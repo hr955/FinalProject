@@ -8,6 +8,8 @@ import android.content.Intent
 import android.util.Log
 import com.facebook.*
 import com.facebook.login.LoginManager
+import com.kakao.sdk.common.KakaoSdk
+import com.kakao.sdk.user.UserApiClient
 import org.json.JSONObject
 import java.util.*
 
@@ -31,6 +33,18 @@ class LoginActivity : BaseActivity() {
     }
 
     override fun setupEvents() {
+        binding.btnKakaoLogin.setOnClickListener {
+            UserApiClient.instance.loginWithKakaoAccount(mContext) { token, error ->
+                if (error != null) {
+                    Log.e("카카오로그인", "로그인 실패", error)
+                }
+                else if (token != null) {
+                    Log.i("카카오로그인", "로그인 성공 ${token.accessToken}")
+                }
+            }
+        }
+
+
         callbackManager = CallbackManager.Factory.create()
 
         binding.btnFacebookLogin.setOnClickListener {
