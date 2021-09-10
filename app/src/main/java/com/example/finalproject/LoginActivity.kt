@@ -8,6 +8,7 @@ import android.content.Intent
 import android.util.Log
 import android.widget.Toast
 import com.example.finalproject.datas.BasicResponse
+import com.example.finalproject.utils.ContextUtil
 import com.facebook.*
 import com.facebook.login.LoginManager
 import com.kakao.sdk.user.UserApiClient
@@ -54,7 +55,7 @@ class LoginActivity : BaseActivity() {
                             Toast.LENGTH_SHORT
                         )
                             .show()
-                        Log.d("로그인 토큰", response.body()!!.data.token)
+                        ContextUtil.setToken(mContext, response.body()!!.data.token)
                     } else {
                         val jsonObj = JSONObject(response.errorBody()!!.string())
                         Toast.makeText(mContext, jsonObj.getString("message"), Toast.LENGTH_SHORT)
@@ -100,6 +101,7 @@ class LoginActivity : BaseActivity() {
                                     call: Call<BasicResponse>,
                                     response: Response<BasicResponse>
                                 ) {
+                                    ContextUtil.setToken(mContext, response.body()!!.data.token)
                                     Toast.makeText(
                                         mContext,
                                         response.body()!!.data.user.nickname,
@@ -154,8 +156,7 @@ class LoginActivity : BaseActivity() {
                                                     response.body()!!.data.user.nickname,
                                                     Toast.LENGTH_SHORT
                                                 ).show()
-                                                Log.d("API서버토큰", response.body()!!.data.token)
-                                                // TODO 서버에서 내려주는 토큰값을 SharedPreferences 에 저장
+                                                ContextUtil.setToken(mContext, response.body()!!.data.token)
                                             }
 
                                             override fun onFailure(
