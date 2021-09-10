@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.databinding.DataBindingUtil
 import com.example.finalproject.databinding.ActivitySingUpBinding
 import com.example.finalproject.datas.BasicResponse
+import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -32,8 +33,14 @@ class SignUpActivity : BaseActivity() {
                     call: Call<BasicResponse>,
                     response: Response<BasicResponse>
                 ) {
-                    val basicResponse = response.body()!!
-                    Log.d("서버메세지", basicResponse.message)
+                    if(response.isSuccessful){
+                        val basicResponse = response.body()!!
+
+                    } else {
+                        val jsonObj = JSONObject(response.errorBody()!!.string())
+                        val message = jsonObj.getString("message")
+
+                    }
                 }
 
                 override fun onFailure(call: Call<BasicResponse>, t: Throwable) {
