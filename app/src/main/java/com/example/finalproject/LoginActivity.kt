@@ -149,6 +149,8 @@ class LoginActivity : BaseActivity() {
                                                     response.body()!!.message,
                                                     Toast.LENGTH_SHORT
                                                 ).show()
+                                                Log.d("API서버토큰",response.body()!!.data.token )
+                                                // TODO 서버에서 내려주는 토큰값을 SharedPreferences 에 저장
                                             }
 
                                             override fun onFailure(
