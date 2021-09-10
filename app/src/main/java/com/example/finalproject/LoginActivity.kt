@@ -48,8 +48,13 @@ class LoginActivity : BaseActivity() {
                     response: Response<BasicResponse>
                 ) {
                     if (response.isSuccessful) {
-                        Toast.makeText(mContext, response.body()!!.message, Toast.LENGTH_SHORT)
+                        Toast.makeText(
+                            mContext,
+                            response.body()!!.data.user.nickname,
+                            Toast.LENGTH_SHORT
+                        )
                             .show()
+                        Log.d("로그인 토큰", response.body()!!.data.token)
                     } else {
                         val jsonObj = JSONObject(response.errorBody()!!.string())
                         Toast.makeText(mContext, jsonObj.getString("message"), Toast.LENGTH_SHORT)
@@ -97,7 +102,7 @@ class LoginActivity : BaseActivity() {
                                 ) {
                                     Toast.makeText(
                                         mContext,
-                                        response.body()!!.message,
+                                        response.body()!!.data.user.nickname,
                                         Toast.LENGTH_SHORT
                                     ).show()
                                 }
@@ -146,10 +151,10 @@ class LoginActivity : BaseActivity() {
                                             ) {
                                                 Toast.makeText(
                                                     mContext,
-                                                    response.body()!!.message,
+                                                    response.body()!!.data.user.nickname,
                                                     Toast.LENGTH_SHORT
                                                 ).show()
-                                                Log.d("API서버토큰",response.body()!!.data.token )
+                                                Log.d("API서버토큰", response.body()!!.data.token)
                                                 // TODO 서버에서 내려주는 토큰값을 SharedPreferences 에 저장
                                             }
 
