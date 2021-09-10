@@ -8,7 +8,6 @@ import android.content.Intent
 import android.util.Log
 import com.facebook.*
 import com.facebook.login.LoginManager
-import com.kakao.sdk.common.KakaoSdk
 import com.kakao.sdk.user.UserApiClient
 import org.json.JSONObject
 import java.util.*
@@ -33,6 +32,10 @@ class LoginActivity : BaseActivity() {
     }
 
     override fun setupEvents() {
+        binding.btnSignUp.setOnClickListener { 
+            startActivity(Intent(mContext, SignUpActivity::class.java))
+        }
+        
         binding.btnKakaoLogin.setOnClickListener {
             UserApiClient.instance.loginWithKakaoAccount(mContext) { token, error ->
                 if (error != null) {
