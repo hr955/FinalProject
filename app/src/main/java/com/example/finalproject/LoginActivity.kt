@@ -6,10 +6,15 @@ import com.example.finalproject.databinding.ActivityLoginBinding
 import com.facebook.login.LoginResult
 import android.content.Intent
 import android.util.Log
+import android.widget.Toast
+import com.example.finalproject.datas.BasicResponse
 import com.facebook.*
 import com.facebook.login.LoginManager
 import com.kakao.sdk.user.UserApiClient
 import org.json.JSONObject
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.util.*
 
 class LoginActivity : BaseActivity() {
@@ -32,10 +37,36 @@ class LoginActivity : BaseActivity() {
     }
 
     override fun setupEvents() {
+        //로그인 버튼 클릭
+        binding.btnLogin.setOnClickListener {
+            apiService.putRequestSingIn(
+                binding.edtEmail.text.toString(),
+                binding.edtPassword.text.toString()
+            ).enqueue(object : Callback<BasicResponse>{
+                override fun onResponse(
+                    call: Call<BasicResponse>,
+                    response: Response<BasicResponse>
+                ) {
+                    if(response.isSuccessful){
+                        Toast.makeText(mContext, response.body()!!.message, Toast.LENGTH_SHORT).show()
+                    }else{
+                        val jsonObj = JSONObject(response.errorBody()!!.string())
+                        val message = jsonObj.getString("message")
+                        Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                override fun onFailure(call: Call<BasicResponse>, t: Throwable) {
+                }
+            })
+        }
+
+        // 회원가입 버튼 클릭
         binding.btnSignUp.setOnClickListener { 
             startActivity(Intent(mContext, SignUpActivity::class.java))
         }
-        
+
+        // 카카오 로그인 버튼 클릭
         binding.btnKakaoLogin.setOnClickListener {
             UserApiClient.instance.loginWithKakaoAccount(mContext) { token, error ->
                 if (error != null) {
@@ -60,9 +91,9 @@ class LoginActivity : BaseActivity() {
             }
         }
 
-
         callbackManager = CallbackManager.Factory.create()
 
+        // 페이스북 로그인 버튼 클릭
         binding.btnFacebookLogin.setOnClickListener {
             val loginManager = LoginManager.getInstance()
 
