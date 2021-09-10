@@ -39,20 +39,21 @@ class LoginActivity : BaseActivity() {
     override fun setupEvents() {
         //로그인 버튼 클릭
         binding.btnLogin.setOnClickListener {
-            apiService.putRequestSingIn(
+            apiService.postRequestLogin(
                 binding.edtEmail.text.toString(),
                 binding.edtPassword.text.toString()
-            ).enqueue(object : Callback<BasicResponse>{
+            ).enqueue(object : Callback<BasicResponse> {
                 override fun onResponse(
                     call: Call<BasicResponse>,
                     response: Response<BasicResponse>
                 ) {
-                    if(response.isSuccessful){
-                        Toast.makeText(mContext, response.body()!!.message, Toast.LENGTH_SHORT).show()
-                    }else{
+                    if (response.isSuccessful) {
+                        Toast.makeText(mContext, response.body()!!.message, Toast.LENGTH_SHORT)
+                            .show()
+                    } else {
                         val jsonObj = JSONObject(response.errorBody()!!.string())
-                        val message = jsonObj.getString("message")
-                        Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show()
+                        Toast.makeText(mContext, jsonObj.getString("message"), Toast.LENGTH_SHORT)
+                            .show()
                     }
                 }
 
@@ -62,7 +63,7 @@ class LoginActivity : BaseActivity() {
         }
 
         // 회원가입 버튼 클릭
-        binding.btnSignUp.setOnClickListener { 
+        binding.btnSignUp.setOnClickListener {
             startActivity(Intent(mContext, SignUpActivity::class.java))
         }
 
@@ -71,20 +72,43 @@ class LoginActivity : BaseActivity() {
             UserApiClient.instance.loginWithKakaoAccount(mContext) { token, error ->
                 if (error != null) {
                     Log.e("카카오로그인", "로그인 실패", error)
-                }
-                else if (token != null) {
+                } else if (token != null) {
                     Log.i("카카오로그인", "로그인 성공 ${token.accessToken}")
 
                     UserApiClient.instance.me { user, error ->
                         if (error != null) {
                             Log.e("카카오로그인", "사용자 정보 요청 실패", error)
-                        }
-                        else if (user != null) {
-                            Log.i("카카오로그인", "사용자 정보 요청 성공" +
-                                    "\n회원번호: ${user.id}" +
-                                    "\n이메일: ${user.kakaoAccount?.email}" +
-                                    "\n닉네임: ${user.kakaoAccount?.profile?.nickname}" +
-                                    "\n프로필사진: ${user.kakaoAccount?.profile?.thumbnailImageUrl}")
+                        } else if (user != null) {
+                            Log.i(
+                                "카카오로그인", "사용자 정보 요청 성공" +
+                                        "\n회원번호: ${user.id}" +
+                                        "\n이메일: ${user.kakaoAccount?.email}" +
+                                        "\n닉네임: ${user.kakaoAccount?.profile?.nickname}" +
+                                        "\n프로필사진: ${user.kakaoAccount?.profile?.thumbnailImageUrl}"
+                            )
+                            apiService.postRequestSocialLogin(
+                                "kakao",
+                                user.id.toString(),
+                                user.kakaoAccount?.profile?.nickname.toString()
+                            ).enqueue(object : Callback<BasicResponse> {
+                                override fun onResponse(
+                                    call: Call<BasicResponse>,
+                                    response: Response<BasicResponse>
+                                ) {
+                                    Toast.makeText(
+                                        mContext,
+                                        response.body()!!.message,
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+
+                                override fun onFailure(
+                                    call: Call<BasicResponse>,
+                                    t: Throwable
+                                ) {
+                                }
+                            })
+
                         }
                     }
                 }
@@ -114,9 +138,25 @@ class LoginActivity : BaseActivity() {
                                     val name = obj!!.getString("name")
                                     val id = obj!!.getString("id")
 
-                                    Log.d("이름", name)
-                                    Log.d("user_id", id)
+                                    apiService.postRequestSocialLogin("facebook", id, name)
+                                        .enqueue(object : Callback<BasicResponse> {
+                                            override fun onResponse(
+                                                call: Call<BasicResponse>,
+                                                response: Response<BasicResponse>
+                                            ) {
+                                                Toast.makeText(
+                                                    mContext,
+                                                    response.body()!!.message,
+                                                    Toast.LENGTH_SHORT
+                                                ).show()
+                                            }
 
+                                            override fun onFailure(
+                                                call: Call<BasicResponse>,
+                                                t: Throwable
+                                            ) {
+                                            }
+                                        })
                                 }
                             })
                         graphRequest.executeAsync()
