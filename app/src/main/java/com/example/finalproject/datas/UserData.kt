@@ -4,9 +4,9 @@ import com.google.gson.annotations.SerializedName
 
 class UserData(
     var id: Int,
-    provider: String,
+    var provider: String,
+    var email: String,
     @SerializedName("nick_name")
-    var nickname: String,
-    var email: String
+    var nickname: String
 ) {
 }
