@@ -36,7 +36,7 @@
                 android:id="@+id/txt_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="2021-09-09 03:05"
+                android:text=""
                 android:textSize="17sp" />
 
         </LinearLayout>
