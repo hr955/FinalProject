@@ -39,6 +39,19 @@ class LoginActivity : BaseActivity() {
     }
 
     override fun setupEvents() {
+        callbackManager = CallbackManager.Factory.create()
+
+        loginButtonEvent()
+        signUpButtonEvent()
+        kakaoLoginButtonEvent()
+        facebookLoginButtonEvent()
+
+    }
+
+    override fun setValues() {
+    }
+
+    fun loginButtonEvent() {
         //로그인 버튼 클릭
         binding.btnLogin.setOnClickListener {
             apiService.postRequestLogin(
@@ -52,9 +65,9 @@ class LoginActivity : BaseActivity() {
                     if (response.isSuccessful) {
                         val responseBody = response.body()!!.data
 
-                        Toast.makeText(mContext, responseBody.user.nickname, Toast.LENGTH_SHORT).show()
                         ContextUtil.setToken(mContext, responseBody.token)
                         GlobalData.loginUser = responseBody.user
+                        startActivity(Intent(mContext, MainActivity::class.java))
                     } else {
                         val jsonObj = JSONObject(response.errorBody()!!.string())
                         Toast.makeText(mContext, jsonObj.getString("message"), Toast.LENGTH_SHORT).show()
@@ -64,12 +77,17 @@ class LoginActivity : BaseActivity() {
                 override fun onFailure(call: Call<BasicResponse>, t: Throwable) { }
             })
         }
+    }
 
+    fun signUpButtonEvent(){
         // 회원가입 버튼 클릭
         binding.btnSignUp.setOnClickListener {
             startActivity(Intent(mContext, SignUpActivity::class.java))
         }
 
+    }
+
+    fun kakaoLoginButtonEvent() {
         // 카카오 로그인 버튼 클릭
         binding.btnKakaoLogin.setOnClickListener {
             UserApiClient.instance.loginWithKakaoAccount(mContext) { token, error ->
@@ -99,7 +117,7 @@ class LoginActivity : BaseActivity() {
 
                                     ContextUtil.setToken(mContext, responseBody.token)
                                     GlobalData.loginUser = responseBody.user
-                                    Toast.makeText(mContext, responseBody.user.nickname, Toast.LENGTH_SHORT).show()
+                                    startActivity(Intent(mContext, MainActivity::class.java))
                                 }
 
                                 override fun onFailure(call: Call<BasicResponse>, t: Throwable) {
@@ -110,9 +128,9 @@ class LoginActivity : BaseActivity() {
                 }
             }
         }
+    }
 
-        callbackManager = CallbackManager.Factory.create()
-
+    fun facebookLoginButtonEvent(){
         // 페이스북 로그인 버튼 클릭
         binding.btnFacebookLogin.setOnClickListener {
             val loginManager = LoginManager.getInstance()
@@ -139,6 +157,7 @@ class LoginActivity : BaseActivity() {
                                                 Toast.makeText(mContext, responseBody.user.nickname, Toast.LENGTH_SHORT).show()
                                                 ContextUtil.setToken(mContext, responseBody.token)
                                                 GlobalData.loginUser = responseBody.user
+                                                startActivity(Intent(mContext, MainActivity::class.java))
                                             }
 
                                             override fun onFailure(call: Call<BasicResponse>, t: Throwable) {
@@ -155,8 +174,6 @@ class LoginActivity : BaseActivity() {
                 }
             )
         }
-    }
 
-    override fun setValues() {
     }
 }
