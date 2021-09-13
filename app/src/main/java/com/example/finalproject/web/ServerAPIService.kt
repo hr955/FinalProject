@@ -38,5 +38,6 @@ interface ServerAPIService {
         @Field("longitude") longitude: Double
         ): Call<BasicResponse>
 
-
+    @GET("/appointment")
+    fun getRequestAppointmentList(): Call<BasicResponse>
 }

@@ -3,6 +3,9 @@
     package="com.example.finalproject">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
     <application
         android:name=".GlobalApplication"
         android:allowBackup="true"
@@ -38,6 +41,8 @@
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
+
+        <meta-data android:name="com.kakao.sdk.AppKey" android:value="@string/kakao_app_key"/>
 
         <activity
             android:name="com.facebook.FacebookActivity"

@@ -7,7 +7,7 @@ import android.util.Log
 import androidx.databinding.DataBindingUtil
 import com.example.finalproject.databinding.ActivityEditAppointmentBinding
 import com.example.finalproject.datas.BasicResponse
-import com.example.finalproject.utils.ContextUtil
+import net.daum.mf.map.api.MapView
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -96,5 +96,7 @@ class EditAppointmentActivity : BaseActivity() {
     }
 
     override fun setValues() {
+        val mapView = MapView(mContext)
+        binding.mapView.addView(mapView)
     }
 }

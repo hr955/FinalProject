@@ -9,7 +9,7 @@ import com.example.finalproject.R
 import com.example.finalproject.databinding.ItemAppointmentListBinding
 import com.example.finalproject.datas.AppointmentData
 
-class AppointmentListAdapter(private val mList: ArrayList<AppointmentData>) : RecyclerView.Adapter<AppointmentListAdapter.AppointmentListAdapterViewHolder>(){
+class AppointmentListAdapter(private val mList: List<AppointmentData>) : RecyclerView.Adapter<AppointmentListAdapter.AppointmentListAdapterViewHolder>(){
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
@@ -32,7 +32,7 @@ class AppointmentListAdapter(private val mList: ArrayList<AppointmentData>) : Re
         RecyclerView.ViewHolder(binding.root) {
             fun onBind(item: AppointmentData){
                 binding.txtTitle.text = item.title
-                binding.txtDate.text = item.date
+                binding.txtDate.text = item.datetime
                 binding.txtPlace.text = item.place
             }
 
