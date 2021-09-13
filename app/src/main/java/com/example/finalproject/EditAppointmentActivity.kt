@@ -69,7 +69,6 @@ class EditAppointmentActivity : BaseActivity() {
             val lon = 127.027469
 
             apiService.postRequestAppointment(
-                ContextUtil.getToken(mContext),
                 inputTitle,
                 inputDate,
                 inputPlace,
@@ -91,7 +90,7 @@ class EditAppointmentActivity : BaseActivity() {
             })
 
             if (binding.txtDate.text == "") {
-                //날짜를 선택해주세요
+                // TODO 제목/날짜/장소 미선택시 분기처리
             }
         }
     }
