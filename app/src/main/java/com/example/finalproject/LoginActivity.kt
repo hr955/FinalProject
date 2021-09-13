@@ -9,6 +9,7 @@ import android.util.Log
 import android.widget.Toast
 import com.example.finalproject.datas.BasicResponse
 import com.example.finalproject.utils.ContextUtil
+import com.example.finalproject.utils.GlobalData
 import com.facebook.*
 import com.facebook.login.LoginManager
 import com.kakao.sdk.user.UserApiClient
@@ -49,22 +50,18 @@ class LoginActivity : BaseActivity() {
                     response: Response<BasicResponse>
                 ) {
                     if (response.isSuccessful) {
-                        Toast.makeText(
-                            mContext,
-                            response.body()!!.data.user.nickname,
-                            Toast.LENGTH_SHORT
-                        )
-                            .show()
-                        ContextUtil.setToken(mContext, response.body()!!.data.token)
+                        val responseBody = response.body()!!.data
+
+                        Toast.makeText(mContext, responseBody.user.nickname, Toast.LENGTH_SHORT).show()
+                        ContextUtil.setToken(mContext, responseBody.token)
+                        GlobalData.loginUser = responseBody.user
                     } else {
                         val jsonObj = JSONObject(response.errorBody()!!.string())
-                        Toast.makeText(mContext, jsonObj.getString("message"), Toast.LENGTH_SHORT)
-                            .show()
+                        Toast.makeText(mContext, jsonObj.getString("message"), Toast.LENGTH_SHORT).show()
                     }
                 }
 
-                override fun onFailure(call: Call<BasicResponse>, t: Throwable) {
-                }
+                override fun onFailure(call: Call<BasicResponse>, t: Throwable) { }
             })
         }
 
@@ -95,27 +92,19 @@ class LoginActivity : BaseActivity() {
                             apiService.postRequestSocialLogin(
                                 "kakao",
                                 user.id.toString(),
-                                user.kakaoAccount?.profile?.nickname.toString()
+                                user.kakaoAccount?.profile?.nickname!!
                             ).enqueue(object : Callback<BasicResponse> {
-                                override fun onResponse(
-                                    call: Call<BasicResponse>,
-                                    response: Response<BasicResponse>
-                                ) {
-                                    ContextUtil.setToken(mContext, response.body()!!.data.token)
-                                    Toast.makeText(
-                                        mContext,
-                                        response.body()!!.data.user.nickname,
-                                        Toast.LENGTH_SHORT
-                                    ).show()
+                                override fun onResponse(call: Call<BasicResponse>, response: Response<BasicResponse>) {
+                                    val responseBody = response.body()!!.data
+
+                                    ContextUtil.setToken(mContext, responseBody.token)
+                                    GlobalData.loginUser = responseBody.user
+                                    Toast.makeText(mContext, responseBody.user.nickname, Toast.LENGTH_SHORT).show()
                                 }
 
-                                override fun onFailure(
-                                    call: Call<BasicResponse>,
-                                    t: Throwable
-                                ) {
+                                override fun onFailure(call: Call<BasicResponse>, t: Throwable) {
                                 }
                             })
-
                         }
                     }
                 }
@@ -138,31 +127,21 @@ class LoginActivity : BaseActivity() {
                         // 유저 정보 받아오기
                         val graphRequest = GraphRequest.newMeRequest(result?.accessToken,
                             object : GraphRequest.GraphJSONObjectCallback {
-                                override fun onCompleted(
-                                    obj: JSONObject?,
-                                    response: GraphResponse?
-                                ) {
+                                override fun onCompleted(obj: JSONObject?, response: GraphResponse?) {
                                     val name = obj!!.getString("name")
                                     val id = obj!!.getString("id")
 
                                     apiService.postRequestSocialLogin("facebook", id, name)
                                         .enqueue(object : Callback<BasicResponse> {
-                                            override fun onResponse(
-                                                call: Call<BasicResponse>,
-                                                response: Response<BasicResponse>
-                                            ) {
-                                                Toast.makeText(
-                                                    mContext,
-                                                    response.body()!!.data.user.nickname,
-                                                    Toast.LENGTH_SHORT
-                                                ).show()
-                                                ContextUtil.setToken(mContext, response.body()!!.data.token)
+                                            override fun onResponse(call: Call<BasicResponse>, response: Response<BasicResponse>) {
+                                                val responseBody = response.body()!!.data
+
+                                                Toast.makeText(mContext, responseBody.user.nickname, Toast.LENGTH_SHORT).show()
+                                                ContextUtil.setToken(mContext, responseBody.token)
+                                                GlobalData.loginUser = responseBody.user
                                             }
 
-                                            override fun onFailure(
-                                                call: Call<BasicResponse>,
-                                                t: Throwable
-                                            ) {
+                                            override fun onFailure(call: Call<BasicResponse>, t: Throwable) {
                                             }
                                         })
                                 }
@@ -170,11 +149,9 @@ class LoginActivity : BaseActivity() {
                         graphRequest.executeAsync()
                     }
 
-                    override fun onCancel() {
-                    }
+                    override fun onCancel() { }
 
-                    override fun onError(error: FacebookException?) {
-                    }
+                    override fun onError(error: FacebookException?) { }
                 }
             )
         }
