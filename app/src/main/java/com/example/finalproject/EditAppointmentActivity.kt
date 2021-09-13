@@ -3,11 +3,10 @@ package com.example.finalproject
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.os.Bundle
-import android.util.Log
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import com.example.finalproject.databinding.ActivityEditAppointmentBinding
 import com.example.finalproject.datas.BasicResponse
-import net.daum.mf.map.api.MapView
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -29,7 +28,16 @@ class EditAppointmentActivity : BaseActivity() {
     }
 
     override fun setupEvents() {
-        // 날짜 선택 버튼
+
+        dateSelectButtonClickEvent()
+        saveButtonClickEvent()
+    }
+
+    override fun setValues() {
+    }
+
+    // 날짜 선택 버튼 클릭 이벤트
+    fun dateSelectButtonClickEvent() {
         binding.btnSelectDate.setOnClickListener {
             val dateSetListener =
                 DatePickerDialog.OnDateSetListener { datePicker, year, month, day ->
@@ -59,16 +67,31 @@ class EditAppointmentActivity : BaseActivity() {
                 mSelectedDateTime.get(Calendar.DAY_OF_MONTH)
             ).show()
         }
+    }
 
-        // 완료 버튼 (일정 저장)
+    // 저장 버튼 클릭 이벤트 -> 일정 저장 API 호출
+    fun saveButtonClickEvent() {
         binding.btnSave.setOnClickListener {
             val inputTitle = binding.edtAppointmentTitle.text.toString()
             val inputPlace = binding.edtPlace.text.toString()
             val inputDate = SimpleDateFormat("yyyy-MM-dd HH:mm").format(mSelectedDateTime.time)
+
+            // TODO 지도 API를 활용하여 좌표 받아오기
             val lat = 37.497919
             val lon = 127.027469
 
-            apiService.postRequestAppointment(
+            if (inputTitle == "") {
+                Toast.makeText(mContext, "제목을 작성해주세요", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            } else if (inputPlace == "") {
+                Toast.makeText(mContext, "날짜를 선택해주세요", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            } else if (inputDate == "") {
+                Toast.makeText(mContext, "장소을 선택해주세요", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            apiService.postRequestAddAppointment(
                 inputTitle,
                 inputDate,
                 inputPlace,
@@ -79,24 +102,11 @@ class EditAppointmentActivity : BaseActivity() {
                     call: Call<BasicResponse>,
                     response: Response<BasicResponse>
                 ) {
-
-                    Log.d("테스트", response.body().toString())
+                    finish()
                 }
 
-                override fun onFailure(call: Call<BasicResponse>, t: Throwable) {
-                    Log.d("테스트", t.message.toString())
-
-                }
+                override fun onFailure(call: Call<BasicResponse>, t: Throwable) {}
             })
-
-            if (binding.txtDate.text == "") {
-                // TODO 제목/날짜/장소 미선택시 분기처리
-            }
         }
-    }
-
-    override fun setValues() {
-        val mapView = MapView(mContext)
-        binding.mapView.addView(mapView)
     }
 }
