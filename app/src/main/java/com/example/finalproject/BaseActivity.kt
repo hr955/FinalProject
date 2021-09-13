@@ -20,7 +20,7 @@ abstract class BaseActivity : AppCompatActivity() {
 
         mContext = this
 
-        retrofit = ServerAPI.getRetrofit()
+        retrofit = ServerAPI.getRetrofit(mContext)
         apiService = retrofit.create(ServerAPIService::class.java)
     }
 
