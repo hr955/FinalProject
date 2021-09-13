@@ -15,5 +15,4 @@
 local.properties
 
 # App_Key
-app/src/main/res/values/kakao_app_key.xml
-app/src/main/res/values/facebook_app_id.xml
+app/src/main/res/values/app_keys.xml
