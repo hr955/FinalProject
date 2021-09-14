@@ -3,6 +3,7 @@ package com.example.finalproject
 import android.os.Bundle
 import androidx.databinding.DataBindingUtil
 import com.example.finalproject.databinding.ActivityMySettingBinding
+import com.example.finalproject.utils.GlobalData
 
 class MySettingActivity : BaseActivity() {
 
@@ -17,9 +18,13 @@ class MySettingActivity : BaseActivity() {
     }
 
     override fun setupEvents() {
+        binding.layoutReadyTime.setOnClickListener {
+
+        }
     }
 
     override fun setValues() {
         txtTitle.text = "프로필"
+        binding.txtNickname.text = GlobalData.loginUser!!.nickname
     }
 }
