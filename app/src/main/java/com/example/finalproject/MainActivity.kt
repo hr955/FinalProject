@@ -44,7 +44,7 @@ class MainActivity : BaseActivity() {
     override fun setValues() {
         Toast.makeText(mContext, "${GlobalData.loginUser!!.nickname}님 환영합니다!", Toast.LENGTH_SHORT).show()
 
-        mAdapter = AppointmentListAdapter(mAppointmentList)
+        mAdapter = AppointmentListAdapter(mContext, mAppointmentList)
 
         binding.rvAppointmentList.apply{
             adapter = mAdapter

@@ -10,6 +10,8 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
+// TODO 비밀번호 일치 검사, 이메일 중복 및 양식 검사, 닉네임 중복검사
+
 class SignUpActivity : BaseActivity() {
 
     lateinit var binding: ActivitySingUpBinding

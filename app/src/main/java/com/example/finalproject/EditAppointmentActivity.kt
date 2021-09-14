@@ -3,10 +3,15 @@ package com.example.finalproject
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import com.example.finalproject.databinding.ActivityEditAppointmentBinding
 import com.example.finalproject.datas.BasicResponse
+import com.naver.maps.geometry.LatLng
+import com.naver.maps.map.*
+import com.naver.maps.map.overlay.Marker
+import com.naver.maps.map.overlay.OverlayImage
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -17,6 +22,9 @@ class EditAppointmentActivity : BaseActivity() {
 
     lateinit var binding: ActivityEditAppointmentBinding
     val mSelectedDateTime = Calendar.getInstance()
+
+    var mSelectedLat = 0.0
+    var mSelectedLng = 0.0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,6 +42,38 @@ class EditAppointmentActivity : BaseActivity() {
     }
 
     override fun setValues() {
+        val fm = supportFragmentManager
+        val mapFragment = fm.findFragmentById(R.id.fragment_naver_map) as MapFragment?
+            ?: MapFragment.newInstance().also {
+                fm.beginTransaction().add(R.id.fragment_naver_map, it).commit()
+            }
+        mapFragment.getMapAsync {
+            Log.d("지도객체 가져오기", "지도객체 가져오기")
+
+            val coord = LatLng(37.497846, 127.027357)
+
+            val cameraUpdate = CameraUpdate.scrollTo(coord)
+                .animate(CameraAnimation.Easing)
+            it.moveCamera(cameraUpdate)
+
+            val uiSettings = it.uiSettings
+            uiSettings.isCompassEnabled = true
+
+            val selectedPointMarker = Marker()
+            selectedPointMarker.icon = OverlayImage.fromResource(R.drawable.ic_pink_marker)
+
+            it.setOnMapClickListener { point, coord ->
+                Toast.makeText(
+                    this, "${coord.latitude}, ${coord.longitude}",
+                    Toast.LENGTH_SHORT
+                ).show()
+                mSelectedLat = coord.latitude
+                mSelectedLng = coord.longitude
+
+                selectedPointMarker.position = LatLng(mSelectedLat, mSelectedLng)
+                selectedPointMarker.map = it
+            }
+        }
     }
 
     // 날짜 선택 버튼 클릭 이벤트
@@ -76,17 +116,15 @@ class EditAppointmentActivity : BaseActivity() {
             val inputPlace = binding.edtPlace.text.toString()
             val inputDate = SimpleDateFormat("yyyy-MM-dd HH:mm").format(mSelectedDateTime.time)
 
-            // TODO 지도 API를 활용하여 좌표 받아오기
-            val lat = 37.497919
-            val lon = 127.027469
-
             if (inputTitle == "") {
                 Toast.makeText(mContext, "제목을 작성해주세요", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
-            } else if (inputPlace == "") {
+            }
+            if (inputDate == "") {
                 Toast.makeText(mContext, "날짜를 선택해주세요", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
-            } else if (inputDate == "") {
+            }
+            if (mSelectedLat == 0.0 && mSelectedLng == 0.0) {
                 Toast.makeText(mContext, "장소을 선택해주세요", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
@@ -95,8 +133,8 @@ class EditAppointmentActivity : BaseActivity() {
                 inputTitle,
                 inputDate,
                 inputPlace,
-                lat,
-                lon
+                mSelectedLat,
+                mSelectedLng
             ).enqueue(object : Callback<BasicResponse> {
                 override fun onResponse(
                     call: Call<BasicResponse>,
@@ -109,4 +147,6 @@ class EditAppointmentActivity : BaseActivity() {
             })
         }
     }
+
+
 }
