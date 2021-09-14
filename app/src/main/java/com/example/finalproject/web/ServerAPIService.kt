@@ -49,4 +49,12 @@ interface ServerAPIService {
     // 사용자 정보 조회 API
     @GET("/user")
     fun getRequestUserData(): Call<BasicResponse>
+
+    // 회원 정보 수정
+    @FormUrlEncoded
+    @PATCH("/user")
+    fun patchRequestMyInfo(
+        @Field("field") field: String,
+        @Field("value") value: String
+    ): Call<BasicResponse>
 }
