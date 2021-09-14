@@ -1,9 +1,11 @@
 package com.example.finalproject
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import com.example.finalproject.databinding.ActivityViewMapBinding
 import com.example.finalproject.datas.AppointmentData
@@ -14,6 +16,10 @@ import com.naver.maps.map.MapFragment
 import com.naver.maps.map.overlay.InfoWindow
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.OverlayImage
+import com.odsay.odsayandroidsdk.API
+import com.odsay.odsayandroidsdk.ODsayData
+import com.odsay.odsayandroidsdk.ODsayService
+import com.odsay.odsayandroidsdk.OnResultCallbackListener
 
 class ViewMapActivity : BaseActivity() {
 
@@ -52,20 +58,50 @@ class ViewMapActivity : BaseActivity() {
             marker.map = it
 
             val infoWindow = InfoWindow()
-            infoWindow.adapter = object : InfoWindow.DefaultViewAdapter(mContext) {
-                override fun getContentView(infoWindow: InfoWindow): View {
 
-                    val myView =
-                        LayoutInflater.from(mContext).inflate(R.layout.my_custom_info_window, null)
-                    val placeNameTxt = myView.findViewById<TextView>(R.id.txt_place)
-                    val arrivalTimeTxt = myView.findViewById<TextView>(R.id.txt_arrival_time)
+            val myODsayService =
+                ODsayService.init(mContext, getString(R.string.odsay_app_key))
+            myODsayService.requestSearchPubTransPath(
+                126.724542.toString(),
+                37.489491.toString(),
+                mAppointmentData.longitude.toString(),
+                mAppointmentData.latitude.toString(),
+                null, null, null, object : OnResultCallbackListener {
+                    override fun onSuccess(p0: ODsayData?, p1: API?) {
+                        val jsonObj = p0!!.json
+                        val resultObj = jsonObj.getJSONObject("result")
+                        val pathArr = resultObj.getJSONArray("path")
 
-                    placeNameTxt.text = mAppointmentData.place
-                    arrivalTimeTxt.text = "4시간 예상"
+                        val firstPath = pathArr.getJSONObject(0)
+                        val infoObj = firstPath.getJSONObject("info")
+                        val totalTime = infoObj.getInt("totalTime")
+                        Log.d("소요시간", totalTime.toString())
 
-                    return myView
-                }
-            }
+                        val hour = totalTime / 60
+                        val minute = totalTime % 60
+
+                        infoWindow.adapter = object : InfoWindow.DefaultViewAdapter(mContext) {
+                            override fun getContentView(infoWindow: InfoWindow): View {
+
+                                val myView =
+                                    LayoutInflater.from(mContext).inflate(R.layout.my_custom_info_window, null)
+                                val placeNameTxt = myView.findViewById<TextView>(R.id.txt_place)
+                                val arrivalTimeTxt = myView.findViewById<TextView>(R.id.txt_arrival_time)
+
+                                placeNameTxt.text = mAppointmentData.place
+                                arrivalTimeTxt.text = "${hour}시간 ${minute}분 예상"
+
+
+                                return myView
+                            }
+                        }
+                    }
+
+                    override fun onError(p0: Int, p1: String?, p2: API?) {
+                        Log.d("예상시간실패", p1!!)
+                    }
+                })
+
             infoWindow.open(marker)
 
             it.setOnMapClickListener { pointF, latLng ->
@@ -74,9 +110,9 @@ class ViewMapActivity : BaseActivity() {
 
             marker.setOnClickListener {
                 val clickedMarker = it as Marker
-                if(clickedMarker.infoWindow == null){
+                if (clickedMarker.infoWindow == null) {
                     infoWindow.open(clickedMarker)
-                }else{
+                } else {
                     infoWindow.close()
                 }
                 return@setOnClickListener true
