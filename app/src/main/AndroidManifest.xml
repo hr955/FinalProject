@@ -16,6 +16,9 @@
         android:theme="@style/Theme.FinalProject"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".ViewMyPlaceListActivity"
+            android:exported="true" />
+        <activity
             android:name=".MySettingActivity"
             android:exported="true" />
         <activity
