@@ -57,4 +57,14 @@ interface ServerAPIService {
         @Field("field") field: String,
         @Field("value") value: String
     ): Call<BasicResponse>
+
+    // 출발지 추가
+    @FormUrlEncoded
+    @POST("/user/place")
+    fun postRequestAddMyPlace(
+        @Field("name") title: String,
+        @Field("latitude") latitude: Double,
+        @Field("longitude") longitude: Double,
+        @Field("is_primary") isPrimary: Boolean
+    ): Call<BasicResponse>
 }

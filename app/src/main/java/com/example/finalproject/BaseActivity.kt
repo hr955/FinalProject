@@ -21,6 +21,7 @@ abstract class BaseActivity : AppCompatActivity() {
 
     lateinit var btnProfile: ImageView
     lateinit var txtTitle: TextView
+    lateinit var btnAddPlace: ImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,6 +50,7 @@ abstract class BaseActivity : AppCompatActivity() {
 
         btnProfile = defActionBar.customView.findViewById(R.id.btn_profile)
         txtTitle = defActionBar.customView.findViewById(R.id.txt_title)
+        btnAddPlace = defActionBar.customView.findViewById(R.id.btn_add_place)
     }
 
 }

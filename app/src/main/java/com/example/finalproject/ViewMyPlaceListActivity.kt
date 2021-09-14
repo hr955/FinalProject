@@ -1,8 +1,8 @@
 package com.example.finalproject
 
-import androidx.appcompat.app.AppCompatActivity
+import android.content.Intent
 import android.os.Bundle
-import androidx.databinding.DataBindingComponent
+import android.view.View
 import androidx.databinding.DataBindingUtil
 import com.example.finalproject.databinding.ActivityViewMyPlaceListBinding
 
@@ -19,8 +19,13 @@ class ViewMyPlaceListActivity : BaseActivity() {
     }
 
     override fun setupEvents() {
+        btnAddPlace.setOnClickListener {
+            startActivity(Intent(mContext, EditMyPlaceActivity::class.java))
+        }
     }
 
     override fun setValues() {
+        txtTitle.text = "출발지 목록"
+        btnAddPlace.visibility = View.VISIBLE
     }
 }

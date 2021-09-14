@@ -2,6 +2,7 @@ package com.example.finalproject
 
 import android.app.AlertDialog
 import android.content.DialogInterface
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -34,6 +35,10 @@ class MySettingActivity : BaseActivity() {
 
         binding.layoutReadyTime.setOnClickListener {
             patchUserInfo("준비시간 입력", "ready_minute")
+        }
+
+        binding.layoutMyPlaceList.setOnClickListener {
+            startActivity(Intent(mContext, ViewMyPlaceListActivity::class.java))
         }
     }
 
