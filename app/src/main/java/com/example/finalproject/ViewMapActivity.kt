@@ -1,8 +1,7 @@
 package com.example.finalproject
 
 import android.os.Bundle
-import android.util.Log
-import android.widget.Toast
+import android.view.LayoutInflater
 import androidx.databinding.DataBindingUtil
 import com.example.finalproject.databinding.ActivityViewMapBinding
 import com.example.finalproject.datas.AppointmentData
@@ -10,6 +9,7 @@ import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraAnimation
 import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.MapFragment
+import com.naver.maps.map.overlay.InfoWindow
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.OverlayImage
 
@@ -48,6 +48,17 @@ class ViewMapActivity : BaseActivity() {
             val selectedPointMarker = Marker(coord)
             selectedPointMarker.icon = OverlayImage.fromResource(R.drawable.ic_pink_marker)
             selectedPointMarker.map = it
+
+            val infoWindow = InfoWindow()
+            infoWindow.adapter = object : InfoWindow.DefaultTextAdapter(mContext) {
+                override fun getText(infoWindow: InfoWindow): CharSequence {
+
+                    val myView = LayoutInflater.from(mContext).inflate(R.layout.my_custom_info_window, null)
+
+                    return mAppointmentData.place
+                }
+            }
+            infoWindow.open(selectedPointMarker)
 
         }
     }
