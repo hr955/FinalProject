@@ -15,6 +15,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FinalProject"
         android:usesCleartextTraffic="true">
+        <activity
+            android:name=".ViewMapActivity"
+            android:exported="true" />
 
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"

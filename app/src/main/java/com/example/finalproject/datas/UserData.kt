@@ -1,6 +1,7 @@
 package com.example.finalproject.datas
 
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 
 class UserData(
     var id: Int,
@@ -8,5 +9,5 @@ class UserData(
     var email: String,
     @SerializedName("nick_name")
     var nickname: String
-) {
+) : Serializable {
 }
