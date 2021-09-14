@@ -40,6 +40,10 @@ class MainActivity : BaseActivity() {
         binding.btnAddAppointment.setOnClickListener {
             startActivity(Intent(mContext, EditAppointmentActivity::class.java))
         }
+
+        btnProfile.setOnClickListener {
+            startActivity(Intent(mContext, MySettingActivity::class.java))
+        }
     }
 
     override fun setValues() {
