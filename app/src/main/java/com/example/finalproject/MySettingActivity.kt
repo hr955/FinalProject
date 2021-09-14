@@ -3,6 +3,8 @@ package com.example.finalproject
 import android.app.AlertDialog
 import android.content.DialogInterface
 import android.os.Bundle
+import android.util.Log
+import android.view.View
 import android.widget.EditText
 import androidx.databinding.DataBindingUtil
 import com.example.finalproject.databinding.ActivityMySettingBinding
@@ -37,12 +39,29 @@ class MySettingActivity : BaseActivity() {
 
     override fun setValues() {
         txtTitle.text = "프로필"
+        Log.d("프로바이더", GlobalData.loginUser!!.provider)
+
+        binding.ivLoginSocialLogo.apply {
+            when(GlobalData.loginUser!!.provider){
+                "facebook" -> {
+                    setImageResource(R.drawable.ic_facebook_logo_color)
+                    binding.layoutLogout.visibility = View.GONE
+                }
+                "kakao" -> {
+                    setImageResource(R.drawable.ic_kakao_logo)
+                    binding.layoutLogout.visibility = View.GONE
+                }
+                else -> visibility = View.GONE
+            }
+        }
 
         setUserInfo()
     }
 
     fun patchUserInfo(title: String, field: String){
         val et = EditText(mContext)
+        et.setPadding(50,0,50,0)
+
         val alert = AlertDialog.Builder(mContext)
         alert.setTitle(title)
         alert.setView(et)
