@@ -42,6 +42,8 @@ class EditAppointmentActivity : BaseActivity() {
     }
 
     override fun setValues() {
+        txtTitle.text = "일정 등록"
+
         val fm = supportFragmentManager
         val mapFragment = fm.findFragmentById(R.id.fragment_naver_map) as MapFragment?
             ?: MapFragment.newInstance().also {

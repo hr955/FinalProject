@@ -3,6 +3,7 @@ package com.example.finalproject
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -51,6 +52,9 @@ class MainActivity : BaseActivity() {
             layoutManager =
                 LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         }
+
+        btnProfile.visibility = View.VISIBLE
+        txtTitle.text = "메인 화면"
 
     }
 

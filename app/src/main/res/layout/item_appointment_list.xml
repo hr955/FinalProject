@@ -76,6 +76,7 @@
 
         <ImageView
             android:id="@+id/btn_map_detail"
+            android:padding="15dp"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:layout_marginRight="10dp"
