@@ -25,27 +25,13 @@ class MySettingActivity : BaseActivity() {
     }
 
     override fun setupEvents() {
-        val et = EditText(mContext)
+
+        binding.txtNickname.setOnClickListener {
+            patchUserInfo("닉네임 입력", "nickname")
+        }
 
         binding.layoutReadyTime.setOnClickListener {
-            val alert = AlertDialog.Builder(mContext)
-            alert.setTitle("준비시간 입력")
-            alert.setView(et)
-            alert.setPositiveButton("확인", DialogInterface.OnClickListener { dialogInterface, i ->
-                apiService.patchRequestMyInfo("ready_minute", et.text.toString())
-                    .enqueue(object : Callback<BasicResponse> {
-                        override fun onResponse(
-                            call: Call<BasicResponse>,
-                            response: Response<BasicResponse>
-                        ) {
-                            GlobalData.loginUser = response.body()!!.data.user
-                            setUserInfo()
-                        }
-
-                        override fun onFailure(call: Call<BasicResponse>, t: Throwable) {}
-                    })
-            })
-            alert.show()
+            patchUserInfo("준비시간 입력", "ready_minute")
         }
     }
 
@@ -53,6 +39,29 @@ class MySettingActivity : BaseActivity() {
         txtTitle.text = "프로필"
 
         setUserInfo()
+    }
+
+    fun patchUserInfo(title: String, field: String){
+        val et = EditText(mContext)
+        val alert = AlertDialog.Builder(mContext)
+        alert.setTitle(title)
+        alert.setView(et)
+        alert.setPositiveButton("확인", DialogInterface.OnClickListener { dialogInterface, i ->
+            apiService.patchRequestMyInfo(field, et.text.toString())
+                .enqueue(object : Callback<BasicResponse> {
+                    override fun onResponse(
+                        call: Call<BasicResponse>,
+                        response: Response<BasicResponse>
+                    ) {
+                        GlobalData.loginUser = response.body()!!.data.user
+                        setUserInfo()
+                    }
+
+                    override fun onFailure(call: Call<BasicResponse>, t: Throwable) {}
+                })
+        })
+        alert.setNegativeButton("취소",null)
+        alert.show()
     }
 
     fun setUserInfo() {
