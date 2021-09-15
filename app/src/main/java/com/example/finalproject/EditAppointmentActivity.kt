@@ -57,7 +57,7 @@ class EditAppointmentActivity : BaseActivity() {
     }
 
     override fun setupEvents() {
-        // 지도영역이 터치되면 스크롤뷰가 정지
+        // 지도영역이 터치되면 스크롤뷰 정지
         binding.txtScrollHelp.setOnTouchListener { view, motionEvent ->
             binding.scrollView.requestDisallowInterceptTouchEvent(true)
             return@setOnTouchListener false
@@ -150,6 +150,7 @@ class EditAppointmentActivity : BaseActivity() {
         }
     }
 
+    // 지도에 경로를 그려주는 함수
     fun drawStartPlaceToDestination(naverMap: NaverMap) {
         mStartPlaceMarker.position =
             LatLng(mSelectedStartPlace.latitude, mSelectedStartPlace.longitude)
@@ -265,9 +266,12 @@ class EditAppointmentActivity : BaseActivity() {
             apiService.postRequestAddAppointment(
                 inputTitle,
                 inputDate,
+                mSelectedStartPlace.name,
+                mSelectedStartPlace.latitude,
+                mSelectedStartPlace.longitude,
                 inputPlace,
                 mSelectedLat,
-                mSelectedLng
+                mSelectedLng,
             ).enqueue(object : Callback<BasicResponse> {
                 override fun onResponse(
                     call: Call<BasicResponse>,
