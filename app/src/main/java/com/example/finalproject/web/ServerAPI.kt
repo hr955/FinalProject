@@ -1,7 +1,9 @@
 package com.example.finalproject.web
 
 import android.content.Context
+import androidx.databinding.adapters.CalendarViewBindingAdapter.setDate
 import com.example.finalproject.utils.ContextUtil
+import com.google.gson.GsonBuilder
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -28,11 +30,13 @@ class ServerAPI {
 
             val myClient = OkHttpClient.Builder().addInterceptor(interceptor).build()
 
+            val gson = GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm").create()
+
             if (retrofit == null) {
                 retrofit = Retrofit.Builder()
                     .baseUrl(HOST_URL)
                     .client(myClient)
-                    .addConverterFactory(GsonConverterFactory.create())
+                    .addConverterFactory(GsonConverterFactory.create(gson))
                     .build()
             }
 

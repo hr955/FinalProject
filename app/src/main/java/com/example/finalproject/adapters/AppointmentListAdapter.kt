@@ -10,6 +10,7 @@ import com.example.finalproject.R
 import com.example.finalproject.ViewMapActivity
 import com.example.finalproject.databinding.ItemAppointmentListBinding
 import com.example.finalproject.datas.AppointmentData
+import java.text.SimpleDateFormat
 
 class AppointmentListAdapter(val mContext: Context, private val mList: List<AppointmentData>) :
     RecyclerView.Adapter<AppointmentListAdapter.AppointmentListAdapterViewHolder>() {
@@ -35,8 +36,9 @@ class AppointmentListAdapter(val mContext: Context, private val mList: List<Appo
     class AppointmentListAdapterViewHolder(private val binding: ItemAppointmentListBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun onBind(item: AppointmentData) {
+            val dateTimeFormat = SimpleDateFormat("M/d (E) a h:mm")
             binding.txtTitle.text = item.title
-            binding.txtDate.text = item.datetime
+            binding.txtDate.text = dateTimeFormat.format(item.datetime)
             binding.txtPlace.text = item.place
         }
 
