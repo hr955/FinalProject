@@ -32,13 +32,13 @@ class MyPlaceListAdapter(val mContext: Context, private val mList: List<PlaceDat
 
     class MyPlaceListAdapterViewHolder(private val binding: ItemMyPlaceListBinding) :
         RecyclerView.ViewHolder(binding.root) {
-            fun onBind(item: PlaceData){
-                binding.txtMyPalceName.text = item.name
-                if(item.isPrimary){
-                    binding.txtIsPrimary.visibility = View.VISIBLE
-                }else{
-                    binding.txtIsPrimary.visibility = View.GONE
-                }
+        fun onBind(item: PlaceData) {
+            binding.txtMyPlaceName.text = item.name
+            if (item.isPrimary) {
+                binding.txtIsPrimary.visibility = View.VISIBLE
+            } else {
+                binding.txtIsPrimary.visibility = View.GONE
             }
+        }
     }
 }

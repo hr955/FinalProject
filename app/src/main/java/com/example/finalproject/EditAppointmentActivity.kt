@@ -6,8 +6,10 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
+import com.example.finalproject.adapters.StartPlaceAdapter
 import com.example.finalproject.databinding.ActivityEditAppointmentBinding
 import com.example.finalproject.datas.BasicResponse
+import com.example.finalproject.datas.PlaceData
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.*
 import com.naver.maps.map.overlay.Marker
@@ -22,6 +24,8 @@ class EditAppointmentActivity : BaseActivity() {
 
     lateinit var binding: ActivityEditAppointmentBinding
     val mSelectedDateTime = Calendar.getInstance()
+    val mStartPlaceList = ArrayList<PlaceData>()
+    lateinit var mSpinnerAdapter: StartPlaceAdapter
 
     var mSelectedLat = 0.0
     var mSelectedLng = 0.0
@@ -42,8 +46,34 @@ class EditAppointmentActivity : BaseActivity() {
     }
 
     override fun setValues() {
-        txtTitle.text = "일정 등록"
+        txtTitle.text = "일정 추가"
 
+        setNaverMap()
+        getMyPlaceListFromServer()
+
+        mSpinnerAdapter = StartPlaceAdapter(mContext, R.layout.item_my_place_list, mStartPlaceList)
+        binding.spinnerStartPlace.adapter = mSpinnerAdapter
+
+    }
+
+    // 출발지 목록 불러오기
+    fun getMyPlaceListFromServer() {
+        apiService.getRequestMyPlaceList().enqueue(object : Callback<BasicResponse> {
+            override fun onResponse(call: Call<BasicResponse>, response: Response<BasicResponse>) {
+                mStartPlaceList.clear()
+                mStartPlaceList.addAll(response.body()!!.data.places)
+
+                mSpinnerAdapter.notifyDataSetChanged()
+            }
+
+            override fun onFailure(call: Call<BasicResponse>, t: Throwable) {
+                TODO("Not yet implemented")
+            }
+        })
+    }
+
+    // 네이버 지도 표시하기
+    fun setNaverMap() {
         val fm = supportFragmentManager
         val mapFragment = fm.findFragmentById(R.id.fragment_naver_map) as MapFragment?
             ?: MapFragment.newInstance().also {
@@ -130,7 +160,7 @@ class EditAppointmentActivity : BaseActivity() {
                 Toast.makeText(mContext, "장소을 선택해주세요", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-            if (inputPlace == ""){
+            if (inputPlace == "") {
                 Toast.makeText(mContext, "장소를 입력해주세요", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
@@ -153,6 +183,4 @@ class EditAppointmentActivity : BaseActivity() {
             })
         }
     }
-
-
 }
