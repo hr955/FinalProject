@@ -67,4 +67,8 @@ interface ServerAPIService {
         @Field("longitude") longitude: Double,
         @Field("is_primary") isPrimary: Boolean
     ): Call<BasicResponse>
+
+    // 출발지 목록 조회
+    @GET("/user/place")
+    fun getRequestMyPlaceList(): Call<BasicResponse>
 }

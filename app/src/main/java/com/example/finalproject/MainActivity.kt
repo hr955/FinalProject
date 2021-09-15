@@ -54,7 +54,7 @@ class MainActivity : BaseActivity() {
         binding.rvAppointmentList.apply{
             adapter = mAdapter
             layoutManager =
-                LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+                LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false)
         }
 
         btnProfile.visibility = View.VISIBLE
