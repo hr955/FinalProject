@@ -4,6 +4,8 @@ import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import android.widget.AdapterView
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import com.example.finalproject.adapters.StartPlaceAdapter
@@ -14,6 +16,7 @@ import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.*
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.OverlayImage
+import com.naver.maps.map.overlay.PolylineOverlay
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -26,6 +29,8 @@ class EditAppointmentActivity : BaseActivity() {
     val mSelectedDateTime = Calendar.getInstance()
     val mStartPlaceList = ArrayList<PlaceData>()
     lateinit var mSpinnerAdapter: StartPlaceAdapter
+    lateinit var mSelectedStartPlace: PlaceData
+    val mPolyline = PolylineOverlay()
 
     var mSelectedLat = 0.0
     var mSelectedLng = 0.0
@@ -40,6 +45,15 @@ class EditAppointmentActivity : BaseActivity() {
     }
 
     override fun setupEvents() {
+        binding.spinnerStartPlace.onItemSelectedListener = object: AdapterView.OnItemSelectedListener{
+            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, position: Int, p3: Long) {
+                mSelectedStartPlace = mStartPlaceList[position]
+            }
+
+            override fun onNothingSelected(p0: AdapterView<*>?) {
+                TODO("Not yet implemented")
+            }
+        }
 
         dateSelectButtonClickEvent()
         saveButtonClickEvent()
@@ -104,8 +118,20 @@ class EditAppointmentActivity : BaseActivity() {
 
                 selectedPointMarker.position = LatLng(mSelectedLat, mSelectedLng)
                 selectedPointMarker.map = it
+                drawStartPlaceToDestination(it)
             }
         }
+    }
+
+    fun drawStartPlaceToDestination(naverMap: NaverMap) {
+        val points = ArrayList<LatLng>()
+        points.add(LatLng(mSelectedStartPlace.latitude, mSelectedStartPlace.longitude))
+        points.add(LatLng(mSelectedLat, mSelectedLng))
+
+        mPolyline.coords = points
+
+        mPolyline.map = naverMap
+
     }
 
     // 날짜 선택 버튼 클릭 이벤트
