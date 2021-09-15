@@ -57,6 +57,12 @@ class EditAppointmentActivity : BaseActivity() {
     }
 
     override fun setupEvents() {
+        // 지도영역이 터치되면 스크롤뷰가 정지
+        binding.txtScrollHelp.setOnTouchListener { view, motionEvent ->
+            binding.scrollView.requestDisallowInterceptTouchEvent(true)
+            return@setOnTouchListener false
+        }
+
         binding.spinnerStartPlace.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(
