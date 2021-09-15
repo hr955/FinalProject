@@ -130,6 +130,10 @@ class EditAppointmentActivity : BaseActivity() {
                 Toast.makeText(mContext, "장소을 선택해주세요", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
+            if (inputPlace == ""){
+                Toast.makeText(mContext, "장소를 입력해주세요", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
 
             apiService.postRequestAddAppointment(
                 inputTitle,

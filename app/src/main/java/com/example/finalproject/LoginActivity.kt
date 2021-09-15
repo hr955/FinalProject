@@ -67,6 +67,7 @@ class LoginActivity : BaseActivity() {
 
                         ContextUtil.setToken(mContext, responseBody.token)
                         GlobalData.loginUser = responseBody.user
+                        finish()
                         startActivity(Intent(mContext, MainActivity::class.java))
                     } else {
                         val jsonObj = JSONObject(response.errorBody()!!.string())
@@ -117,6 +118,7 @@ class LoginActivity : BaseActivity() {
 
                                     ContextUtil.setToken(mContext, responseBody.token)
                                     GlobalData.loginUser = responseBody.user
+                                    finish()
                                     startActivity(Intent(mContext, MainActivity::class.java))
                                 }
 
@@ -157,6 +159,7 @@ class LoginActivity : BaseActivity() {
                                                 Toast.makeText(mContext, responseBody.user.nickname, Toast.LENGTH_SHORT).show()
                                                 ContextUtil.setToken(mContext, responseBody.token)
                                                 GlobalData.loginUser = responseBody.user
+                                                finish()
                                                 startActivity(Intent(mContext, MainActivity::class.java))
                                             }
 

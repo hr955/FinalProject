@@ -10,6 +10,7 @@ import android.widget.EditText
 import androidx.databinding.DataBindingUtil
 import com.example.finalproject.databinding.ActivityMySettingBinding
 import com.example.finalproject.datas.BasicResponse
+import com.example.finalproject.utils.ContextUtil
 import com.example.finalproject.utils.GlobalData
 import retrofit2.Call
 import retrofit2.Callback
@@ -39,6 +40,14 @@ class MySettingActivity : BaseActivity() {
 
         binding.layoutMyPlaceList.setOnClickListener {
             startActivity(Intent(mContext, ViewMyPlaceListActivity::class.java))
+        }
+
+        binding.btnLogout.setOnClickListener {
+            ContextUtil.setToken(mContext,"")
+            val myIntent = Intent(mContext, LoginActivity::class.java)
+            myIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            startActivity(myIntent)
+            finish()
         }
     }
 

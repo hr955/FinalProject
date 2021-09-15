@@ -86,12 +86,24 @@ class ViewMapActivity : BaseActivity() {
                             override fun getContentView(infoWindow: InfoWindow): View {
 
                                 val myView =
-                                    LayoutInflater.from(mContext).inflate(R.layout.my_custom_info_window, null)
+                                    LayoutInflater.from(mContext)
+                                        .inflate(R.layout.my_custom_info_window, null)
                                 val placeNameTxt = myView.findViewById<TextView>(R.id.txt_place)
-                                val arrivalTimeTxt = myView.findViewById<TextView>(R.id.txt_arrival_time)
+                                val arrivalTimeTxt =
+                                    myView.findViewById<TextView>(R.id.txt_arrival_time)
 
                                 placeNameTxt.text = mAppointmentData.place
-                                arrivalTimeTxt.text = "${hour}시간 ${minute}분 예상"
+
+                                if (hour == 0) {
+                                    arrivalTimeTxt.text = "${minute}분 예상"
+                                } else {
+                                    if (minute == 0) {
+                                        arrivalTimeTxt.text = "${hour}시간 예상"
+                                    } else {
+                                        arrivalTimeTxt.text = "${hour}시간 ${minute}분 예상"
+                                    }
+                                }
+
 
 
                                 return myView
