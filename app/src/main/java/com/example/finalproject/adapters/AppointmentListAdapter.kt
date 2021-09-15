@@ -35,6 +35,7 @@ class AppointmentListAdapter(val mContext: Context, private val mList: List<Appo
 
     class AppointmentListAdapterViewHolder(private val binding: ItemAppointmentListBinding) :
         RecyclerView.ViewHolder(binding.root) {
+
         fun onBind(item: AppointmentData) {
             binding.txtTitle.text = item.title
             binding.txtDate.text = item.getFormattedDateTime()

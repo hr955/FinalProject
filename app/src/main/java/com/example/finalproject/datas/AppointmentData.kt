@@ -11,6 +11,12 @@ class AppointmentData(
     var userId: Int,
     var title: String,
     var datetime: Date,
+    @SerializedName("start_place")
+    var startPlace: String,
+    @SerializedName("start_latitude")
+    var startlatitude: Double,
+    @SerializedName("start_longitude")
+    var startlongitude: Double,
     var place: String,
     var latitude: Double,
     var longitude: Double,
