@@ -1,7 +1,9 @@
 package com.example.finalproject
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import androidx.databinding.DataBindingUtil
 import com.example.finalproject.adapters.FriendsListViewPagerAdapter
 import com.example.finalproject.databinding.ActivityViewMyFriendsListBinding
@@ -20,11 +22,16 @@ class ViewMyFriendsListActivity : BaseActivity() {
     }
 
     override fun setupEvents() {
+        btnAdd.setOnClickListener {
+            startActivity(Intent(mContext, AddFriendActivity::class.java))
+        }
     }
 
     override fun setValues() {
+        txtTitle.text = "친구 목록 관리"
         mAdapter = FriendsListViewPagerAdapter(supportFragmentManager)
         binding.vpFriends.adapter = mAdapter
         binding.tlFriends.setupWithViewPager(binding.vpFriends)
+        btnAdd.visibility = View.VISIBLE
     }
 }

@@ -33,14 +33,14 @@ class ViewMyPlaceListActivity : BaseActivity() {
     }
 
     override fun setupEvents() {
-        btnAddPlace.setOnClickListener {
+        btnAdd.setOnClickListener {
             startActivity(Intent(mContext, EditMyPlaceActivity::class.java))
         }
     }
 
     override fun setValues() {
         txtTitle.text = "출발지 목록"
-        btnAddPlace.visibility = View.VISIBLE
+        btnAdd.visibility = View.VISIBLE
 
         mPlaceAdapter = MyPlaceListAdapter(mContext, mMyPlaceList)
         binding.rvMyPlaceList.apply {
