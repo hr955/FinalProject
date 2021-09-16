@@ -1,21 +1,37 @@
 package com.example.finalproject.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.finalproject.R
+import com.example.finalproject.adapters.RequestedFriendListAdapter
 import com.example.finalproject.databinding.FragmentRequestedFriendListBinding
+import com.example.finalproject.datas.BasicResponse
+import com.example.finalproject.datas.UserData
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class RequestedFriendListFragment : BaseFragment() {
 
     lateinit var binding: FragmentRequestedFriendListBinding
+    val mFriendRequestList = ArrayList<UserData>()
+    lateinit var mAdapter: RequestedFriendListAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+    }
+
+    override fun onResume() {
+        super.onResume()
+        getRequestFriendListFromServer()
     }
 
     override fun onCreateView(
@@ -23,18 +39,48 @@ class RequestedFriendListFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding =
-            DataBindingUtil.inflate(inflater, R.layout.fragment_requested_friend_list, container, false)
+            DataBindingUtil.inflate(
+                inflater,
+                R.layout.fragment_requested_friend_list,
+                container,
+                false
+            )
         return binding.root
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
+        setupEvents()
+        setValues()
     }
 
     override fun setupEvents() {
     }
 
     override fun setValues() {
+        mAdapter = RequestedFriendListAdapter(mContext, mFriendRequestList)
+        binding.rvRequestedFriendList.apply {
+            adapter = mAdapter
+            layoutManager = LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false)
+        }
+    }
+
+    fun getRequestFriendListFromServer() {
+        apiService.getRequestFriendList("requested").enqueue(object : Callback<BasicResponse> {
+            override fun onResponse(call: Call<BasicResponse>, response: Response<BasicResponse>) {
+                if(response.isSuccessful){
+                    mFriendRequestList.clear()
+                    mFriendRequestList.addAll(response.body()!!.data.friends)
+                    Log.d("테스트",response.body()!!.data.friends.toString())
+
+                    mAdapter.notifyDataSetChanged()
+                }
+            }
+
+            override fun onFailure(call: Call<BasicResponse>, t: Throwable) {
+                TODO("Not yet implemented")
+            }
+        })
     }
 }

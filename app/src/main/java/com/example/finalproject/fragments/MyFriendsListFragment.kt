@@ -27,6 +27,11 @@ class MyFriendsListFragment : BaseFragment() {
 
     }
 
+    override fun onResume() {
+        super.onResume()
+        getMyFriendsListFromServer()
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -54,11 +59,6 @@ class MyFriendsListFragment : BaseFragment() {
             layoutManager =
                 LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false)
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        getMyFriendsListFromServer()
     }
 
     fun getMyFriendsListFromServer(){
