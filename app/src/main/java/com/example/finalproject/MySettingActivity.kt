@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.View
 import android.widget.EditText
 import androidx.databinding.DataBindingUtil
+import com.bumptech.glide.Glide
 import com.example.finalproject.databinding.ActivityMySettingBinding
 import com.example.finalproject.datas.BasicResponse
 import com.example.finalproject.utils.ContextUtil
@@ -98,11 +99,15 @@ class MySettingActivity : BaseActivity() {
     }
 
     fun setUserInfo() {
-        binding.txtNickname.text = GlobalData.loginUser!!.nickname
+        val loginUser = GlobalData.loginUser!!
 
-        val userReadyMinute = GlobalData.loginUser!!.readyMinute
+        binding.txtNickname.text = loginUser!!.nickname
 
-        if (GlobalData.loginUser!!.readyMinute >= 60) {
+        Glide.with(mContext).load(loginUser.profileImgURL).into(binding.ivProfile)
+
+        val userReadyMinute = loginUser.readyMinute
+
+        if (loginUser.readyMinute >= 60) {
             val hour = userReadyMinute / 60
             val minute = userReadyMinute % 60
             if (minute == 0) {
