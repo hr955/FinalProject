@@ -4,6 +4,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 import com.example.finalproject.fragments.MyFriendsListFragment
+import com.example.finalproject.fragments.RequestedFriendListFragment
 
 class FriendsListViewPagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
 
@@ -11,7 +12,7 @@ class FriendsListViewPagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm
 
     override fun getItem(position: Int): Fragment = when (position) {
         0 -> MyFriendsListFragment()
-        else -> MyFriendsListFragment()
+        else -> RequestedFriendListFragment()
     }
 
     override fun getPageTitle(position: Int): CharSequence? = when (position) {

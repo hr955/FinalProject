@@ -95,4 +95,11 @@ interface ServerAPIService {
         @Query("nickname") nickname: String
     ): Call<BasicResponse>
 
+    // 친구 요청하기
+    @FormUrlEncoded
+    @POST("/user/friend")
+    fun postRequestFriend(
+        @Field("user_id") userId: Int,
+    ): Call<BasicResponse>
+
 }

@@ -1,6 +1,7 @@
 package com.example.finalproject
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.finalproject.adapters.UserSearchListAdapter
@@ -27,6 +28,10 @@ class AddFriendActivity : BaseActivity() {
 
     override fun setupEvents() {
         binding.btnSearch.setOnClickListener {
+            if(binding.edtKeyword.text.length < 2){
+                Toast.makeText(mContext, "검색어는 2자 이상 입력해주세요", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
             getSearchUserListFromServer()
         }
     }
