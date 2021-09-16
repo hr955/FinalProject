@@ -40,6 +40,10 @@ class MySettingActivity : BaseActivity() {
     }
 
     override fun setupEvents() {
+        binding.layoutFriendsList.setOnClickListener {
+            startActivity(Intent(mContext, ViewMyFriendsListActivity::class.java))
+        }
+
         binding.ivProfile.setOnClickListener {
             val permissionListener = object: PermissionListener{
                 override fun onPermissionGranted() {

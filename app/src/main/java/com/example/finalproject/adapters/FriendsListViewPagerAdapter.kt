@@ -3,7 +3,7 @@ package com.example.finalproject.adapters
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
-import com.example.finalproject.MyFriendsListFragment
+import com.example.finalproject.fragments.MyFriendsListFragment
 
 class FriendsListViewPagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
 
@@ -16,6 +16,6 @@ class FriendsListViewPagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm
 
     override fun getPageTitle(position: Int): CharSequence? = when (position) {
         0 -> "친구 목록"
-        else -> "친구 맺기 요청"
+        else -> "수락 대기"
     }
 }
