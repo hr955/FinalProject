@@ -1,18 +1,26 @@
 package com.example.finalproject.fragments
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.finalproject.R
+import com.example.finalproject.adapters.FriendsListAdapter
 import com.example.finalproject.databinding.FragmentMyFriendsListBinding
+import com.example.finalproject.datas.BasicResponse
+import com.example.finalproject.datas.UserData
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 
 class MyFriendsListFragment : BaseFragment() {
 
     lateinit var binding: FragmentMyFriendsListBinding
+    val mMyFriendList = ArrayList<UserData>()
+    lateinit var mFriendsListAdapter: FriendsListAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,5 +47,32 @@ class MyFriendsListFragment : BaseFragment() {
     }
 
     override fun setValues() {
+        mFriendsListAdapter = FriendsListAdapter(mContext, mMyFriendList)
+
+        binding.rvFriendsList.apply {
+            adapter = mFriendsListAdapter
+            layoutManager =
+                LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false)
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        getMyFriendsListFromServer()
+    }
+
+    fun getMyFriendsListFromServer(){
+        apiService.getRequestFriendList("my").enqueue(object : Callback<BasicResponse> {
+            override fun onResponse(call: Call<BasicResponse>, response: Response<BasicResponse>) {
+                if(response.isSuccessful){
+                    mMyFriendList.clear()
+                    mMyFriendList.addAll(response.body()!!.data.friends)
+                    mFriendsListAdapter.notifyDataSetChanged()
+                }
+            }
+
+            override fun onFailure(call: Call<BasicResponse>, t: Throwable) {
+            }
+        })
     }
 }
