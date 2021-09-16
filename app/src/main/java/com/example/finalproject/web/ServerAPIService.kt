@@ -1,6 +1,7 @@
 package com.example.finalproject.web
 
 import com.example.finalproject.datas.BasicResponse
+import okhttp3.MultipartBody
 import retrofit2.Call
 import retrofit2.http.*
 
@@ -43,7 +44,7 @@ interface ServerAPIService {
         @Field("place") place: String,
         @Field("latitude") latitude: Double,
         @Field("longitude") longitude: Double
-        ): Call<BasicResponse>
+    ): Call<BasicResponse>
 
     // 일정 목록 조회 API
     @GET("/appointment")
@@ -74,4 +75,11 @@ interface ServerAPIService {
     // 출발지 목록 조회
     @GET("/user/place")
     fun getRequestMyPlaceList(): Call<BasicResponse>
+
+    // 프로필 이미지 변경
+    @Multipart
+    @PUT("/user/image")
+    fun putRequestProfileImage(
+        @Part profileImg: MultipartBody.Part
+    ): Call<BasicResponse>
 }
