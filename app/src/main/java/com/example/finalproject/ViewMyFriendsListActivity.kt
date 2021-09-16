@@ -1,7 +1,6 @@
 package com.example.finalproject
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import androidx.databinding.DataBindingUtil
@@ -23,7 +22,7 @@ class ViewMyFriendsListActivity : BaseActivity() {
 
     override fun setupEvents() {
         btnAdd.setOnClickListener {
-            startActivity(Intent(mContext, AddFriendActivity::class.java))
+            startActivity(Intent(mContext, FindFriendActivity::class.java))
         }
     }
 

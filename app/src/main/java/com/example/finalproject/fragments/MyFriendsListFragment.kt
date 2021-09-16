@@ -29,6 +29,7 @@ class MyFriendsListFragment : BaseFragment() {
 
     override fun onResume() {
         super.onResume()
+
         getMyFriendsListFromServer()
     }
 
@@ -61,10 +62,10 @@ class MyFriendsListFragment : BaseFragment() {
         }
     }
 
-    fun getMyFriendsListFromServer(){
+    fun getMyFriendsListFromServer() {
         apiService.getRequestFriendList("my").enqueue(object : Callback<BasicResponse> {
             override fun onResponse(call: Call<BasicResponse>, response: Response<BasicResponse>) {
-                if(response.isSuccessful){
+                if (response.isSuccessful) {
                     mMyFriendList.clear()
                     mMyFriendList.addAll(response.body()!!.data.friends)
                     mFriendsListAdapter.notifyDataSetChanged()

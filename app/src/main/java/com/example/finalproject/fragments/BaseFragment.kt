@@ -7,13 +7,15 @@ import com.example.finalproject.web.ServerAPI
 import com.example.finalproject.web.ServerAPIService
 import retrofit2.Retrofit
 
-abstract class BaseFragment : Fragment(){
+abstract class BaseFragment : Fragment() {
+
     lateinit var mContext: Context
     private lateinit var retrofit: Retrofit
     lateinit var apiService: ServerAPIService
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+
         mContext = requireContext()
         retrofit = ServerAPI.getRetrofit(mContext)
         apiService = retrofit.create(ServerAPIService::class.java)

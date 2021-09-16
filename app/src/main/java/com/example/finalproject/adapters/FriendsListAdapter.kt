@@ -11,6 +11,7 @@ import com.example.finalproject.R
 import com.example.finalproject.databinding.ItemFriendListBinding
 import com.example.finalproject.datas.UserData
 
+// 내 친구 목록
 class FriendsListAdapter(val mContext: Context, val mList: List<UserData>) :
     RecyclerView.Adapter<FriendsListAdapter.FriendsListViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FriendsListViewHolder =
@@ -37,16 +38,14 @@ class FriendsListAdapter(val mContext: Context, val mList: List<UserData>) :
             Glide.with(context).load(item.profileImgURL).into(binding.ivFriendProfile)
 
             binding.ivProvider.apply {
-                when(item.provider){
+                when (item.provider) {
                     "facebook" -> {
                         setImageResource(R.drawable.ic_facebook_logo_color)
                         visibility = View.VISIBLE
-
                     }
                     "kakao" -> {
                         setImageResource(R.drawable.ic_kakao_logo)
                         visibility = View.VISIBLE
-
                     }
                     else -> visibility = View.GONE
                 }

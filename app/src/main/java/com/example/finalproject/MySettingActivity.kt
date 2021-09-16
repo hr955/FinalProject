@@ -45,7 +45,7 @@ class MySettingActivity : BaseActivity() {
         }
 
         binding.ivProfile.setOnClickListener {
-            val permissionListener = object: PermissionListener{
+            val permissionListener = object : PermissionListener {
                 override fun onPermissionGranted() {
                     val myIntent = Intent()
                     myIntent.action = Intent.ACTION_GET_CONTENT
@@ -81,14 +81,14 @@ class MySettingActivity : BaseActivity() {
             val alert = AlertDialog.Builder(mContext)
             alert.setTitle("정말 로그아웃 하시겠습니까?")
             alert.setPositiveButton("확인", DialogInterface.OnClickListener { dialogInterface, i ->
-                ContextUtil.setToken(mContext,"")
+                ContextUtil.setToken(mContext, "")
                 GlobalData.loginUser = null
                 val myIntent = Intent(mContext, LoginActivity::class.java)
                 myIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                 startActivity(myIntent)
                 finish()
             })
-            alert.setNegativeButton("취소",null)
+            alert.setNegativeButton("취소", null)
             alert.show()
         }
     }
@@ -98,7 +98,7 @@ class MySettingActivity : BaseActivity() {
         Log.d("프로바이더", GlobalData.loginUser!!.provider)
 
         binding.ivLoginSocialLogo.apply {
-            when(GlobalData.loginUser!!.provider){
+            when (GlobalData.loginUser!!.provider) {
                 "facebook" -> {
                     setImageResource(R.drawable.ic_facebook_logo_color)
                     binding.layoutLogout.visibility = View.GONE
@@ -114,9 +114,9 @@ class MySettingActivity : BaseActivity() {
         setUserInfo()
     }
 
-    fun patchUserInfo(title: String, field: String){
+    fun patchUserInfo(title: String, field: String) {
         val et = EditText(mContext)
-        et.setPadding(50,0,50,0)
+        et.setPadding(50, 0, 50, 0)
 
         val alert = AlertDialog.Builder(mContext)
         alert.setTitle(title)
@@ -135,7 +135,7 @@ class MySettingActivity : BaseActivity() {
                     override fun onFailure(call: Call<BasicResponse>, t: Throwable) {}
                 })
         })
-        alert.setNegativeButton("취소",null)
+        alert.setNegativeButton("취소", null)
         alert.show()
     }
 
@@ -163,27 +163,32 @@ class MySettingActivity : BaseActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if(requestCode == REQ_FOR_GALLERY){
-            if(resultCode == RESULT_OK){
+        if (requestCode == REQ_FOR_GALLERY) {
+            if (resultCode == RESULT_OK) {
                 data?.let {
                     val dataUri = data?.data
                     val file = File(URIPathHelper().getPath(mContext, dataUri!!))
                     val fileReqBody = RequestBody.create(MediaType.get("image/*"), file)
-                    val body = MultipartBody.Part.createFormData("profile_image", "myFile.jpg", fileReqBody)
+                    val body = MultipartBody.Part.createFormData(
+                        "profile_image",
+                        "myFile.jpg",
+                        fileReqBody
+                    )
 
-                    apiService.putRequestProfileImage(body).enqueue(object: Callback<BasicResponse>{
-                        override fun onResponse(
-                            call: Call<BasicResponse>,
-                            response: Response<BasicResponse>
-                        ) {
-                            Log.d("프사선택", response.body()!!.message)
+                    apiService.putRequestProfileImage(body)
+                        .enqueue(object : Callback<BasicResponse> {
+                            override fun onResponse(
+                                call: Call<BasicResponse>,
+                                response: Response<BasicResponse>
+                            ) {
+                                Log.d("프사선택", response.body()!!.message)
 
-                        }
+                            }
 
-                        override fun onFailure(call: Call<BasicResponse>, t: Throwable) {
-                            Log.d("프사선택", t.message.toString())
-                        }
-                    })
+                            override fun onFailure(call: Call<BasicResponse>, t: Throwable) {
+                                Log.d("프사선택", t.message.toString())
+                            }
+                        })
 
                     Glide.with(mContext).load(dataUri).into(binding.ivProfile)
                 }
