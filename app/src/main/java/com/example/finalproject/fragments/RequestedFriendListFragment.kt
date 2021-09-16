@@ -1,18 +1,17 @@
 package com.example.finalproject.fragments
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import com.example.finalproject.R
-import com.example.finalproject.databinding.FragmentMyFriendsListBinding
+import com.example.finalproject.databinding.FragmentRequestedFriendListBinding
 
+class RequestedFriendListFragment : BaseFragment() {
 
-class MyFriendsListFragment : BaseFragment() {
-
-    lateinit var binding: FragmentMyFriendsListBinding
+    lateinit var binding: FragmentRequestedFriendListBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,15 +23,13 @@ class MyFriendsListFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding =
-            DataBindingUtil.inflate(inflater, R.layout.fragment_my_friends_list, container, false)
+            DataBindingUtil.inflate(inflater, R.layout.fragment_requested_friend_list, container, false)
         return binding.root
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        setupEvents()
-        setValues()
     }
 
     override fun setupEvents() {
