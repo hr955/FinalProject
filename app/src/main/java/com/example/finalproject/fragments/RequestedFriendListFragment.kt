@@ -17,6 +17,18 @@ import retrofit2.Response
 
 class RequestedFriendListFragment : BaseFragment() {
 
+    companion object {
+        private var frag: RequestedFriendListFragment? = null
+
+        fun getFrag(): RequestedFriendListFragment {
+            if (frag == null) {
+                frag = RequestedFriendListFragment()
+            }
+
+            return frag!!
+        }
+    }
+
     lateinit var binding: FragmentRequestedFriendListBinding
     val mFriendRequestList = ArrayList<UserData>()
     lateinit var mAdapter: RequestedFriendListAdapter
@@ -74,7 +86,6 @@ class RequestedFriendListFragment : BaseFragment() {
             }
 
             override fun onFailure(call: Call<BasicResponse>, t: Throwable) {
-                TODO("Not yet implemented")
             }
         })
     }

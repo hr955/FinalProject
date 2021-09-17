@@ -12,7 +12,7 @@ class FriendsListViewPagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm
 
     override fun getItem(position: Int): Fragment = when (position) {
         0 -> MyFriendsListFragment()
-        else -> RequestedFriendListFragment()
+        else -> RequestedFriendListFragment.getFrag()
     }
 
     override fun getPageTitle(position: Int): CharSequence? = when (position) {
