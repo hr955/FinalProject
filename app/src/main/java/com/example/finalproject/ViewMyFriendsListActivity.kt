@@ -4,8 +4,11 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.databinding.DataBindingUtil
+import androidx.viewpager.widget.ViewPager
 import com.example.finalproject.adapters.FriendsListViewPagerAdapter
 import com.example.finalproject.databinding.ActivityViewMyFriendsListBinding
+import com.example.finalproject.fragments.MyFriendsListFragment
+import com.example.finalproject.fragments.RequestedFriendListFragment
 
 class ViewMyFriendsListActivity : BaseActivity() {
 
@@ -24,6 +27,25 @@ class ViewMyFriendsListActivity : BaseActivity() {
         btnAdd.setOnClickListener {
             startActivity(Intent(mContext, FindFriendActivity::class.java))
         }
+
+        binding.vpFriends.addOnPageChangeListener(object : ViewPager.OnPageChangeListener{
+            override fun onPageScrolled(
+                position: Int,
+                positionOffset: Float,
+                positionOffsetPixels: Int
+            ) {
+            }
+
+            override fun onPageSelected(position: Int) {
+                when(position){
+                    0-> (mAdapter.getItem(position) as MyFriendsListFragment).getMyFriendsListFromServer()
+                    else -> (mAdapter.getItem(position) as RequestedFriendListFragment).getRequestFriendListFromServer()
+                }
+            }
+
+            override fun onPageScrollStateChanged(state: Int) {
+            }
+        })
     }
 
     override fun setValues() {

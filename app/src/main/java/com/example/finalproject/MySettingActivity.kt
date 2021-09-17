@@ -48,9 +48,10 @@ class MySettingActivity : BaseActivity() {
             val permissionListener = object : PermissionListener {
                 override fun onPermissionGranted() {
                     val myIntent = Intent()
-                    myIntent.action = Intent.ACTION_GET_CONTENT
+                    myIntent.action = Intent.ACTION_PICK
                     myIntent.type = "image/*"
-                    startActivityForResult(Intent.createChooser(myIntent, "사진 선택"), REQ_FOR_GALLERY)
+                    myIntent.type = android.provider.MediaStore.Images.Media.CONTENT_TYPE
+                    startActivityForResult(myIntent, REQ_FOR_GALLERY)
                 }
 
                 override fun onPermissionDenied(deniedPermissions: MutableList<String>?) {
@@ -165,33 +166,34 @@ class MySettingActivity : BaseActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQ_FOR_GALLERY) {
             if (resultCode == RESULT_OK) {
-                data?.let {
-                    val dataUri = data?.data
-                    val file = File(URIPathHelper().getPath(mContext, dataUri!!))
-                    val fileReqBody = RequestBody.create(MediaType.get("image/*"), file)
-                    val body = MultipartBody.Part.createFormData(
-                        "profile_image",
-                        "myFile.jpg",
-                        fileReqBody
-                    )
 
-                    apiService.putRequestProfileImage(body)
-                        .enqueue(object : Callback<BasicResponse> {
-                            override fun onResponse(
-                                call: Call<BasicResponse>,
-                                response: Response<BasicResponse>
-                            ) {
-                                Log.d("프사선택", response.body()!!.message)
+                val dataUri = data?.data
+                val file = File(URIPathHelper().getPath(mContext, dataUri!!))
+                val fileReqBody = RequestBody.create(MediaType.get("image/*"), file)
+                val body = MultipartBody.Part.createFormData(
+                    "profile_image",
+                    "myFile.jpg",
+                    fileReqBody
+                )
 
-                            }
+                apiService.putRequestProfileImage(body)
+                    .enqueue(object : Callback<BasicResponse> {
+                        override fun onResponse(
+                            call: Call<BasicResponse>,
+                            response: Response<BasicResponse>
+                        ) {
+                            Log.d("프사선택", response.body()!!.message)
+                            Glide.with(mContext).load(dataUri).into(binding.ivProfile)
 
-                            override fun onFailure(call: Call<BasicResponse>, t: Throwable) {
-                                Log.d("프사선택", t.message.toString())
-                            }
-                        })
+                        }
 
-                    Glide.with(mContext).load(dataUri).into(binding.ivProfile)
-                }
+                        override fun onFailure(call: Call<BasicResponse>, t: Throwable) {
+                            Log.d("프사선택", t.message.toString())
+                        }
+                    })
+
+                Glide.with(mContext).load(dataUri).into(binding.ivProfile)
+
             }
         }
     }

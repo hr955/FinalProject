@@ -102,4 +102,12 @@ interface ServerAPIService {
         @Field("user_id") userId: Int,
     ): Call<BasicResponse>
 
+    // 친구 요청 수락/거절 API
+    @FormUrlEncoded
+    @PUT("/user/friend")
+    fun putRequestFriendRequestResponse(
+        @Field("user_id") userId: Int,
+        @Field("type") type: String
+    ): Call<BasicResponse>
+
 }

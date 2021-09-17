@@ -1,6 +1,7 @@
 package com.example.finalproject.adapters
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,7 +10,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.finalproject.R
 import com.example.finalproject.databinding.ItemFriendRequestListBinding
+import com.example.finalproject.datas.BasicResponse
 import com.example.finalproject.datas.UserData
+import com.example.finalproject.web.ServerAPI
+import com.example.finalproject.web.ServerAPIService
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 // 나에게 친구요청을 보낸 유저 목록
 class RequestedFriendListAdapter(val mContext: Context, val mList: List<UserData>) :
@@ -51,6 +58,32 @@ class RequestedFriendListAdapter(val mContext: Context, val mList: List<UserData
                     else -> visibility = View.GONE
                 }
             }
+
+            val retrofit = ServerAPI.getRetrofit(context)
+            val apiService = retrofit.create(ServerAPIService::class.java)
+
+            val setOkorNoToServer = object : View.OnClickListener {
+                override fun onClick(p0: View?) {
+                    var tag = p0!!.tag.toString()
+
+                    apiService.putRequestFriendRequestResponse(item.id, "${tag}").enqueue(object :
+                        Callback<BasicResponse> {
+                        override fun onResponse(
+                            call: Call<BasicResponse>,
+                            response: Response<BasicResponse>
+                        ) {
+
+                        }
+
+                        override fun onFailure(call: Call<BasicResponse>, t: Throwable) {
+
+                        }
+                    })
+                }
+            }
+
+            binding.btnAcceptFriend.setOnClickListener(setOkorNoToServer)
+            binding.btnDenialFriend.setOnClickListener(setOkorNoToServer)
         }
     }
 }
