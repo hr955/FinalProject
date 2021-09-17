@@ -3,14 +3,18 @@ package com.example.finalproject
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.AdapterView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
+import com.example.finalproject.adapters.AddFriendSpinnerAdapter
 import com.example.finalproject.adapters.StartPlaceAdapter
 import com.example.finalproject.databinding.ActivityEditAppointmentBinding
 import com.example.finalproject.datas.BasicResponse
 import com.example.finalproject.datas.PlaceData
+import com.example.finalproject.datas.UserData
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.*
 import com.naver.maps.map.overlay.InfoWindow
@@ -33,7 +37,9 @@ class EditAppointmentActivity : BaseActivity() {
     val mSelectedDateTime = Calendar.getInstance()
 
     val mStartPlaceList = ArrayList<PlaceData>()
-    lateinit var mSpinnerAdapter: StartPlaceAdapter
+    val mFriendList = ArrayList<UserData>()
+    lateinit var mStartPlaceSpinnerAdapter: StartPlaceAdapter
+    lateinit var mAddFriendSpinnerAdapter: AddFriendSpinnerAdapter
     lateinit var mSelectedStartPlace: PlaceData
     val mStartPlaceMarker = Marker()
     val mPath = PathOverlay()
@@ -57,6 +63,16 @@ class EditAppointmentActivity : BaseActivity() {
     }
 
     override fun setupEvents() {
+        binding.btnAddFriendToList.setOnClickListener {
+
+            val selectedFriend = mFriendList[binding.spinnerMyFriends.selectedItemPosition]
+            val textView = TextView(mContext)
+            textView.text = selectedFriend.nickname
+            binding.layoutFriendList.addView(textView)
+
+
+        }
+
         // 지도영역이 터치되면 스크롤뷰 정지
         binding.txtScrollHelp.setOnTouchListener { view, motionEvent ->
             binding.scrollView.requestDisallowInterceptTouchEvent(true)
@@ -93,9 +109,13 @@ class EditAppointmentActivity : BaseActivity() {
 
         setNaverMap()
         getMyPlaceListFromServer()
+        getMyFriendListFromServer()
 
-        mSpinnerAdapter = StartPlaceAdapter(mContext, R.layout.item_my_place_list, mStartPlaceList)
-        binding.spinnerStartPlace.adapter = mSpinnerAdapter
+        mStartPlaceSpinnerAdapter = StartPlaceAdapter(mContext, R.layout.item_my_place_list, mStartPlaceList)
+        binding.spinnerStartPlace.adapter = mStartPlaceSpinnerAdapter
+
+        mAddFriendSpinnerAdapter = AddFriendSpinnerAdapter(mContext, R.layout.item_friend_list, mFriendList)
+        binding.spinnerMyFriends.adapter = mAddFriendSpinnerAdapter
 
     }
 
@@ -106,7 +126,23 @@ class EditAppointmentActivity : BaseActivity() {
                 mStartPlaceList.clear()
                 mStartPlaceList.addAll(response.body()!!.data.places)
 
-                mSpinnerAdapter.notifyDataSetChanged()
+                mStartPlaceSpinnerAdapter.notifyDataSetChanged()
+            }
+
+            override fun onFailure(call: Call<BasicResponse>, t: Throwable) {
+                TODO("Not yet implemented")
+            }
+        })
+    }
+
+    // 친구 목록 불러오기
+    fun getMyFriendListFromServer(){
+        apiService.getRequestFriendList("my").enqueue(object : Callback<BasicResponse> {
+            override fun onResponse(call: Call<BasicResponse>, response: Response<BasicResponse>) {
+                mFriendList.clear()
+                mFriendList.addAll(response.body()!!.data.friends)
+
+                mAddFriendSpinnerAdapter.notifyDataSetChanged()
             }
 
             override fun onFailure(call: Call<BasicResponse>, t: Throwable) {
