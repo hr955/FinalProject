@@ -2,12 +2,16 @@ package com.example.finalproject
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.AdapterView
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.view.setPadding
 import androidx.databinding.DataBindingUtil
 import com.example.finalproject.adapters.AddFriendSpinnerAdapter
 import com.example.finalproject.adapters.StartPlaceAdapter
@@ -15,6 +19,7 @@ import com.example.finalproject.databinding.ActivityEditAppointmentBinding
 import com.example.finalproject.datas.BasicResponse
 import com.example.finalproject.datas.PlaceData
 import com.example.finalproject.datas.UserData
+import com.example.finalproject.utils.SizeUtil
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.*
 import com.naver.maps.map.overlay.InfoWindow
@@ -65,20 +70,35 @@ class EditAppointmentActivity : BaseActivity() {
     }
 
     override fun setupEvents() {
+
+
         binding.btnAddFriendToList.setOnClickListener {
 
             val selectedFriend = mFriendList[binding.spinnerMyFriends.selectedItemPosition]
 
-            if(mSelectedFriendList.contains(selectedFriend)){
+            if (mSelectedFriendList.contains(selectedFriend)) {
                 Toast.makeText(mContext, "이미 추가된 친구입니다", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            mSelectedFriendList.add(selectedFriend)
             val textView = TextView(mContext)
+            textView.setBackgroundResource(R.drawable.login_button_background)
+            textView.text = selectedFriend.nickname
+            textView.setPadding(SizeUtil.dpToPx(mContext, 5f).toInt())
+
+//            val inflater = layoutInflater
+//            val row = inflater.inflate(R.layout.item_add_friend_list, null)
+//            val txtFriendNickname = row.findViewById<TextView>(R.id.txt_friend_nickname)
+//            val btnDelete = row.findViewById<ImageView>(R.id.btn_delete)
+
+            mSelectedFriendList.add(selectedFriend)
             textView.text = selectedFriend.nickname
             binding.layoutFriendList.addView(textView)
 
+            textView.setOnClickListener {
+                binding.layoutFriendList.removeView(textView)
+                mSelectedFriendList.remove(selectedFriend)
+            }
         }
 
         // 지도영역이 터치되면 스크롤뷰 정지
@@ -100,12 +120,9 @@ class EditAppointmentActivity : BaseActivity() {
                     mNaverMap?.let {
                         drawStartPlaceToDestination(it)
                     }
-
                 }
 
-                override fun onNothingSelected(p0: AdapterView<*>?) {
-                    TODO("Not yet implemented")
-                }
+                override fun onNothingSelected(p0: AdapterView<*>?) {}
             }
 
         dateSelectButtonClickEvent()
@@ -119,10 +136,12 @@ class EditAppointmentActivity : BaseActivity() {
         getMyPlaceListFromServer()
         getMyFriendListFromServer()
 
-        mStartPlaceSpinnerAdapter = StartPlaceAdapter(mContext, R.layout.item_my_place_list, mStartPlaceList)
+        mStartPlaceSpinnerAdapter =
+            StartPlaceAdapter(mContext, R.layout.item_my_place_list, mStartPlaceList)
         binding.spinnerStartPlace.adapter = mStartPlaceSpinnerAdapter
 
-        mAddFriendSpinnerAdapter = AddFriendSpinnerAdapter(mContext, R.layout.item_friend_list, mFriendList)
+        mAddFriendSpinnerAdapter =
+            AddFriendSpinnerAdapter(mContext, R.layout.item_friend_list, mFriendList)
         binding.spinnerMyFriends.adapter = mAddFriendSpinnerAdapter
 
     }
@@ -144,7 +163,7 @@ class EditAppointmentActivity : BaseActivity() {
     }
 
     // 친구 목록 불러오기
-    fun getMyFriendListFromServer(){
+    fun getMyFriendListFromServer() {
         apiService.getRequestFriendList("my").enqueue(object : Callback<BasicResponse> {
             override fun onResponse(call: Call<BasicResponse>, response: Response<BasicResponse>) {
                 mFriendList.clear()
@@ -220,7 +239,7 @@ class EditAppointmentActivity : BaseActivity() {
 
                     val infoObj = firstPathObj.getJSONObject("info")
                     val totalTime = infoObj.getInt("totalTime")
-                    mInfoWindow.adapter = object: InfoWindow.DefaultTextAdapter(mContext){
+                    mInfoWindow.adapter = object : InfoWindow.DefaultTextAdapter(mContext) {
                         override fun getText(p0: InfoWindow): CharSequence {
                             return "${totalTime}분 소요예정"
                         }
@@ -229,14 +248,19 @@ class EditAppointmentActivity : BaseActivity() {
                     mInfoWindow.open(selectedPointMarker)
 
                     val subPathArr = firstPathObj.getJSONArray("subPath")
-                    for(i in 0 until subPathArr.length()){
+                    for (i in 0 until subPathArr.length()) {
                         val subPathObj = subPathArr.getJSONObject(i)
-                        if(!subPathObj.isNull("passStopList")){
+                        if (!subPathObj.isNull("passStopList")) {
                             val passStopListObj = subPathObj.getJSONObject("passStopList")
                             val stationsArr = passStopListObj.getJSONArray("stations")
-                            for(j in 0 until stationsArr.length()){
+                            for (j in 0 until stationsArr.length()) {
                                 val stationObj = stationsArr.getJSONObject(j)
-                                points.add(LatLng(stationObj.getString("y").toDouble(), stationObj.getString("x").toDouble()))
+                                points.add(
+                                    LatLng(
+                                        stationObj.getString("y").toDouble(),
+                                        stationObj.getString("x").toDouble()
+                                    )
+                                )
                             }
                         }
                     }
@@ -245,7 +269,8 @@ class EditAppointmentActivity : BaseActivity() {
                     mPath.coords = points
                     mPath.map = naverMap
                 }
-                override fun onError(p0: Int, p1: String?, p2: API?) { }
+
+                override fun onError(p0: Int, p1: String?, p2: API?) {}
             }
         )
     }
@@ -283,8 +308,21 @@ class EditAppointmentActivity : BaseActivity() {
         }
     }
 
+    // 서버에 전달할 친구id 목록 string 가공
+    fun setFriendListString(): String {
+        val sb = StringBuilder()
+
+        for (i in mSelectedFriendList) {
+            sb.append(i.id).append(",")
+        }
+        sb.deleteAt(sb.lastIndex)
+
+        return sb.toString()
+    }
+
     // 저장 버튼 클릭 이벤트 -> 일정 저장 API 호출
     fun saveButtonClickEvent() {
+
         binding.btnSave.setOnClickListener {
             val inputTitle = binding.edtAppointmentTitle.text.toString()
             val inputPlace = binding.edtPlace.text.toString()
@@ -316,6 +354,7 @@ class EditAppointmentActivity : BaseActivity() {
                 inputPlace,
                 mSelectedLat,
                 mSelectedLng,
+                setFriendListString()
             ).enqueue(object : Callback<BasicResponse> {
                 override fun onResponse(
                     call: Call<BasicResponse>,
