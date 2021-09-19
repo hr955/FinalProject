@@ -4,6 +4,7 @@ import android.Manifest
 import android.app.AlertDialog
 import android.content.DialogInterface
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -182,18 +183,16 @@ class MySettingActivity : BaseActivity() {
                             call: Call<BasicResponse>,
                             response: Response<BasicResponse>
                         ) {
-                            Log.d("프사선택", response.body()!!.message)
-                            Glide.with(mContext).load(dataUri).into(binding.ivProfile)
+                            Log.d("프사선택1",response.message())
 
+                            if(response.isSuccessful){
+                                Glide.with(mContext).load(dataUri).into(binding.ivProfile)
+                                GlobalData.loginUser!!.profileImgURL = dataUri.toString()
+                            }
                         }
 
-                        override fun onFailure(call: Call<BasicResponse>, t: Throwable) {
-                            Log.d("프사선택", t.message.toString())
-                        }
+                        override fun onFailure(call: Call<BasicResponse>, t: Throwable) { }
                     })
-
-                Glide.with(mContext).load(dataUri).into(binding.ivProfile)
-
             }
         }
     }
