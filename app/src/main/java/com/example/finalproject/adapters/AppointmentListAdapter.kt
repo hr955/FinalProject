@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.finalproject.R
+import com.example.finalproject.ViewAppointmentDetailActivity
 import com.example.finalproject.ViewMapActivity
 import com.example.finalproject.databinding.ItemAppointmentListBinding
 import com.example.finalproject.datas.AppointmentData
@@ -45,6 +46,12 @@ class AppointmentListAdapter(val mContext: Context, private val mList: List<Appo
         fun onMapClickEvent(item: AppointmentData, context: Context) {
             binding.btnMapDetail.setOnClickListener {
                 val myIntent = Intent(context, ViewMapActivity::class.java)
+                myIntent.putExtra("AppointmentData", item)
+                context.startActivity(myIntent)
+            }
+
+            binding.layoutRoot.setOnClickListener {
+                val myIntent = Intent(context, ViewAppointmentDetailActivity::class.java)
                 myIntent.putExtra("AppointmentData", item)
                 context.startActivity(myIntent)
             }
