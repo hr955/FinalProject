@@ -328,6 +328,10 @@ class EditAppointmentActivity : BaseActivity() {
             val inputPlace = binding.edtPlace.text.toString()
             val inputDate = SimpleDateFormat("yyyy-MM-dd HH:mm").format(mSelectedDateTime.time)
 
+            val myTimeZone = mSelectedDateTime.timeZone
+            val myTimeOffset = myTimeZone.rawOffset / 1000 / 60 / 60
+            mSelectedDateTime.add(Calendar.HOUR_OF_DAY, -myTimeOffset)
+
             if (inputTitle == "") {
                 Toast.makeText(mContext, "제목을 작성해주세요", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener

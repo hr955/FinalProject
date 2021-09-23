@@ -60,6 +60,9 @@ class ViewAppointmentDetailActivity : BaseActivity() {
     }
 
     override fun setupEvents() {
+        binding.btnRefresh.setOnClickListener {
+            getAppointmentFromServer()
+        }
 
         binding.btnArrival.setOnClickListener {
 
@@ -190,7 +193,19 @@ class ViewAppointmentDetailActivity : BaseActivity() {
     }
 
     fun getAppointmentFromServer(){
+        apiService.getRequestAppointmentDetail(mAppointmentData.id).enqueue(object: Callback<BasicResponse>{
+            override fun onResponse(call: Call<BasicResponse>, response: Response<BasicResponse>) {
+                val basicResponse = response.body()!!
 
+                mAppointmentData = basicResponse.data.appointment
+
+            }
+
+            override fun onFailure(call: Call<BasicResponse>, t: Throwable) {
+            }
+        })
+
+        binding.layoutFriendList.removeAllViews()
 
         val inflater = LayoutInflater.from(mContext)
 
@@ -213,9 +228,7 @@ class ViewAppointmentDetailActivity : BaseActivity() {
 
             binding.layoutFriendList.addView(friendView)
 
-
         }
-
     }
 
     fun setArrivalMarker() {

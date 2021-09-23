@@ -8,6 +8,7 @@ class DataResponse(
     var appointments: List<AppointmentData>,
     var places: List<PlaceData>,
     var friends: List<UserData>,
-    var users: List<UserData>
+    var users: List<UserData>,
+    var appointment: AppointmentData
 ) {
 }

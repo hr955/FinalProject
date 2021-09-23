@@ -29,7 +29,10 @@ class AppointmentData(
 
     fun getFormattedDateTime(): String {
         val nowDate = Calendar.getInstance()
-        val diff = this.datetime.time - nowDate.timeInMillis
+
+        val dateTimeToTimeZone = this.datetime.time + nowDate.timeZone.rawOffset
+
+        val diff = dateTimeToTimeZone - nowDate.timeInMillis
         val diffHour = diff / 1000 / 60 / 60
 
         if (diffHour < 1) {
@@ -39,7 +42,7 @@ class AppointmentData(
             return "약속 ${diffHour}시간 전"
         } else {
             val dateTimeFormat = SimpleDateFormat("M/d (E) a h:mm")
-            return dateTimeFormat.format(this.datetime)
+            return dateTimeFormat.format(dateTimeToTimeZone)
         }
     }
 }
