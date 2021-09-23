@@ -111,4 +111,12 @@ interface ServerAPIService {
         @Field("type") type: String
     ): Call<BasicResponse>
 
+    @FormUrlEncoded
+    @POST("/appointment/arrival")
+    fun postRequestArrival(
+        @Field("appointment_id") appointmentId: Int,
+        @Field("latitude") latitude: Double,
+        @Field("longitude") longitude: Double,
+    ): Call<BasicResponse>
+
 }

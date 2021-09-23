@@ -18,6 +18,7 @@ import androidx.databinding.DataBindingUtil
 import com.bumptech.glide.Glide
 import com.example.finalproject.databinding.ActivityViewAppointmentDetailBinding
 import com.example.finalproject.datas.AppointmentData
+import com.example.finalproject.datas.BasicResponse
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.normal.TedPermission
 import com.naver.maps.geometry.LatLng
@@ -35,6 +36,9 @@ import com.odsay.odsayandroidsdk.ODsayService
 import com.odsay.odsayandroidsdk.OnResultCallbackListener
 import okhttp3.*
 import org.json.JSONObject
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.io.IOException
 import java.security.Permission
 import java.text.SimpleDateFormat
@@ -56,13 +60,15 @@ class ViewAppointmentDetailActivity : BaseActivity() {
     }
 
     override fun setupEvents() {
+
         binding.btnArrival.setOnClickListener {
+
+//            서버에 위치를 보내야한다고 flag값을 true
             needLocationSendServer = true
+            Log.d("테스트1", "테스트1")
 
             val pl = object : PermissionListener {
                 override fun onPermissionGranted() {
-                    val locationManager = getSystemService(LOCATION_SERVICE) as LocationManager
-
                     if (ActivityCompat.checkSelfPermission(
                             mContext,
                             Manifest.permission.ACCESS_FINE_LOCATION
@@ -71,26 +77,70 @@ class ViewAppointmentDetailActivity : BaseActivity() {
                             Manifest.permission.ACCESS_COARSE_LOCATION
                         ) != PackageManager.PERMISSION_GRANTED
                     ) {
+
                         return
                     }
+
+                    val locationManager = getSystemService(LOCATION_SERVICE) as LocationManager
+
                     locationManager.requestLocationUpdates(
                         LocationManager.GPS_PROVIDER,
                         0L,
                         0f,
                         object : LocationListener {
                             override fun onLocationChanged(p0: Location) {
+                                Log.d("테스트2", "테스트2")
+
                                 if (needLocationSendServer) {
 
 //                                    서버에 위경도값 보내주기.
                                     Log.d("위도", p0.latitude.toString())
                                     Log.d("경도", p0.longitude.toString())
 
+
+                                    apiService.postRequestArrival(
+                                        mAppointmentData.id,
+                                        p0.latitude,
+                                        p0.longitude
+                                    ).enqueue(object: Callback<BasicResponse>{
+                                        override fun onResponse(
+                                            call: Call<BasicResponse>,
+                                            response: Response<BasicResponse>
+                                        ) {
+                                            if(response.isSuccessful){
+                                                needLocationSendServer = false
+                                                Toast.makeText(
+                                                    mContext,
+                                                    "약속 인증에 성공했습니다.",
+                                                    Toast.LENGTH_SHORT
+                                                )
+                                                    .show()
+                                            }else{
+                                                val jsonObj = JSONObject(response.errorBody()!!.string())
+                                                Log.d("응답전문", jsonObj.toString())
+
+                                                val message = jsonObj.getString("message")
+
+                                                Toast.makeText(mContext, message, Toast.LENGTH_SHORT)
+                                                    .show()
+
+                                            }
+                                        }
+
+                                        override fun onFailure(
+                                            call: Call<BasicResponse>,
+                                            t: Throwable
+                                        ) {
+                                        }
+
+                                    })
+
 //                                    응답이 성공적으로 돌아오면 => 서버에 안보내기.
-                                    needLocationSendServer = false
 
                                 }
 
                             }
+
                             override fun onStatusChanged(
                                 provider: String?,
                                 status: Int,
@@ -106,16 +156,15 @@ class ViewAppointmentDetailActivity : BaseActivity() {
                             override fun onProviderDisabled(provider: String) {
 
                             }
-
-                        }
-                    )
+                        })
                 }
 
                 override fun onPermissionDenied(deniedPermissions: MutableList<String>?) {
-                    Toast.makeText(mContext, "도착인증은 위치가 켜져있어야 가능합니다", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(mContext, "현재 위치 정보를 파악해야 약속 도착 인증이 가능합니다.", Toast.LENGTH_SHORT)
+                        .show()
                 }
-            }
 
+            }
             TedPermission.create()
                 .setPermissionListener(pl)
                 .setPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
@@ -137,12 +186,27 @@ class ViewAppointmentDetailActivity : BaseActivity() {
         binding.txtDate.text = sdf.format(mAppointmentData.datetime)
         setArrivalMarker()
 
+        getAppointmentFromServer()
+    }
+
+    fun getAppointmentFromServer(){
+
+
         val inflater = LayoutInflater.from(mContext)
+
+        val sdf = SimpleDateFormat("H:mm 도착")
+
         for (friend in mAppointmentData.invitedFriendList) {
             val friendView = inflater.inflate(R.layout.item_invited_friends_list, null)
             val ivFriendProfile = friendView.findViewById<ImageView>(R.id.iv_friend_profile)
             val txtFriendNickname = friendView.findViewById<TextView>(R.id.txt_friend_nickname)
             val txtArrivalStatus = friendView.findViewById<TextView>(R.id.txt_arrival_status)
+
+            if(friend.arrivedAt == null){
+                txtArrivalStatus.text = "도착 전"
+            }else{
+                txtArrivalStatus.text = sdf.format(friend.arrivedAt)
+            }
 
             Glide.with(mContext).load(friend.profileImgURL).into(ivFriendProfile)
             txtFriendNickname.text = friend.nickname
@@ -151,6 +215,7 @@ class ViewAppointmentDetailActivity : BaseActivity() {
 
 
         }
+
     }
 
     fun setArrivalMarker() {
