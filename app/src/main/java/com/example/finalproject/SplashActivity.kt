@@ -24,6 +24,8 @@ class SplashActivity : BaseActivity() {
     }
 
     override fun setValues() {
+        GlobalData.context = mContext
+
         val myHandler = Handler(Looper.getMainLooper())
 
         apiService.getRequestUserData().enqueue(object : Callback<BasicResponse> {

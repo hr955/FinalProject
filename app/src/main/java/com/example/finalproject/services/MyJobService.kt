@@ -13,6 +13,7 @@ import android.widget.TextView
 import com.example.finalproject.R
 import com.example.finalproject.datas.BasicResponse
 import com.example.finalproject.receiver.AlarmReceiver
+import com.example.finalproject.utils.ContextUtil
 import com.example.finalproject.utils.GlobalData
 import com.example.finalproject.web.ServerAPI
 import com.example.finalproject.web.ServerAPIService
@@ -71,8 +72,10 @@ class MyJobService : JobService() {
                                     val hour = totalTime / 60
                                     val minute = totalTime % 60
 
+                                    val now = Calendar.getInstance()
+                                    appointmentData.datetime.time += now.timeZone.rawOffset
                                     val alarmTime =
-                                        appointmentData.datetime.time - totalTime * 60 * 1000 - GlobalData.loginUser!!.readyMinute * 60 * 1000
+                                        appointmentData.datetime.time - totalTime * 60 * 1000 - ContextUtil.getMyReadyMinute(applicationContext) * 60 * 1000
 
                                     setAlarmByMillisecond(alarmTime)
 
