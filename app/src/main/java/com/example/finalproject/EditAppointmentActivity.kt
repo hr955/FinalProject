@@ -2,6 +2,9 @@ package com.example.finalproject
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.app.job.JobInfo
+import android.app.job.JobScheduler
+import android.content.ComponentName
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
@@ -19,6 +22,7 @@ import com.example.finalproject.databinding.ActivityEditAppointmentBinding
 import com.example.finalproject.datas.BasicResponse
 import com.example.finalproject.datas.PlaceData
 import com.example.finalproject.datas.UserData
+import com.example.finalproject.services.MyJobService
 import com.example.finalproject.utils.SizeUtil
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.*
@@ -35,6 +39,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 class EditAppointmentActivity : BaseActivity() {
 
@@ -364,6 +369,27 @@ class EditAppointmentActivity : BaseActivity() {
                     call: Call<BasicResponse>,
                     response: Response<BasicResponse>
                 ) {
+                    val js = getSystemService(JOB_SCHEDULER_SERVICE) as JobScheduler
+                    val serviceComponent = ComponentName(mContext, MyJobService::class.java)
+
+                    mSelectedDateTime.add(Calendar.HOUR_OF_DAY, -2)
+
+                    val now = Calendar.getInstance()
+                    val timeOffset = now.timeZone.rawOffset / 1000 / 60 / 60
+                    now.add(Calendar.HOUR_OF_DAY, -timeOffset)
+
+                    val jobTime = mSelectedDateTime.timeInMillis - now.timeInMillis
+
+                    val basicResponse = response.body()!!
+
+                    val jobInfo = JobInfo.Builder(basicResponse.data.appointment.id, serviceComponent)
+                       // .setMinimumLatency(jobTime
+                            .setMinimumLatency(TimeUnit.SECONDS.toMillis(20))
+
+                            .setOverrideDeadline(TimeUnit.MINUTES.toMillis(3))
+                        .build()
+
+                    js.schedule(jobInfo)
                     finish()
                 }
 
