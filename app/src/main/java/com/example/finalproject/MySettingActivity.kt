@@ -103,11 +103,11 @@ class MySettingActivity : BaseActivity() {
             when (GlobalData.loginUser!!.provider) {
                 "facebook" -> {
                     setImageResource(R.drawable.ic_facebook_logo_color)
-                    binding.layoutLogout.visibility = View.GONE
+                    binding.layoutChangePassword.visibility = View.GONE
                 }
                 "kakao" -> {
                     setImageResource(R.drawable.ic_kakao_logo)
-                    binding.layoutLogout.visibility = View.GONE
+                    binding.layoutChangePassword.visibility = View.GONE
                 }
                 else -> visibility = View.GONE
             }

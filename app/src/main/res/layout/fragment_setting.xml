@@ -17,6 +17,7 @@
             android:layout_height="100dp">
 
             <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/iv_profile"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:src="@drawable/default_profile_image"
@@ -142,36 +143,6 @@
                     android:background="@color/grey" />
 
                 <LinearLayout
-                    android:id="@+id/layout_friends_list"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:padding="10dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="나의 친구 목록" />
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1" />
-
-                    <ImageView
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:padding="10dp"
-                        android:src="@drawable/ic_right_arrow" />
-                </LinearLayout>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="20dp"
-                    android:background="@color/grey" />
-
-                <LinearLayout
                     android:id="@+id/layout_password_change"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -197,6 +168,7 @@
                 </LinearLayout>
 
                 <View
+                    android:id="@+id/view_border"
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:background="@color/grey" />
