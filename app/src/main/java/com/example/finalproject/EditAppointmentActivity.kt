@@ -37,6 +37,7 @@ import com.odsay.odsayandroidsdk.OnResultCallbackListener
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -93,6 +94,7 @@ class EditAppointmentActivity : BaseActivity() {
             val urlString = url.toString()
 
             val request = Request.Builder()
+                .url(urlString)
                 .get()
                 .header("Authorization",getString(R.string.kakao_rest_api_key))
                 .build()
@@ -103,6 +105,30 @@ class EditAppointmentActivity : BaseActivity() {
                 }
 
                 override fun onResponse(call: okhttp3.Call, response: okhttp3.Response) {
+                    val jsonObj = JSONObject(response.body()!!.string())
+                    Log.d("장소검색 결과", jsonObj.toString())
+
+                    val documentsArr = jsonObj.getJSONArray("documents")
+                    for(i in 0 until documentsArr.length()){
+                        val docu = documentsArr.getJSONObject(i)
+                        val placeName = docu.getString("place_name")
+                        val lat = docu.getString("y").toDouble()
+                        val lng = docu.getString("x").toDouble()
+
+                        // 첫번째 검색 결과만 파싱
+
+                        runOnUiThread {
+                            binding.edtPlace.setText(placeName)
+
+                            val findPlaceLatLng = LatLng(lat, lng)
+
+                            selectedPointMarker.position = findPlaceLatLng
+                            selectedPointMarker.map = mNaverMap
+
+                            mNaverMap?.moveCamera(CameraUpdate.scrollTo(findPlaceLatLng))
+                        }
+                            break
+                    }
                 }
             })
         }
