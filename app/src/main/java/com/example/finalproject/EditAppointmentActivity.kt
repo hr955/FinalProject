@@ -34,9 +34,13 @@ import com.odsay.odsayandroidsdk.API
 import com.odsay.odsayandroidsdk.ODsayData
 import com.odsay.odsayandroidsdk.ODsayService
 import com.odsay.odsayandroidsdk.OnResultCallbackListener
+import okhttp3.HttpUrl
+import okhttp3.OkHttpClient
+import okhttp3.Request
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -75,6 +79,34 @@ class EditAppointmentActivity : BaseActivity() {
     }
 
     override fun setupEvents() {
+        binding.btnSearchPlace.setOnClickListener {
+            val inputPlaceName = binding.edtPlace.text.toString()
+
+            if(inputPlaceName.length < 2){
+                Toast.makeText(mContext, "검색어는 2자 이상 입력해주세요", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            val url = HttpUrl.parse("https://dapi.kakao.com/v2/local/search/keyword.json")!!.newBuilder()
+            url.addQueryParameter("query", inputPlaceName)
+
+            val urlString = url.toString()
+
+            val request = Request.Builder()
+                .get()
+                .header("Authorization",getString(R.string.kakao_rest_api_key))
+                .build()
+
+            val client = OkHttpClient()
+            client.newCall(request).enqueue(object: okhttp3.Callback{
+                override fun onFailure(call: okhttp3.Call, e: IOException) {
+                }
+
+                override fun onResponse(call: okhttp3.Call, response: okhttp3.Response) {
+                }
+            })
+        }
+
 
 
         binding.btnAddFriendToList.setOnClickListener {
