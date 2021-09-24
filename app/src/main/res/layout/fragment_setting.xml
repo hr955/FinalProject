@@ -12,12 +12,11 @@
         tools:context=".MySettingActivity">
 
         <FrameLayout
-            android:id="@+id/iv_profile_image"
             android:layout_width="100dp"
             android:layout_height="100dp">
 
             <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/iv_profile"
+                android:id="@+id/iv_profile_image"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:src="@drawable/default_profile_image"
@@ -25,6 +24,7 @@
                 app:civ_border_width="2dp" />
 
             <ImageView
+                android:id="@+id/iv_change_profile_image"
                 android:layout_width="25dp"
                 android:layout_height="25dp"
                 android:layout_gravity="bottom|right"
@@ -37,8 +37,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="40dp"
             android:gravity="center"
             android:orientation="horizontal">
 
@@ -55,8 +55,15 @@
                 android:layout_height="wrap_content"
                 android:text="혜린"
                 android:textColor="@color/black"
-                android:textSize="23sp"
+                android:textSize="27sp"
                 android:textStyle="bold" />
+
+            <ImageView
+                android:id="@+id/btn_edit_nickname"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginStart="5dp"
+                android:src="@drawable/ic_edit"/>
 
         </LinearLayout>
 
@@ -72,7 +79,7 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="20dp"
-                    android:background="@color/grey" />
+                    android:background="@color/lavender" />
 
                 <LinearLayout
                     android:id="@+id/layout_ready_time"
@@ -85,6 +92,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:textColor="@color/text_purple"
                         android:text="나의 외출 소요시간" />
 
                     <TextView
@@ -97,7 +105,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="30분"
-                        android:textColor="@color/black"
+                        android:textColor="@color/text_purple"
                         android:textSize="18sp" />
 
                     <ImageView
@@ -123,6 +131,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:textColor="@color/text_purple"
                         android:text="출발지 목록" />
 
                     <TextView
@@ -140,7 +149,7 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="20dp"
-                    android:background="@color/grey" />
+                    android:background="@color/lavender" />
 
                 <LinearLayout
                     android:id="@+id/layout_password_change"
@@ -153,6 +162,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:textColor="@color/text_purple"
                         android:text="비밀번호 변경하기" />
 
                     <TextView
@@ -184,6 +194,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:textColor="@color/text_purple"
                         android:text="로그아웃" />
 
                     <TextView
@@ -201,8 +212,8 @@
 
                 <View
                     android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@color/grey" />
+                    android:layout_height="20dp"
+                    android:background="@color/lavender" />
 
             </LinearLayout>
         </ScrollView>

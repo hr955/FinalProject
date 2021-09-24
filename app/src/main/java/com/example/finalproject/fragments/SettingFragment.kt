@@ -62,7 +62,7 @@ class SettingFragment : BaseFragment() {
         logoutButtonClickEvent()
 
         // 닉네임 변경
-        binding.txtNickname.setOnClickListener {
+        binding.btnEditNickname.setOnClickListener {
             patchUserInfo("닉네임 입력", "nickname")
         }
 
@@ -104,35 +104,41 @@ class SettingFragment : BaseFragment() {
 
     // 프로필사진 변경 (갤러리로 이동)
     private fun profileImageChangeButtonClickEvent() {
-        binding.ivProfile.setOnClickListener {
-            val permissionListener = object : PermissionListener {
-                override fun onPermissionGranted() {
-                    val myIntent = Intent()
-                    myIntent.action = Intent.ACTION_PICK
-                    myIntent.type = "image/*"
-                    myIntent.type = android.provider.MediaStore.Images.Media.CONTENT_TYPE
 
-                    startForSelectedImageResult.launch(myIntent)
+        val changeProfileImgBtnClickListener  = object: View.OnClickListener{
+            override fun onClick(p0: View?) {
+                val permissionListener = object : PermissionListener {
+                    override fun onPermissionGranted() {
+                        val myIntent = Intent()
+                        myIntent.action = Intent.ACTION_PICK
+                        myIntent.type = "image/*"
+                        myIntent.type = android.provider.MediaStore.Images.Media.CONTENT_TYPE
+
+                        startForSelectedImageResult.launch(myIntent)
+                    }
+
+                    override fun onPermissionDenied(deniedPermissions: MutableList<String>?) {
+                        Toast.makeText(mContext, "접근 권한이 필요합니다", Toast.LENGTH_SHORT).show()
+                    }
                 }
 
-                override fun onPermissionDenied(deniedPermissions: MutableList<String>?) {
-                    Toast.makeText(mContext, "접근 권한이 필요합니다", Toast.LENGTH_SHORT).show()
-                }
+                TedPermission.create()
+                    .setPermissionListener(permissionListener)
+                    .setPermissions(Manifest.permission.READ_EXTERNAL_STORAGE)
+                    .setDeniedMessage("[설정] > [권한]에서 접근을 허용해주세요")
+                    .check()
             }
-
-            TedPermission.create()
-                .setPermissionListener(permissionListener)
-                .setPermissions(Manifest.permission.READ_EXTERNAL_STORAGE)
-                .setDeniedMessage("[설정] > [권한]에서 접근을 허용해주세요")
-                .check()
         }
+
+        binding.ivProfileImage.setOnClickListener(changeProfileImgBtnClickListener)
+        binding.ivChangeProfileImage.setOnClickListener(changeProfileImgBtnClickListener)
     }
 
     // 사용자 정보 설정
     fun setUserInfo() {
         val loginUser = GlobalData.loginUser!!
 
-        Glide.with(mContext).load(loginUser.profileImgURL).into(binding.ivProfile)
+        Glide.with(mContext).load(loginUser.profileImgURL).into(binding.ivProfileImage)
 
         binding.txtNickname.text = loginUser.nickname
 
@@ -213,7 +219,7 @@ class SettingFragment : BaseFragment() {
                             response: Response<BasicResponse>
                         ) {
                             if (response.isSuccessful) {
-                                Glide.with(mContext).load(dataUri).into(binding.ivProfile)
+                                Glide.with(mContext).load(dataUri).into(binding.ivProfileImage)
                                 GlobalData.loginUser!!.profileImgURL = dataUri.toString()
                             }
                         }
