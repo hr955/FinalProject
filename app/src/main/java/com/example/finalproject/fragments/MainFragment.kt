@@ -49,6 +49,9 @@ class MainFragment : BaseFragment() {
     }
 
     override fun setValues() {
+        txtTitle.text = "내 약속"
+        btnAdd.visibility = View.VISIBLE
+
         mAdapter = AppointmentListAdapter(mContext, mAppointmentList)
 
         binding.rvAppointmentList.apply {
@@ -60,7 +63,7 @@ class MainFragment : BaseFragment() {
     }
 
     // 서버에서 일정 리스트를 받아와 리사이클러뷰에 뿌려주는 함수
-    fun getAppointmentListFromServer() {
+    private fun getAppointmentListFromServer() {
         apiService.getRequestAppointmentList().enqueue(object : Callback<BasicResponse> {
             override fun onResponse(call: Call<BasicResponse>, response: Response<BasicResponse>) {
                 mAppointmentList.clear()

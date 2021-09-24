@@ -14,4 +14,5 @@
     <color name="email_button">#D0D3D8</color>
     <color name="red">#FF0000</color>
     <color name="text_purple">#030640</color>
+    <color name="action_bar_title">#414043</color>
 </resources>

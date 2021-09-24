@@ -32,16 +32,7 @@ class MainActivity : BaseActivity() {
         setValues()
     }
 
-    override fun setupEvents() {
-
-//        binding.btnAddAppointment.setOnClickListener {
-//            startActivity(Intent(mContext, EditAppointmentActivity::class.java))
-//        }
-
-        btnProfile.setOnClickListener {
-            startActivity(Intent(mContext, MySettingActivity::class.java))
-        }
-    }
+    override fun setupEvents() { }
 
     override fun setValues() {
         replaceFragment(MainFragment())
@@ -63,13 +54,9 @@ class MainActivity : BaseActivity() {
         }
 
         Toast.makeText(mContext, "${GlobalData.loginUser!!.nickname}님 환영합니다!", Toast.LENGTH_SHORT).show()
-
-        btnProfile.visibility = View.VISIBLE
-        txtTitle.text = "메인 화면"
-
     }
 
-    fun replaceFragment(fragment: Fragment){
+    private fun replaceFragment(fragment: Fragment){
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         fragmentTransaction.replace(R.id.frame_layout_main, fragment)
         fragmentTransaction.commit()

@@ -18,7 +18,6 @@ abstract class BaseActivity : AppCompatActivity() {
     private lateinit var retrofit: Retrofit
     lateinit var apiService: ServerAPIService
 
-    lateinit var btnProfile: ImageView
     lateinit var txtTitle: TextView
     lateinit var btnAdd: ImageView
 
@@ -47,7 +46,6 @@ abstract class BaseActivity : AppCompatActivity() {
         val toolBar = defActionBar.customView.parent as Toolbar
         toolBar.setContentInsetsAbsolute(0, 0)
 
-        btnProfile = defActionBar.customView.findViewById(R.id.btn_profile)
         txtTitle = defActionBar.customView.findViewById(R.id.txt_title)
         btnAdd = defActionBar.customView.findViewById(R.id.btn_add)
     }

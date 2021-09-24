@@ -25,5 +25,6 @@ class InvitationsFragment : BaseFragment() {
     }
 
     override fun setValues() {
+        txtTitle.text = "초대받은 약속"
     }
 }

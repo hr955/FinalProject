@@ -1,39 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:background="@color/white"
-    android:layout_height="60dp">
+<layout>
 
-    <TextView
-        android:id="@+id/txt_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="앱제목"
-        android:textColor="@color/black"
-        android:textSize="16sp" />
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/white">
 
-    <ImageView
-        android:id="@+id/btn_profile"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:visibility="gone"
-        android:layout_gravity="right|center_vertical"
-        android:layout_marginRight="10dp"
-        android:padding="5dp"
-        tools:visibility="visible"
-        android:src="@drawable/ic_profile" />
+        <TextView
+            android:id="@+id/txt_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left|center_vertical"
+            android:layout_marginLeft="20dp"
+            android:text="앱제목"
+            android:textColor="@color/action_bar_title"
+            android:textSize="20sp"
+            android:textStyle="bold" />
 
-    <ImageView
-        android:id="@+id/btn_add"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:visibility="gone"
-        android:layout_gravity="right|center_vertical"
-        android:layout_marginRight="10dp"
-        android:padding="7dp"
-        tools:visibility="visible"
-        android:src="@drawable/ic_add" />
+        <ImageView
+            android:id="@+id/btn_add"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="right|center_vertical"
+            android:layout_marginRight="10dp"
+            android:padding="7dp"
+            android:src="@drawable/ic_add"
+            android:visibility="gone"
+            tools:visibility="visible" />
 
-</FrameLayout>
+    </FrameLayout>
+</layout>
