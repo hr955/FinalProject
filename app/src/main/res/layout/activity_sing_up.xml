@@ -14,8 +14,9 @@
             android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
             android:text="회원가입"
-            android:textColor="@color/black"
+            android:textColor="@color/text_purple"
             android:textSize="50sp"
             android:textStyle="bold" />
 
@@ -25,9 +26,10 @@
             android:layout_marginStart="5dp"
             android:layout_marginTop="70dp"
             android:text="아이디"
-            android:textColor="@color/black"
+            android:textColor="@color/text_purple"
             android:textSize="16sp"
             android:textStyle="bold" />
+
 
         <FrameLayout
             android:layout_width="match_parent"
@@ -40,14 +42,16 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/edittext_background"
                 android:hint="이메일 양식"
+                android:inputType="textEmailAddress"
                 android:padding="15dp" />
 
             <TextView
                 android:id="@+id/btn_check_email"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_gravity="center_vertical|right"
                 android:layout_marginRight="15dp"
+                android:gravity="center"
                 android:text="중복확인"
                 android:textColor="@color/button_color"
                 android:textSize="15dp"
@@ -60,9 +64,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
-            android:text="이미 존재하는 이메일입니다"
-            android:textColor="@color/red"
-            android:visibility="invisible" />
+            android:textColor="@color/red" />
 
 
         <TextView
@@ -71,7 +73,7 @@
             android:layout_marginStart="5dp"
             android:layout_marginTop="10dp"
             android:text="비밀번호"
-            android:textColor="@color/black"
+            android:textColor="@color/text_purple"
             android:textSize="16sp"
             android:textStyle="bold" />
 
@@ -81,7 +83,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:background="@drawable/edittext_background"
-            android:hint="비밀번호"
+            android:hint="비밀번호 (8자 이상)"
             android:inputType="textPassword"
             android:padding="15dp" />
 
@@ -100,9 +102,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
-            android:text="비밀번호가 일치하지 않습니다"
-            android:textColor="@color/red"
-            android:visibility="invisible" />
+            android:textColor="@color/green" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -110,8 +110,9 @@
             android:layout_marginStart="5dp"
             android:layout_marginTop="10dp"
             android:text="닉네임"
-            android:textColor="@color/black"
-            android:textSize="16sp" />
+            android:textColor="@color/text_purple"
+            android:textSize="16sp"
+            android:textStyle="bold" />
 
         <FrameLayout
             android:layout_width="match_parent"
@@ -123,16 +124,19 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/edittext_background"
-                android:hint="닉네임"
+                android:hint="닉네임 (2자 이상)"
+                android:maxLength="8"
+                android:maxLines="1"
                 android:padding="15dp"
                 android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/btn_check_nickname"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_gravity="center_vertical|right"
                 android:layout_marginRight="15dp"
+                android:gravity="center"
                 android:text="중복확인"
                 android:textColor="@color/button_color"
                 android:textSize="15dp"
@@ -141,14 +145,25 @@
         </FrameLayout>
 
         <TextView
+            android:id="@+id/txt_nickname_warning"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:textColor="@color/green" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <TextView
             android:id="@+id/btn_sign_up"
             android:layout_width="match_parent"
             android:layout_height="45dp"
-            android:layout_marginTop="50dp"
             android:background="@drawable/login_button_background"
             android:gravity="center"
             android:text="회원가입 완료"
-            android:textColor="@color/black"
+            android:textColor="@color/white"
             android:textSize="17dp" />
 
     </LinearLayout>

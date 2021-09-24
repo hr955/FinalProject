@@ -1,5 +1,20 @@
 <resources>
     <string name="app_name">FinalProject</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!-- SignUpActivity -->
+    <string name="password_length_warning">비밀번호를 8자 이상 입력해주세요</string>
+    <string name="password_match_warning">비밀번호가 일치하지 않습니다</string>
+    <string name="password_usable">사용 가능한 비밀번호입니다</string>
+
+    <string name="email_check_warning">이메일 중복검사를 진행해주세요</string>
+    <string name="email_pattern_check">이메일 형식으로 입력해주세요</string>
+    <string name="email_edt_empty">사용하실 이메일을 입력해주세요</string>
+    <string name="email_unusable">이미 사용중인 이메일입니다</string>
+    <string name="email_usable">사용 가능한 이메일입니다</string>
+
+    <string name="nickname_usable">사용 가능한 닉네임입니다</string>
+    <string name="nickname_unusable">이미 사용중인 닉네임입니다</string>
+    <string name="nickname_check_warning">닉네임 중복검사를 진행해주세요</string>
+    <string name="nickname_length_warning">닉네임은 2자 이상 입력해주세요</string>
+
 </resources>

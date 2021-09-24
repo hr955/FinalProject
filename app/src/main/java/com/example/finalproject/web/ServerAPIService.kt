@@ -32,6 +32,13 @@ interface ServerAPIService {
         @Field("nick_name") nickname: String
     ): Call<BasicResponse>
 
+    // 이메일 및 닉네임 중복검사
+    @GET("/user/check")
+    fun getRequestDuplCheck(
+        @Query("type") type: String,
+        @Query("value") value: String
+    ): Call<BasicResponse>
+
     // 일정 목록 추가 API
     @FormUrlEncoded
     @POST("/appointment")

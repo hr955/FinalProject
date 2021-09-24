@@ -7,9 +7,11 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="button_color">#AC8FBF</color>
+    <color name="green">#0AC91F</color>
+    <color name="button_color">#6950E2</color>
     <color name="kakao_button">#FEE500</color>
     <color name="facebook_button">#1877F2</color>
     <color name="email_button">#D0D3D8</color>
     <color name="red">#FF0000</color>
+    <color name="text_purple">#030640</color>
 </resources>

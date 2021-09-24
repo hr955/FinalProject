@@ -1,7 +1,5 @@
 package com.example.finalproject.datas
 
-import com.google.gson.annotations.SerializedName
-
 class DataResponse(
     var token: String,
     var user: UserData,

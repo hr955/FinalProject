@@ -51,9 +51,19 @@ class LoginActivity : BaseActivity() {
     override fun setValues() {
     }
 
+    //로그인 버튼 클릭
     fun loginButtonEvent() {
-        //로그인 버튼 클릭
         binding.btnLogin.setOnClickListener {
+            if(binding.edtEmail.text.isEmpty()){
+                Toast.makeText(mContext, "아이디를 입력해주세요", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            if(binding.edtPassword.text.isEmpty()){
+                Toast.makeText(mContext,"비밀번호를 입력해주세요", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
             apiService.postRequestLogin(
                 binding.edtEmail.text.toString(),
                 binding.edtPassword.text.toString()
@@ -80,16 +90,16 @@ class LoginActivity : BaseActivity() {
         }
     }
 
+    // 회원가입 버튼 클릭
     fun signUpButtonEvent(){
-        // 회원가입 버튼 클릭
         binding.btnSignUp.setOnClickListener {
             startActivity(Intent(mContext, SignUpActivity::class.java))
         }
 
     }
 
+    // 카카오 로그인 버튼 클릭
     fun kakaoLoginButtonEvent() {
-        // 카카오 로그인 버튼 클릭
         binding.btnKakaoLogin.setOnClickListener {
             UserApiClient.instance.loginWithKakaoAccount(mContext) { token, error ->
                 if (error != null) {
@@ -132,8 +142,8 @@ class LoginActivity : BaseActivity() {
         }
     }
 
+    // 페이스북 로그인 버튼 클릭
     fun facebookLoginButtonEvent(){
-        // 페이스북 로그인 버튼 클릭
         binding.btnFacebookLogin.setOnClickListener {
             val loginManager = LoginManager.getInstance()
 
