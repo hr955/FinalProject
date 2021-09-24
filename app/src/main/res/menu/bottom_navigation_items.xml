@@ -8,6 +8,12 @@
         android:id="@+id/menu_invite_appointment"
         android:icon="@drawable/ic_invitation"
         android:title="초대받은" />
+
+    <item
+        android:id="@+id/menu_friend"
+        android:icon="@drawable/ic_friend"
+        android:title="친구" />
+
     <item
         android:id="@+id/menu_setting"
         android:icon="@drawable/ic_setting"

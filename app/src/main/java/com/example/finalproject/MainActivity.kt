@@ -1,24 +1,15 @@
 package com.example.finalproject
 
-import android.content.Intent
 import android.os.Bundle
-import android.util.Log
-import android.view.View
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.finalproject.adapters.AppointmentListAdapter
 import com.example.finalproject.databinding.ActivityMainBinding
-import com.example.finalproject.datas.AppointmentData
-import com.example.finalproject.datas.BasicResponse
+import com.example.finalproject.fragments.FriendFragment
 import com.example.finalproject.fragments.InvitationsFragment
 import com.example.finalproject.fragments.MainFragment
 import com.example.finalproject.fragments.SettingFragment
 import com.example.finalproject.utils.GlobalData
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 class MainActivity : BaseActivity() {
 
@@ -39,15 +30,10 @@ class MainActivity : BaseActivity() {
 
         binding.navBarBottom.setOnItemSelectedListener { item ->
             when(item.itemId){
-                R.id.menu_my_appointment -> {
-                    replaceFragment(MainFragment())
-                }
-                R.id.menu_invite_appointment -> {
-                    replaceFragment(InvitationsFragment())
-                }
-                R.id.menu_setting -> {
-                    replaceFragment(SettingFragment())
-                }
+                R.id.menu_my_appointment -> replaceFragment(MainFragment())
+                R.id.menu_invite_appointment -> replaceFragment(InvitationsFragment())
+                R.id.menu_setting -> replaceFragment(SettingFragment())
+                R.id.menu_friend -> replaceFragment(FriendFragment())
                 else -> { }
             }
             true
