@@ -1,11 +1,13 @@
 package com.example.finalproject.fragments
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.finalproject.EditAppointmentActivity
 import com.example.finalproject.R
 import com.example.finalproject.adapters.AppointmentListAdapter
 import com.example.finalproject.databinding.FragmentMainBinding
@@ -31,8 +33,8 @@ class MainFragment : BaseFragment() {
         return binding.root
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         setupEvents()
         setValues()
@@ -46,6 +48,9 @@ class MainFragment : BaseFragment() {
     }
 
     override fun setupEvents() {
+        btnAdd.setOnClickListener {
+            startActivity(Intent(mContext, EditAppointmentActivity::class.java))
+        }
     }
 
     override fun setValues() {

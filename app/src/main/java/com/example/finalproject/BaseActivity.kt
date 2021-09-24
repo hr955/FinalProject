@@ -42,6 +42,7 @@ abstract class BaseActivity : AppCompatActivity() {
 
         defActionBar.displayOptions = ActionBar.DISPLAY_SHOW_CUSTOM
         defActionBar.setCustomView(R.layout.my_custom_action_bar)
+        defActionBar.elevation = 0F
 
         val toolBar = defActionBar.customView.parent as Toolbar
         toolBar.setContentInsetsAbsolute(0, 0)
