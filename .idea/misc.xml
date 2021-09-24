@@ -24,8 +24,11 @@
         <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/layout/activity_view_map.xml" value="0.25885416666666666" />
         <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/layout/activity_view_my_friends_list.xml" value="0.2234375" />
         <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/layout/activity_view_my_place_list.xml" value="0.25885416666666666" />
+        <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/layout/fragment_invitation.xml" value="0.25885416666666666" />
+        <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/layout/fragment_main.xml" value="0.25885416666666666" />
         <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/layout/fragment_my_friends_list.xml" value="0.20885416666666667" />
         <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/layout/fragment_requested_friend_list.xml" value="0.19166666666666668" />
+        <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/layout/fragment_setting.xml" value="0.25885416666666666" />
         <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/layout/item_add_friend_list.xml" value="0.264" />
         <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/layout/item_appointment_list.xml" value="0.264" />
         <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/layout/item_friend_list.xml" value="0.2234375" />
@@ -37,6 +40,7 @@
         <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/layout/my_custom_info_window.xml" value="0.25885416666666666" />
         <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/layout/my_place_list_item.xml" value="0.25885416666666666" />
         <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/layout/requested_friend_list_fragment.xml" value="0.1546875" />
+        <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/menu/bottom_navigation_items.xml" value="0.25885416666666666" />
       </map>
     </option>
   </component>
