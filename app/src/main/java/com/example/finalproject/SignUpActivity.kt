@@ -5,22 +5,18 @@ import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.util.Patterns
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
-import androidx.core.widget.addTextChangedListener
 import androidx.databinding.DataBindingUtil
 import com.example.finalproject.databinding.ActivitySingUpBinding
 import com.example.finalproject.datas.BasicResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-
-// TODO 비밀번호 일치 검사, 이메일 중복 및 양식 검사, 닉네임 중복검사
 
 class SignUpActivity : BaseActivity() {
 
