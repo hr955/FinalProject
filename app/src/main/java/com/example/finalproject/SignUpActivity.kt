@@ -1,5 +1,6 @@
 package com.example.finalproject
 
+import android.app.Activity
 import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
@@ -7,7 +8,9 @@ import android.text.TextWatcher
 import android.util.Log
 import android.util.Patterns
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.databinding.DataBindingUtil
@@ -46,6 +49,7 @@ class SignUpActivity : BaseActivity() {
         checkPasswordMatch()
         emailTextWatcher()
         nicknameTextWatcher()
+        hideKeyboard()
     }
 
     // 이메일 중복검사 버튼이벤트
@@ -88,7 +92,6 @@ class SignUpActivity : BaseActivity() {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                Log.d("테스트", p0.toString())
                 mEmailFlag = false
                 binding.txtEmailWarning.visibility = View.INVISIBLE
             }
@@ -236,6 +239,36 @@ class SignUpActivity : BaseActivity() {
         }
     }
 
+    // 회원가입 API 호출
+    private fun callSingUpAPI() {
+        apiService.putRequestSingUp(
+            binding.edtEmail.text.toString(),
+            binding.edtPassword.text.toString(),
+            binding.edtNickname.text.toString()
+        ).enqueue(object : Callback<BasicResponse> {
+            override fun onResponse(
+                call: Call<BasicResponse>,
+                response: Response<BasicResponse>
+            ) {
+                if (response.isSuccessful) {
+                    Toast.makeText(mContext, "회원가입이 완료되었습니다\n로그인을 진행해주세요", Toast.LENGTH_SHORT).show()
+                    finish()
+                }
+            }
+
+            override fun onFailure(call: Call<BasicResponse>, t: Throwable) {}
+        })
+    }
+
+    fun hideKeyboard(){
+        val imm = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        var view = currentFocus
+        if(view == null){
+            view = View(this)
+        }
+        imm.hideSoftInputFromWindow(view.windowToken, 0)
+    }
+
     fun setWarning(resId: TextView, warningMessage: String) {
         resId.apply {
             visibility = View.VISIBLE
@@ -250,25 +283,5 @@ class SignUpActivity : BaseActivity() {
             setTextColor(ContextCompat.getColor(mContext, R.color.green))
             text = usableMessage
         }
-    }
-
-    // 회원가입 API 호출
-    private fun callSingUpAPI() {
-        apiService.putRequestSingUp(
-            binding.edtEmail.text.toString(),
-            binding.edtPassword.text.toString(),
-            binding.edtNickname.text.toString()
-        ).enqueue(object : Callback<BasicResponse> {
-            override fun onResponse(
-                call: Call<BasicResponse>,
-                response: Response<BasicResponse>
-            ) {
-                if (response.isSuccessful) {
-                    // TODO 회원가입 성공시 GlobalData 설정 후 MainActivity로 이동
-                }
-            }
-
-            override fun onFailure(call: Call<BasicResponse>, t: Throwable) {}
-        })
     }
 }
