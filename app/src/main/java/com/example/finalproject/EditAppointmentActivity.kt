@@ -106,7 +106,6 @@ class EditAppointmentActivity : BaseActivity() {
 
                 override fun onResponse(call: okhttp3.Call, response: okhttp3.Response) {
                     val jsonObj = JSONObject(response.body()!!.string())
-                    Log.d("장소검색 결과", jsonObj.toString())
 
                     val documentsArr = jsonObj.getJSONArray("documents")
                     for(i in 0 until documentsArr.length()){
@@ -126,6 +125,11 @@ class EditAppointmentActivity : BaseActivity() {
                             selectedPointMarker.map = mNaverMap
 
                             mNaverMap?.moveCamera(CameraUpdate.scrollTo(findPlaceLatLng))
+
+                            mSelectedLat = lat
+                            mSelectedLng = lng
+
+                            drawStartPlaceToDestination(mNaverMap!!)
                         }
                             break
                     }
