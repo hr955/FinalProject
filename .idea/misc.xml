@@ -12,11 +12,13 @@
         <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/drawable/ic_launcher_background.xml" value="0.125" />
         <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/drawable/kakao_login_button_background.xml" value="0.275" />
         <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/drawable/login_button_background.xml" value="0.27076923076923076" />
+        <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/drawable/login_kakao_button_background.xml" value="0.27076923076923076" />
+        <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/drawable/notification_badge_background.xml" value="0.27076923076923076" />
         <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/layout/activity_add_friend.xml" value="0.25885416666666666" />
         <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/layout/activity_edit_appointment.xml" value="0.264" />
         <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/layout/activity_edit_my_place.xml" value="0.25885416666666666" />
         <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/layout/activity_find_friend.xml" value="0.25885416666666666" />
-        <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/layout/activity_login.xml" value="0.536" />
+        <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/layout/activity_login.xml" value="0.264" />
         <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/layout/activity_main.xml" value="0.264" />
         <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/layout/activity_my_setting.xml" value="0.264" />
         <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/layout/activity_sing_up.xml" value="0.264" />
@@ -39,9 +41,11 @@
         <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/layout/item_friend_request_list.xml" value="0.19166666666666668" />
         <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/layout/item_invited_friends_list.xml" value="0.25885416666666666" />
         <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/layout/item_my_place_list.xml" value="0.25885416666666666" />
+        <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/layout/item_notification.xml" value="0.264" />
         <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/layout/item_search_friend_list.xml" value="0.25885416666666666" />
         <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/layout/my_custom_action_bar.xml" value="0.264" />
         <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/layout/my_custom_info_window.xml" value="0.25885416666666666" />
+        <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/layout/my_custom_notification_badge.xml" value="0.264" />
         <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/layout/my_place_list_item.xml" value="0.25885416666666666" />
         <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/layout/requested_friend_list_fragment.xml" value="0.1546875" />
         <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/menu/bottom_navigation_items.xml" value="0.25885416666666666" />
