@@ -5,10 +5,7 @@ import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import com.example.finalproject.databinding.ActivityMainBinding
-import com.example.finalproject.fragments.FriendFragment
-import com.example.finalproject.fragments.InvitationsFragment
-import com.example.finalproject.fragments.MainFragment
-import com.example.finalproject.fragments.SettingFragment
+import com.example.finalproject.fragments.*
 import com.example.finalproject.utils.GlobalData
 
 class MainActivity : BaseActivity() {
@@ -34,6 +31,7 @@ class MainActivity : BaseActivity() {
                 R.id.menu_invite_appointment -> replaceFragment(InvitationsFragment())
                 R.id.menu_setting -> replaceFragment(SettingFragment())
                 R.id.menu_friend -> replaceFragment(FriendFragment())
+                R.id.menu_notification -> replaceFragment(NotificationFragment())
                 else -> { }
             }
             true

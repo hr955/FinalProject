@@ -15,6 +15,11 @@
         android:title="친구" />
 
     <item
+        android:id="@+id/menu_notification"
+        android:icon="@drawable/ic_notification"
+        android:title="알림" />
+
+    <item
         android:id="@+id/menu_setting"
         android:icon="@drawable/ic_setting"
         android:title="설정" />
