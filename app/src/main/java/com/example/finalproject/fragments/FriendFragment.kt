@@ -45,8 +45,6 @@ class FriendFragment : BaseFragment(){
         btnFindFriend.visibility = View.VISIBLE
 
         binding.vpFriend.adapter = FriendsListViewPagerAdapter(this)
-        Log.d("테스트", binding.vpFriend.adapter.toString())
-        binding.vpFriend.orientation = ViewPager2.ORIENTATION_HORIZONTAL
 
         TabLayoutMediator(binding.tabFriend, binding.vpFriend) { tab, position ->
             when(position){
