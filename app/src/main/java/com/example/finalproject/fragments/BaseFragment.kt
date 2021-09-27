@@ -24,6 +24,7 @@ abstract class BaseFragment : Fragment() {
 
     lateinit var txtTitle: TextView
     lateinit var btnAdd: ImageView
+    lateinit var btnFindFriend: ImageView
 
     // 뷰가 그려지는 시기
     override fun onCreateView(
@@ -61,5 +62,6 @@ abstract class BaseFragment : Fragment() {
 
         txtTitle = defActionBar.customView.findViewById(R.id.txt_title)
         btnAdd = defActionBar.customView.findViewById(R.id.btn_add)
+        btnFindFriend = defActionBar.customView.findViewById(R.id.btn_find_friend)
     }
 }

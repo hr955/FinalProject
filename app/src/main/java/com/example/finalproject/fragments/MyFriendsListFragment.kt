@@ -65,6 +65,8 @@ class MyFriendsListFragment : BaseFragment() {
     }
 
     override fun setValues() {
+        txtTitle.text = "친구"
+        btnFindFriend.visibility = View.VISIBLE
         mFriendsListAdapter = FriendsListAdapter(mContext, mMyFriendList)
 
         binding.rvFriendsList.apply {

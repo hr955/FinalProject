@@ -29,6 +29,17 @@
             android:visibility="gone"
             tools:visibility="visible" />
 
+        <ImageView
+            android:id="@+id/btn_find_friend"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="right|center_vertical"
+            android:layout_marginRight="10dp"
+            android:padding="10dp"
+            android:src="@drawable/ic_search"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
         <View
             android:layout_width="match_parent"
             android:layout_gravity="bottom"

@@ -68,6 +68,9 @@ class RequestedFriendListFragment : BaseFragment() {
     }
 
     override fun setValues() {
+        txtTitle.text = "친구"
+        btnFindFriend.visibility = View.VISIBLE
+
         mAdapter = RequestedFriendListAdapter(mContext, mFriendRequestList)
         binding.rvRequestedFriendList.apply {
             adapter = mAdapter
