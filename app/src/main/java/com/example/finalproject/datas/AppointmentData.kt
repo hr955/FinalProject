@@ -34,10 +34,10 @@ class AppointmentData(
         val diff = this.datetime.time - nowDate.timeInMillis
         val diffHour = diff / 1000 / 60 / 60
 
-        if (diffHour < 1) {
+        if (diffHour in 1..0) {
             val diffMinute = diff / 1000 / 60
             return "약속 ${diffMinute}분 전"
-        } else if (diffHour < 5) {
+        } else if (diffHour in 1..4) {
             return "약속 ${diffHour}시간 전"
         } else {
             val dateTimeFormat = SimpleDateFormat("M/d (E) a h:mm")

@@ -13,6 +13,8 @@ import com.example.finalproject.utils.GlobalData
 import com.facebook.*
 import com.facebook.login.LoginManager
 import com.kakao.sdk.user.UserApiClient
+import com.nhn.android.naverlogin.OAuthLogin
+import com.nhn.android.naverlogin.OAuthLoginHandler
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
@@ -23,6 +25,7 @@ class LoginActivity : BaseActivity() {
 
     lateinit var binding: ActivityLoginBinding
     lateinit var callbackManager: CallbackManager
+    lateinit var mNaverLoginModule: OAuthLogin
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,12 +46,21 @@ class LoginActivity : BaseActivity() {
 
         loginButtonEvent()
         signUpButtonEvent()
+        naverLoginButtonEvent()
         kakaoLoginButtonEvent()
         facebookLoginButtonEvent()
 
     }
 
     override fun setValues() {
+        //네이버 로그인 모듈 세팅
+        mNaverLoginModule = OAuthLogin.getInstance()
+        mNaverLoginModule.init(
+            mContext,
+            getString(R.string.naver_login_client_id),
+            getString(R.string.naver_client_secret),
+            getString(R.string.app_name)
+        )
     }
 
     //로그인 버튼 클릭
@@ -96,6 +108,52 @@ class LoginActivity : BaseActivity() {
             startActivity(Intent(mContext, SignUpActivity::class.java))
         }
 
+    }
+
+    // 네이버 로그인 버튼 클릭
+    fun naverLoginButtonEvent() {
+        binding.btnNaverLogin.setOnClickListener {
+            mNaverLoginModule.startOauthLoginActivity(this, object : OAuthLoginHandler() {
+                override fun run(success: Boolean) {
+                    if (success) {
+                        val accessToken = mNaverLoginModule.getAccessToken(mContext)
+                        Thread{
+                            val url = "https://openapi.naver.com/v1/nid/me"
+
+                            val jsonObj = JSONObject(mNaverLoginModule.requestApi(mContext, accessToken, url))
+                            Log.d("네이버로그인내정보", jsonObj.toString())
+
+                            val responseObj = jsonObj.getJSONObject("response")
+                            val uid = responseObj.getString("id")
+                            val name = responseObj.getString("nickname")
+
+                            apiService.postRequestSocialLogin(
+                                "naver",
+                                uid,
+                                name
+                            ).enqueue(object : retrofit2.Callback<BasicResponse>{
+                                override fun onResponse(
+                                    call: Call<BasicResponse>,
+                                    response: Response<BasicResponse>
+                                ) {
+                                    val responseBody = response.body()!!.data
+
+                                    ContextUtil.setToken(mContext, responseBody.token)
+                                    GlobalData.loginUser = responseBody.user
+                                    finish()
+                                    startActivity(Intent(mContext, MainActivity::class.java))
+                                }
+
+                                override fun onFailure(call: Call<BasicResponse>, t: Throwable) {
+                                }
+                            })
+                        }.start()
+                    } else {
+                        Toast.makeText(mContext, "네이버 로그인에 실패했습니다", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            })
+        }
     }
 
     // 카카오 로그인 버튼 클릭

@@ -3,6 +3,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/drawable/background_login_naver_button.xml" value="0.27076923076923076" />
         <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/drawable/background_profile_image_change.xml" value="0.275" />
         <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/drawable/background_request_friend.xml" value="0.275" />
         <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/drawable/custom_button_background.xml" value="0.275" />
@@ -13,6 +14,7 @@
         <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/drawable/ic_launcher_background.xml" value="0.125" />
         <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/drawable/kakao_login_button_background.xml" value="0.275" />
         <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/drawable/login_button_background.xml" value="0.27076923076923076" />
+        <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/drawable/login_facebook_button_background.xml" value="0.27076923076923076" />
         <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/drawable/login_kakao_button_background.xml" value="0.27076923076923076" />
         <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/drawable/notification_badge_background.xml" value="0.27076923076923076" />
         <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/layout/activity_add_friend.xml" value="0.25885416666666666" />
