@@ -1,6 +1,9 @@
 package com.example.finalproject
 
 import android.Manifest
+import android.app.AlertDialog
+import android.content.DialogInterface
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.location.Location
@@ -19,6 +22,8 @@ import com.bumptech.glide.Glide
 import com.example.finalproject.databinding.ActivityViewAppointmentDetailBinding
 import com.example.finalproject.datas.AppointmentData
 import com.example.finalproject.datas.BasicResponse
+import com.example.finalproject.utils.ContextUtil
+import com.example.finalproject.utils.GlobalData
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.normal.TedPermission
 import com.naver.maps.geometry.LatLng
@@ -60,10 +65,12 @@ class ViewAppointmentDetailActivity : BaseActivity() {
     }
 
     override fun setupEvents() {
+        // 친구목록 새로고침 (도착여부 확인)
         binding.btnRefresh.setOnClickListener {
             getAppointmentFromServer()
         }
 
+        // 도착 인증 버튼
         binding.btnArrival.setOnClickListener {
 
 //            서버에 위치를 보내야한다고 flag값을 true
@@ -137,9 +144,7 @@ class ViewAppointmentDetailActivity : BaseActivity() {
                                         }
 
                                     })
-
 //                                    응답이 성공적으로 돌아오면 => 서버에 안보내기.
-
                                 }
 
                             }
@@ -172,6 +177,18 @@ class ViewAppointmentDetailActivity : BaseActivity() {
                 .setPermissionListener(pl)
                 .setPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
                 .check()
+        }
+
+        // 약속 삭제 버튼
+        binding.btnDeleteAppointment.setOnClickListener {
+            val alert = AlertDialog.Builder(mContext)
+            alert.setTitle("약속을 삭제하시겠습니까?")
+            alert.setPositiveButton("삭제", DialogInterface.OnClickListener { dialogInterface, i ->
+                deleteAppointment()
+                finish()
+            })
+            alert.setNegativeButton("취소", null)
+            alert.show()
         }
     }
 
@@ -263,36 +280,6 @@ class ViewAppointmentDetailActivity : BaseActivity() {
             startPlaceMarker.map = it
             arrivalMarker.map = it
 
-//            val url =
-//                HttpUrl.parse("https://api.odsay.com/v1/api/searchPubTransPath?")!!.newBuilder()
-//            url.addEncodedQueryParameter("SX", startLongitude.toString())
-//            url.addEncodedQueryParameter("SY", startLatitude.toString())
-//            url.addEncodedQueryParameter("EX", arrivalLongitude.toString())
-//            url.addEncodedQueryParameter("EY", arrivalLatitude.toString())
-//            url.addEncodedQueryParameter("apiKey", getString(R.string.odsay_app_key))
-//
-//            Log.d("완성된주소",url.toString())
-//
-//
-//            val request = Request.Builder()
-//                .url(url.toString())
-//                .get()
-//                .build()
-//
-//            val client = OkHttpClient()
-//            client.newCall(request).enqueue(object : Callback {
-//                override fun onFailure(call: Call, e: IOException) { }
-//
-//                override fun onResponse(call: Call, response: Response) {
-//                    val bodyString = response.body()!!.string()
-//                    val jsonObj = JSONObject(bodyString)
-//                    Log.d("테스트",jsonObj.toString())
-//
-//
-//                }
-//
-//            })
-
             val points = ArrayList<LatLng>()
             points.add(startPosition)
 
@@ -372,5 +359,16 @@ class ViewAppointmentDetailActivity : BaseActivity() {
                 }
             )
         }
+    }
+
+    // 약속 삭제
+    fun deleteAppointment(){
+        apiService.deleteRequestAppointment(mAppointmentData.id).enqueue(object: Callback<BasicResponse>{
+            override fun onResponse(call: Call<BasicResponse>, response: Response<BasicResponse>) {
+                if(response.isSuccessful) Log.d("deleteAppointment", "Delete Appointment Successful")
+            }
+
+            override fun onFailure(call: Call<BasicResponse>, t: Throwable) {}
+        })
     }
 }

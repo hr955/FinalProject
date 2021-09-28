@@ -147,4 +147,10 @@ interface ServerAPIService {
         @Field("noti_id") appointmentId: Int
     ): Call<BasicResponse>
 
+    // 약속 삭제 API
+    @DELETE("/appointment")
+    fun deleteRequestAppointment(
+        @Query("appointment_id") appointmentId: Int
+    ): Call<BasicResponse>
+
 }
