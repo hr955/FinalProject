@@ -48,7 +48,7 @@
             android:value="@string/kakao_app_key" />
         <meta-data
             android:name="com.naver.maps.map.CLIENT_ID"
-            android:value="@string/naver_client_id" />
+            android:value="@string/naver_map_client_id" />
 
         <activity
             android:name=".SplashActivity"
