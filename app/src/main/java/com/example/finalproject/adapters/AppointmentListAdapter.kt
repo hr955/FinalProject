@@ -2,6 +2,7 @@ package com.example.finalproject.adapters
 
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
@@ -11,7 +12,6 @@ import com.example.finalproject.ViewAppointmentDetailActivity
 import com.example.finalproject.ViewMapActivity
 import com.example.finalproject.databinding.ItemAppointmentListBinding
 import com.example.finalproject.datas.AppointmentData
-import java.text.SimpleDateFormat
 
 class AppointmentListAdapter(val mContext: Context, private val mList: List<AppointmentData>) :
     RecyclerView.Adapter<AppointmentListAdapter.AppointmentListAdapterViewHolder>() {
@@ -39,6 +39,7 @@ class AppointmentListAdapter(val mContext: Context, private val mList: List<Appo
 
         fun onBind(item: AppointmentData) {
             binding.txtTitle.text = item.title
+            Log.d("appointmentDate", item.datetime.toString())
             binding.txtDate.text = item.getFormattedDateTime()
             binding.txtPlace.text = item.place
         }

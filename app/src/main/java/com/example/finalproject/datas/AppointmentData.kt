@@ -1,5 +1,6 @@
 package com.example.finalproject.datas
 
+import android.util.Log
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 import java.text.SimpleDateFormat
@@ -30,9 +31,7 @@ class AppointmentData(
     fun getFormattedDateTime(): String {
         val nowDate = Calendar.getInstance()
 
-        val dateTimeToTimeZone = this.datetime.time + nowDate.timeZone.rawOffset
-
-        val diff = dateTimeToTimeZone - nowDate.timeInMillis
+        val diff = this.datetime.time - nowDate.timeInMillis
         val diffHour = diff / 1000 / 60 / 60
 
         if (diffHour < 1) {
@@ -42,7 +41,7 @@ class AppointmentData(
             return "약속 ${diffHour}시간 전"
         } else {
             val dateTimeFormat = SimpleDateFormat("M/d (E) a h:mm")
-            return dateTimeFormat.format(dateTimeToTimeZone)
+            return dateTimeFormat.format(this.datetime.time)
         }
     }
 }
