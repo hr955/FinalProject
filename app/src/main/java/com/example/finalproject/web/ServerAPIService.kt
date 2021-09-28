@@ -118,6 +118,7 @@ interface ServerAPIService {
         @Field("type") type: String
     ): Call<BasicResponse>
 
+    // 도착 인증 API
     @FormUrlEncoded
     @POST("/appointment/arrival")
     fun postRequestArrival(
@@ -126,8 +127,24 @@ interface ServerAPIService {
         @Field("longitude") longitude: Double,
     ): Call<BasicResponse>
 
+
+    // 약속 상세 조회 API
     @GET("/appointment/{appointment_id}")
     fun getRequestAppointmentDetail(
         @Path("appointment_id") id: Int
     ): Call<BasicResponse>
+
+    // 알림 목록 조회 API
+    @GET("/notifications")
+    fun getRequestNotificationList(
+        @Query("need_all_notis") needAllNotis: String?
+    ): Call<BasicResponse>
+
+    // 알림 읽음처리 API
+    @FormUrlEncoded
+    @POST("/notifications")
+    fun postRequestNotiIsRead(
+        @Field("noti_id") appointmentId: Int
+    ): Call<BasicResponse>
+
 }

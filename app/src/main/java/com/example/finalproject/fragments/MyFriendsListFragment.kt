@@ -1,11 +1,13 @@
 package com.example.finalproject.fragments
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.finalproject.FindFriendActivity
 import com.example.finalproject.R
 import com.example.finalproject.adapters.FriendsListAdapter
 import com.example.finalproject.databinding.FragmentMyFriendsListBinding
@@ -62,6 +64,9 @@ class MyFriendsListFragment : BaseFragment() {
     }
 
     override fun setupEvents() {
+        btnFindFriend.setOnClickListener {
+            startActivity(Intent(mContext, FindFriendActivity::class.java))
+        }
     }
 
     override fun setValues() {

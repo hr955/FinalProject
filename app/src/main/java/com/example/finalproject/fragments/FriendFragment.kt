@@ -1,5 +1,6 @@
 package com.example.finalproject.fragments
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -8,6 +9,7 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.viewpager.widget.ViewPager
 import androidx.viewpager2.widget.ViewPager2
+import com.example.finalproject.FindFriendActivity
 import com.example.finalproject.R
 import com.example.finalproject.adapters.FriendsListViewPagerAdapter
 import com.example.finalproject.databinding.FragmentFriendBinding
@@ -37,6 +39,10 @@ class FriendFragment : BaseFragment(){
     }
 
     override fun setupEvents() {
+        btnFindFriend.setOnClickListener {
+            startActivity(Intent(mContext, FindFriendActivity::class.java))
+        }
+
 
     }
 
