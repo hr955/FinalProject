@@ -20,6 +20,7 @@ abstract class BaseActivity : AppCompatActivity() {
 
     lateinit var txtTitle: TextView
     lateinit var btnAdd: ImageView
+    lateinit var btnClose: ImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,6 +50,7 @@ abstract class BaseActivity : AppCompatActivity() {
 
         txtTitle = defActionBar.customView.findViewById(R.id.txt_title)
         btnAdd = defActionBar.customView.findViewById(R.id.btn_add)
+        btnClose = defActionBar.customView.findViewById(R.id.btn_close)
     }
 
 }

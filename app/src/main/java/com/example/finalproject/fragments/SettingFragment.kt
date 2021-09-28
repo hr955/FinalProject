@@ -16,10 +16,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.bumptech.glide.Glide
-import com.example.finalproject.LoginActivity
-import com.example.finalproject.MainActivity
-import com.example.finalproject.R
-import com.example.finalproject.ViewMyPlaceListActivity
+import com.example.finalproject.*
 import com.example.finalproject.databinding.FragmentSettingBinding
 import com.example.finalproject.datas.BasicResponse
 import com.example.finalproject.utils.ContextUtil
@@ -74,6 +71,11 @@ class SettingFragment : BaseFragment() {
         // 출발지 목록
         binding.layoutMyPlaceList.setOnClickListener {
             startActivity(Intent(mContext, ViewMyPlaceListActivity::class.java))
+        }
+
+        // 비밀번호 변경
+        binding.layoutPasswordChange.setOnClickListener {
+            startActivity(Intent(mContext, ChangePasswordActivity::class.java))
         }
     }
 

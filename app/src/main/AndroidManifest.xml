@@ -19,6 +19,9 @@
         android:theme="@style/Theme.FinalProject"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".ChangePasswordActivity"
+            android:exported="true" />
+        <activity
             android:name=".ViewAppointmentDetailActivity"
             android:exported="true" />
         <activity
@@ -67,9 +70,9 @@
             android:name=".MainActivity"
             android:exported="true" />
         <activity
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
             android:name=".SignUpActivity"
-            android:exported="true" />
+            android:exported="true"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <activity
             android:name=".LoginActivity"
             android:exported="true"
