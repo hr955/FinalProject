@@ -12,7 +12,9 @@ class NotificationData(
     @SerializedName("act_user")
     var actUser: UserData,
     @SerializedName("created_at")
-    var createdAt: Date
+    var createdAt: Date,
+    @SerializedName("is_read")
+    var isRead: Boolean
 ) {
 
     fun getFormattedDateTime(): String {

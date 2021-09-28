@@ -7,9 +7,7 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.finalproject.R
-import com.example.finalproject.databinding.FragmentNotificationBinding
 import com.example.finalproject.databinding.ItemNotificationBinding
-import com.example.finalproject.datas.BasicResponse
 import com.example.finalproject.datas.NotificationData
 
 class NotificationAdapter(val mContext: Context, val mList: List<NotificationData>) :
@@ -45,6 +43,10 @@ class NotificationAdapter(val mContext: Context, val mList: List<NotificationDat
             when (item.type) {
                 "약속초대" -> binding.icInviteAppointment.visibility = View.VISIBLE
                 "친구추가요청" -> binding.icRequestFriend.visibility = View.VISIBLE
+            }
+
+            if(!item.isRead){
+                binding.layoutNotificationItem.setBackgroundResource(R.color.lavender_25)
             }
         }
     }

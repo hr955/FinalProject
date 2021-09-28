@@ -140,4 +140,11 @@ interface ServerAPIService {
         @Query("need_all_notis") needAllNotis: String?
     ): Call<BasicResponse>
 
+    // 알림 읽음처리 API
+    @FormUrlEncoded
+    @POST("/notifications")
+    fun postRequestNotiIsRead(
+        @Field("noti_id") appointmentId: Int
+    ): Call<BasicResponse>
+
 }
