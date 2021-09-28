@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">FinalProject</string>
+    <string name="app_name">가보자고</string>
 
     <!-- SignUpActivity -->
     <string name="password_length_warning">비밀번호를 8자 이상 입력해주세요</string>
