@@ -42,7 +42,6 @@ class LoginActivity : BaseActivity() {
     }
 
     override fun setupEvents() {
-        callbackManager = CallbackManager.Factory.create()
 
         loginButtonEvent()
         signUpButtonEvent()
@@ -53,6 +52,9 @@ class LoginActivity : BaseActivity() {
     }
 
     override fun setValues() {
+        // 페이스북 로그인 - 콜백 관련 함수
+        callbackManager = CallbackManager.Factory.create()
+
         //네이버 로그인 모듈 세팅
         mNaverLoginModule = OAuthLogin.getInstance()
         mNaverLoginModule.init(
@@ -110,6 +112,7 @@ class LoginActivity : BaseActivity() {
         }
     }
 
+    // 네이버 로그인 버튼 클릭
     fun naverLoginButtonEvent() {
         binding.btnNaverLogin.setOnClickListener {
             mNaverLoginModule.startOauthLoginActivity(this, object : OAuthLoginHandler() {
@@ -118,10 +121,7 @@ class LoginActivity : BaseActivity() {
                         val accessToken = mNaverLoginModule.getAccessToken(mContext)
                         Thread{
                             val url = "https://openapi.naver.com/v1/nid/me"
-
                             val jsonObj = JSONObject(mNaverLoginModule.requestApi(mContext, accessToken, url))
-                            Log.d("네이버로그인내정보", jsonObj.toString())
-
                             val responseObj = jsonObj.getJSONObject("response")
                             val uid = responseObj.getString("id")
                             val name = responseObj.getString("nickname")
