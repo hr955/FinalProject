@@ -12,6 +12,8 @@ class DataResponse(
     var appointment: AppointmentData,
     @SerializedName("unread_noty_count")
     var unreadNotyCount: Int,
-    var notifications: List<NotificationData>
+    var notifications: List<NotificationData>,
+    @SerializedName("invited_appointments")
+    var invitedAppointments: List<AppointmentData>
 ) {
 }
