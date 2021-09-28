@@ -1,5 +1,6 @@
 package com.example.finalproject.fragments
 
+import android.app.Notification
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -58,7 +59,7 @@ abstract class BaseFragment : Fragment() {
 
         defActionBar.displayOptions = ActionBar.DISPLAY_SHOW_CUSTOM
         defActionBar.setCustomView(R.layout.my_custom_action_bar)
-        defActionBar.elevation = 0F
+        //defActionBar.elevation = 0F
 
         txtTitle = defActionBar.customView.findViewById(R.id.txt_title)
         btnAdd = defActionBar.customView.findViewById(R.id.btn_add)
