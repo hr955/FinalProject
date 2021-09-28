@@ -21,13 +21,13 @@ class ContextUtil {
             return pref.getString(TOKEN, "")!!
         }
 
-        // 토큰 저장 함수
+        // 준비시간 저장 함수
         fun setMyReadyMinute(context: Context, minute: Int) {
             val pref = context.getSharedPreferences(prefName, Context.MODE_PRIVATE)
             pref.edit().putInt(MY_READY_MINUTE, minute).apply()
         }
 
-        // 저장된 토큰 읽어오는 함수
+        // 준비시간 읽어오는 함수
         fun getMyReadyMinute(context: Context): Int {
             val pref = context.getSharedPreferences(prefName, Context.MODE_PRIVATE)
             return pref.getInt(MY_READY_MINUTE, 0)!!
