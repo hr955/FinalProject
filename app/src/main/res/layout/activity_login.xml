@@ -10,6 +10,16 @@
         android:padding="30dp">
 
         <TextView
+            android:id="@+id/btn_naver_login"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="네이버 로그인"
+            android:background="@color/yellow"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
             android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
