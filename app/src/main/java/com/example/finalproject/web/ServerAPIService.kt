@@ -153,4 +153,10 @@ interface ServerAPIService {
         @Query("appointment_id") appointmentId: Int
     ): Call<BasicResponse>
 
+    // 약속 삭제 API
+    @DELETE("/user/place")
+    fun deleteRequestMyPlace(
+        @Query("place_id") placeId: Int
+    ): Call<BasicResponse>
+
 }

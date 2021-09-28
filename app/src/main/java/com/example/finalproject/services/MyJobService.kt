@@ -98,7 +98,6 @@ class MyJobService : JobService() {
     }
 
     fun setAlarmByMillisecond(timeInMillis: Long) {
-        Log.d("테스트", "테스트")
         val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
         val myIntent = Intent(this, AlarmReceiver::class.java)
         val pendingIntent = PendingIntent.getBroadcast(
