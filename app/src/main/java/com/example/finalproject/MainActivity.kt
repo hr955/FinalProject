@@ -1,23 +1,13 @@
 package com.example.finalproject
 
-import android.content.Context
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.widget.TextView
 import android.widget.Toast
-import androidx.annotation.IdRes
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import com.example.finalproject.databinding.ActivityMainBinding
-import com.example.finalproject.datas.BasicResponse
 import com.example.finalproject.fragments.*
 import com.example.finalproject.utils.GlobalData
-import com.google.android.material.bottomnavigation.BottomNavigationItemView
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 
 class MainActivity : BaseActivity() {

@@ -2,6 +2,7 @@ package com.example.finalproject.adapters
 
 import android.content.Context
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -27,14 +28,24 @@ class NotificationAdapter(val mContext: Context, val mList: List<NotificationDat
 
     override fun onBindViewHolder(holder: NotificationAdapterViewHolder, position: Int) {
         holder.onBind(mList[position])
+        if (position == mList.size - 1) holder.viewDivisionLine.visibility = View.INVISIBLE
     }
 
     override fun getItemCount(): Int = mList.size
 
     class NotificationAdapterViewHolder(private val binding: ItemNotificationBinding) :
         RecyclerView.ViewHolder(binding.root) {
+        val viewDivisionLine = binding.viewDivisionLine
+
         fun onBind(item: NotificationData) {
             binding.txtNotificationMessage.text = item.message
+            binding.txtNotificationTitle.text = item.title
+            binding.txtNotificationUserDate.text = "${item.actUser.nickname} · ${item.createdAt}"
+
+            when (item.type) {
+                "약속초대" -> binding.icInviteAppointment.visibility = View.VISIBLE
+                "친구추가요청" -> binding.icRequestFriend.visibility = View.VISIBLE
+            }
         }
     }
 }

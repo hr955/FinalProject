@@ -8,7 +8,7 @@
         android:id="@+id/txt_noti_count"
         android:layout_width="15dp"
         android:layout_height="15dp"
-        android:background="@drawable/notification_badge_background"
+        android:background="@drawable/background_purple_oval"
         android:gravity="center"
         android:text="5"
         android:textColor="@color/white"
