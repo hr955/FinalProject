@@ -13,8 +13,6 @@ import com.example.finalproject.utils.GlobalData
 import com.facebook.*
 import com.facebook.login.LoginManager
 import com.kakao.sdk.user.UserApiClient
-import com.nhn.android.naverlogin.OAuthLogin
-import com.nhn.android.naverlogin.OAuthLoginHandler
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
@@ -25,7 +23,6 @@ class LoginActivity : BaseActivity() {
 
     lateinit var binding: ActivityLoginBinding
     lateinit var callbackManager: CallbackManager
-    lateinit var mNaverLoginModule: OAuthLogin
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,39 +39,28 @@ class LoginActivity : BaseActivity() {
     }
 
     override fun setupEvents() {
+        callbackManager = CallbackManager.Factory.create()
 
         loginButtonEvent()
         signUpButtonEvent()
-        naverLoginButtonEvent()
         kakaoLoginButtonEvent()
         facebookLoginButtonEvent()
 
     }
 
     override fun setValues() {
-        // 페이스북 로그인 - 콜백 관련 함수
-        callbackManager = CallbackManager.Factory.create()
-
-        //네이버 로그인 모듈 세팅
-        mNaverLoginModule = OAuthLogin.getInstance()
-        mNaverLoginModule.init(
-            mContext,
-            getString(R.string.naver_login_client_id),
-            getString(R.string.naver_client_secret),
-            getString(R.string.naver_client_name)
-        )
     }
 
     //로그인 버튼 클릭
     fun loginButtonEvent() {
         binding.btnLogin.setOnClickListener {
-            if (binding.edtEmail.text.isEmpty()) {
+            if(binding.edtEmail.text.isEmpty()){
                 Toast.makeText(mContext, "아이디를 입력해주세요", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            if (binding.edtPassword.text.isEmpty()) {
-                Toast.makeText(mContext, "비밀번호를 입력해주세요", Toast.LENGTH_SHORT).show()
+            if(binding.edtPassword.text.isEmpty()){
+                Toast.makeText(mContext,"비밀번호를 입력해주세요", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
@@ -95,64 +81,21 @@ class LoginActivity : BaseActivity() {
                         startActivity(Intent(mContext, MainActivity::class.java))
                     } else {
                         val jsonObj = JSONObject(response.errorBody()!!.string())
-                        Toast.makeText(mContext, jsonObj.getString("message"), Toast.LENGTH_SHORT)
-                            .show()
+                        Toast.makeText(mContext, jsonObj.getString("message"), Toast.LENGTH_SHORT).show()
                     }
                 }
 
-                override fun onFailure(call: Call<BasicResponse>, t: Throwable) {}
+                override fun onFailure(call: Call<BasicResponse>, t: Throwable) { }
             })
         }
     }
 
     // 회원가입 버튼 클릭
-    fun signUpButtonEvent() {
+    fun signUpButtonEvent(){
         binding.btnSignUp.setOnClickListener {
             startActivity(Intent(mContext, SignUpActivity::class.java))
         }
-    }
 
-    // 네이버 로그인 버튼 클릭
-    fun naverLoginButtonEvent() {
-        binding.btnNaverLogin.setOnClickListener {
-            mNaverLoginModule.startOauthLoginActivity(this, object : OAuthLoginHandler() {
-                override fun run(success: Boolean) {
-                    if (success) {
-                        val accessToken = mNaverLoginModule.getAccessToken(mContext)
-                        Thread{
-                            val url = "https://openapi.naver.com/v1/nid/me"
-                            val jsonObj = JSONObject(mNaverLoginModule.requestApi(mContext, accessToken, url))
-                            val responseObj = jsonObj.getJSONObject("response")
-                            val uid = responseObj.getString("id")
-                            val name = responseObj.getString("nickname")
-
-                            apiService.postRequestSocialLogin(
-                                "naver",
-                                uid,
-                                name
-                            ).enqueue(object : retrofit2.Callback<BasicResponse>{
-                                override fun onResponse(
-                                    call: Call<BasicResponse>,
-                                    response: Response<BasicResponse>
-                                ) {
-                                    val responseBody = response.body()!!.data
-
-                                    ContextUtil.setToken(mContext, responseBody.token)
-                                    GlobalData.loginUser = responseBody.user
-                                    finish()
-                                    startActivity(Intent(mContext, MainActivity::class.java))
-                                }
-
-                                override fun onFailure(call: Call<BasicResponse>, t: Throwable) {
-                                }
-                            })
-                        }.start()
-                    } else {
-                        Toast.makeText(mContext, "네이버 로그인에 실패했습니다", Toast.LENGTH_SHORT).show()
-                    }
-                }
-            })
-        }
     }
 
     // 카카오 로그인 버튼 클릭
@@ -180,10 +123,7 @@ class LoginActivity : BaseActivity() {
                                 user.id.toString(),
                                 user.kakaoAccount?.profile?.nickname!!
                             ).enqueue(object : Callback<BasicResponse> {
-                                override fun onResponse(
-                                    call: Call<BasicResponse>,
-                                    response: Response<BasicResponse>
-                                ) {
+                                override fun onResponse(call: Call<BasicResponse>, response: Response<BasicResponse>) {
                                     val responseBody = response.body()!!.data
 
                                     ContextUtil.setToken(mContext, responseBody.token)
@@ -203,7 +143,7 @@ class LoginActivity : BaseActivity() {
     }
 
     // 페이스북 로그인 버튼 클릭
-    fun facebookLoginButtonEvent() {
+    fun facebookLoginButtonEvent(){
         binding.btnFacebookLogin.setOnClickListener {
             val loginManager = LoginManager.getInstance()
 
@@ -217,41 +157,23 @@ class LoginActivity : BaseActivity() {
                         // 유저 정보 받아오기
                         val graphRequest = GraphRequest.newMeRequest(result?.accessToken,
                             object : GraphRequest.GraphJSONObjectCallback {
-                                override fun onCompleted(
-                                    obj: JSONObject?,
-                                    response: GraphResponse?
-                                ) {
+                                override fun onCompleted(obj: JSONObject?, response: GraphResponse?) {
                                     val name = obj!!.getString("name")
                                     val id = obj!!.getString("id")
 
                                     apiService.postRequestSocialLogin("facebook", id, name)
                                         .enqueue(object : Callback<BasicResponse> {
-                                            override fun onResponse(
-                                                call: Call<BasicResponse>,
-                                                response: Response<BasicResponse>
-                                            ) {
+                                            override fun onResponse(call: Call<BasicResponse>, response: Response<BasicResponse>) {
                                                 val responseBody = response.body()!!.data
 
-                                                Toast.makeText(
-                                                    mContext,
-                                                    responseBody.user.nickname,
-                                                    Toast.LENGTH_SHORT
-                                                ).show()
+                                                Toast.makeText(mContext, responseBody.user.nickname, Toast.LENGTH_SHORT).show()
                                                 ContextUtil.setToken(mContext, responseBody.token)
                                                 GlobalData.loginUser = responseBody.user
                                                 finish()
-                                                startActivity(
-                                                    Intent(
-                                                        mContext,
-                                                        MainActivity::class.java
-                                                    )
-                                                )
+                                                startActivity(Intent(mContext, MainActivity::class.java))
                                             }
 
-                                            override fun onFailure(
-                                                call: Call<BasicResponse>,
-                                                t: Throwable
-                                            ) {
+                                            override fun onFailure(call: Call<BasicResponse>, t: Throwable) {
                                             }
                                         })
                                 }
@@ -259,9 +181,9 @@ class LoginActivity : BaseActivity() {
                         graphRequest.executeAsync()
                     }
 
-                    override fun onCancel() {}
+                    override fun onCancel() { }
 
-                    override fun onError(error: FacebookException?) {}
+                    override fun onError(error: FacebookException?) { }
                 }
             )
         }

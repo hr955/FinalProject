@@ -11,9 +11,8 @@
     <color name="main_purple">#6950E2</color>
     <color name="lavender">#DBD8ED</color>
     <color name="lavender_25">#40DBD8ED</color>
-    <color name="kakao_color">#FEE500</color>
-    <color name="facebook_color">#1877F2</color>
-    <color name="naver_color">#03C75A</color>
+    <color name="kakao_button">#FEE500</color>
+    <color name="facebook_button">#1877F2</color>
     <color name="grey">#E8E9EC</color>
     <color name="red">#FF0000</color>
     <color name="text_purple">#030640</color>
