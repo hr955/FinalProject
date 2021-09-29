@@ -161,12 +161,17 @@ interface ServerAPIService {
     ): Call<BasicResponse>
 
     // 비밀번호 변경 API
-    // 회원 정보 수정
     @FormUrlEncoded
     @PATCH("/user/password")
     fun patchRequestChangePassword(
         @Field("current_password") currentPassword: String,
         @Field("new_password") newPassword: String
+    ): Call<BasicResponse>
+
+    // 탈퇴 API
+    @DELETE("/user")
+    fun deleteRequestLeaveApp(
+        @Query("text") acceptStr: String
     ): Call<BasicResponse>
 
 }

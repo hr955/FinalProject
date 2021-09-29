@@ -57,6 +57,7 @@ class SettingFragment : BaseFragment() {
     override fun setupEvents() {
         profileImageChangeButtonClickEvent()
         logoutButtonClickEvent()
+        leaveAppButtonClickEvent()
 
         // 닉네임 변경
         binding.btnEditNickname.setOnClickListener {
@@ -83,6 +84,23 @@ class SettingFragment : BaseFragment() {
         txtTitle.text = "설정"
 
         setUserInfo()
+    }
+
+    fun leaveAppButtonClickEvent() {
+        binding.layoutLeaveApp.setOnClickListener {
+            apiService.deleteRequestLeaveApp("동의").enqueue(object: Callback<BasicResponse>{
+                override fun onResponse(
+                    call: Call<BasicResponse>,
+                    response: Response<BasicResponse>
+                ) {
+                    if(response.isSuccessful){
+                        Toast.makeText(mContext, "탈퇴완료", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                override fun onFailure(call: Call<BasicResponse>, t: Throwable) {
+                }
+            })
+        }
     }
 
     // 로그아웃 버튼
