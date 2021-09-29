@@ -12,8 +12,9 @@ interface ServerAPIService {
     fun putRequestSingUp(
         @Field("email") email: String,
         @Field("password") pw: String,
-        @Field("nick_name") nickname: String
-    ): Call<BasicResponse>
+        @Field("nick_name") nickname: String,
+        @Field("app_maker") appMaker: String
+        ): Call<BasicResponse>
 
     // 로그인 API
     @FormUrlEncoded

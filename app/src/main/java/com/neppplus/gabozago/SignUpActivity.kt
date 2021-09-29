@@ -240,7 +240,8 @@ class SignUpActivity : BaseActivity() {
         apiService.putRequestSingUp(
             binding.edtEmail.text.toString(),
             binding.edtPassword.text.toString(),
-            binding.edtNickname.text.toString()
+            binding.edtNickname.text.toString(),
+            "가보자고"
         ).enqueue(object : Callback<BasicResponse> {
             override fun onResponse(
                 call: Call<BasicResponse>,
