@@ -7,7 +7,7 @@ android {
     compileSdk 30
 
     defaultConfig {
-        applicationId "com.example.finalproject"
+        applicationId "com.neppplus.gabozago"
         minSdk 21
         targetSdk 30
         versionCode 2
