@@ -16,3 +16,4 @@ local.properties
 
 # App_Key
 app/src/main/res/values/app_keys.xml
+private_key.pepk

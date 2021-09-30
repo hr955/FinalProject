@@ -15,6 +15,9 @@ import com.facebook.login.LoginManager
 import com.kakao.sdk.user.UserApiClient
 import com.nhn.android.naverlogin.OAuthLogin
 import com.nhn.android.naverlogin.OAuthLoginHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
@@ -117,7 +120,14 @@ class LoginActivity : BaseActivity() {
                 override fun run(success: Boolean) {
                     if (success) {
                         val accessToken = mNaverLoginModule.getAccessToken(mContext)
-                        Thread{
+
+                        // 코루틴으로 백그라운드 작업
+                        // 코루틴 -> 실행할 코드를 scope { }에 정의
+                        // Dispatcher -> UI 스레드(Main) or 백그라운드(Default) or 다운로드/업로드(IO)
+
+                        val scope = CoroutineScope(Dispatchers.Default)
+                        scope.launch {
+                            // 쓰레드 대신, 코루틴 사용 예시
                             val url = "https://openapi.naver.com/v1/nid/me"
 
                             val jsonObj = JSONObject(mNaverLoginModule.requestApi(mContext, accessToken, url))
@@ -147,7 +157,7 @@ class LoginActivity : BaseActivity() {
                                 override fun onFailure(call: Call<BasicResponse>, t: Throwable) {
                                 }
                             })
-                        }.start()
+                        }
                     } else {
                         Toast.makeText(mContext, "네이버 로그인에 실패했습니다", Toast.LENGTH_SHORT).show()
                     }
