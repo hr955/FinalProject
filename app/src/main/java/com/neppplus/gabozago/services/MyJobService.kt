@@ -64,13 +64,10 @@ class MyJobService : JobService() {
                                     val hour = totalTime / 60
                                     val minute = totalTime % 60
 
-                                    val now = Calendar.getInstance()
-                                    appointmentData.datetime.time += now.timeZone.rawOffset
                                     val alarmTime =
                                         appointmentData.datetime.time - totalTime * 60 * 1000 - ContextUtil.getMyReadyMinute(applicationContext) * 60 * 1000
 
                                     setAlarmByMillisecond(alarmTime)
-
                                 }
 
                                 override fun onError(p0: Int, p1: String?, p2: API?) {}
