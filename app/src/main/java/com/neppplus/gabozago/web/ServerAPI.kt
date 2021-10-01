@@ -11,7 +11,7 @@ import java.util.*
 
 class ServerAPI {
     companion object {
-        private val HOST_URL = "http://3.36.146.152"
+        private val HOST_URL = "https://keepthetime.xyz/api/docs/"
 
         private var retrofit: Retrofit? = null
 
