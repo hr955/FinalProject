@@ -14,6 +14,12 @@
     <color name="text_purple">#030640</color>
     <color name="lavender">#DBD8ED</color>
     <color name="lavender_25">#40DBD8ED</color>
+    <color name="mint">#CDF3E2</color>
+    <color name="mint_25">#40CDF3E2</color>
+    <color name="pink">#FACAE1</color>
+    <color name="pink_25">#40FACAE1</color>
+    <color name="beige">#F3C499</color>
+    <color name="beige_25">#40F3C499</color>
 
     <color name="grey">#E8E9EC</color>
     <color name="action_bar_title">#414043</color>

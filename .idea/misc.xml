@@ -3,8 +3,13 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/drawable/background_beige_round_square.xml" value="0.17395833333333333" />
+        <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/drawable/background_grey_square.xml" value="0.27076923076923076" />
         <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/drawable/background_lavendar_round_square.xml" value="0.27076923076923076" />
+        <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/drawable/background_lavender_round_square.xml" value="0.17395833333333333" />
         <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/drawable/background_login_naver_button.xml" value="0.27076923076923076" />
+        <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/drawable/background_mint_round_square.xml" value="0.17395833333333333" />
+        <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/drawable/background_pink_round_square.xml" value="0.17395833333333333" />
         <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/drawable/background_profile_image_change.xml" value="0.275" />
         <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/drawable/background_purple_oval.xml" value="0.27076923076923076" />
         <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/drawable/background_request_friend.xml" value="0.275" />
