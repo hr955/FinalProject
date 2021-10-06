@@ -48,14 +48,14 @@ class MainFragment : BaseFragment() {
     }
 
     override fun setupEvents() {
-        btnAdd.setOnClickListener {
-            startActivity(Intent(mContext, EditAppointmentActivity::class.java))
-        }
+//        btnAdd.setOnClickListener {
+//            startActivity(Intent(mContext, EditAppointmentActivity::class.java))
+//        }
     }
 
     override fun setValues() {
-        txtTitle.text = "내 약속"
-        btnAdd.visibility = View.VISIBLE
+//        txtTitle.text = "내 약속"
+//        btnAdd.visibility = View.VISIBLE
 
         mAdapter = AppointmentListAdapter(mContext, mAppointmentList)
 

@@ -24,8 +24,6 @@ class ChangePasswordActivity : BaseActivity() {
     }
 
     override fun setupEvents() {
-        btnClose.setOnClickListener { finish() }
-
         binding.btnChangePassword.setOnClickListener {
             val currentPW = binding.edtCurrentPassword.text.toString()
             val newPW = binding.edtNewPassword.text.toString()
@@ -67,7 +65,6 @@ class ChangePasswordActivity : BaseActivity() {
     }
 
     override fun setValues() {
-        txtTitle.text = "비밀번호 변경"
-        btnClose.visibility = View.VISIBLE
+
     }
 }

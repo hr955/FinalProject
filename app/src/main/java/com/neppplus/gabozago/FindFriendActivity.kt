@@ -37,8 +37,6 @@ class FindFriendActivity : BaseActivity() {
     }
 
     override fun setValues() {
-        txtTitle.text = "친구 검색"
-
         mAdapterFind = FindFriendListAdapter(mContext, mUserSearchList)
 
         binding.rvFindList.apply {

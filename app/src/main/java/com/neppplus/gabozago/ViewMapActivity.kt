@@ -38,8 +38,6 @@ class ViewMapActivity : BaseActivity() {
     }
 
     override fun setValues() {
-        txtTitle.text = "약속장소 확인"
-
         mAppointmentData = intent.getSerializableExtra("AppointmentData") as AppointmentData
 
         drawMarkerAndPath()

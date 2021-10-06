@@ -45,8 +45,6 @@ class NotificationFragment : BaseFragment() {
     }
 
     override fun setValues() {
-        txtTitle.text = "알림"
-
         // 알림 목록 불러오기
         apiService.getRequestNotificationList("true").enqueue(object: Callback<BasicResponse>{
             override fun onResponse(call: Call<BasicResponse>, response: Response<BasicResponse>) {

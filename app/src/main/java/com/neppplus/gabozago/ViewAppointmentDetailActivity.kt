@@ -187,8 +187,6 @@ class ViewAppointmentDetailActivity : BaseActivity() {
     }
 
     override fun setValues() {
-        txtTitle.text = "약속 상세"
-
         mAppointmentData = intent.getSerializableExtra("AppointmentData") as AppointmentData
 
         binding.txtTitle.text = mAppointmentData.title

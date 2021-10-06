@@ -67,15 +67,9 @@ class RequestedFriendListFragment : BaseFragment() {
     }
 
     override fun setupEvents() {
-        btnFindFriend.setOnClickListener {
-            startActivity(Intent(mContext, FindFriendActivity::class.java))
-        }
     }
 
     override fun setValues() {
-        txtTitle.text = "친구"
-        btnFindFriend.visibility = View.VISIBLE
-
         mAdapter = RequestedFriendListAdapter(mContext, mFriendRequestList)
         binding.rvRequestedFriendList.apply {
             adapter = mAdapter

@@ -95,7 +95,6 @@ class MySettingActivity : BaseActivity() {
     }
 
     override fun setValues() {
-        txtTitle.text = "프로필"
         Log.d("프로바이더", GlobalData.loginUser!!.provider)
 
         binding.ivLoginSocialLogo.apply {

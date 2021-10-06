@@ -22,9 +22,6 @@ abstract class BaseFragment : Fragment() {
     private lateinit var retrofit: Retrofit
     lateinit var apiService: ServerAPIService
 
-    lateinit var txtTitle: TextView
-    lateinit var btnAdd: ImageView
-    lateinit var btnFindFriend: ImageView
 
     // 뷰가 그려지는 시기
     override fun onCreateView(
@@ -32,9 +29,6 @@ abstract class BaseFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
-        setCustomActionBar()
-
         return super.onCreateView(inflater, container, savedInstanceState)
     }
 
@@ -46,22 +40,9 @@ abstract class BaseFragment : Fragment() {
         retrofit = ServerAPI.getRetrofit(mContext)
         apiService = retrofit.create(ServerAPIService::class.java)
 
-        setCustomActionBar()
-
     }
 
     abstract fun setupEvents()
     abstract fun setValues()
 
-    private fun setCustomActionBar() {
-        val defActionBar = (requireActivity() as AppCompatActivity).supportActionBar!!
-
-        defActionBar.displayOptions = ActionBar.DISPLAY_SHOW_CUSTOM
-        defActionBar.setCustomView(R.layout.my_custom_action_bar)
-        //defActionBar.elevation = 0F
-
-        txtTitle = defActionBar.customView.findViewById(R.id.txt_title)
-        btnAdd = defActionBar.customView.findViewById(R.id.btn_add)
-        btnFindFriend = defActionBar.customView.findViewById(R.id.btn_find_friend)
-    }
 }

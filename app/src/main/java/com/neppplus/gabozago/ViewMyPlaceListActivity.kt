@@ -33,15 +33,10 @@ class ViewMyPlaceListActivity : com.neppplus.gabozago.BaseActivity() {
     }
 
     override fun setupEvents() {
-        btnAdd.setOnClickListener {
-            startActivity(Intent(mContext, EditMyPlaceActivity::class.java))
-        }
+
     }
 
     override fun setValues() {
-        txtTitle.text = "출발지 목록"
-        btnAdd.visibility = View.VISIBLE
-
         mPlaceAdapter = MyPlaceListAdapter(mContext, mMyPlaceList)
         binding.rvMyPlaceList.apply {
             adapter = mPlaceAdapter

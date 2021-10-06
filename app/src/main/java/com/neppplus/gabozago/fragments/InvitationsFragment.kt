@@ -42,8 +42,6 @@ class InvitationsFragment : BaseFragment() {
     }
 
     override fun setValues() {
-        txtTitle.text = "초대받은 약속"
-
         apiService.getRequestAppointmentList().enqueue(object : Callback<BasicResponse> {
             override fun onResponse(call: Call<BasicResponse>, response: Response<BasicResponse>) {
                 if (response.isSuccessful) {

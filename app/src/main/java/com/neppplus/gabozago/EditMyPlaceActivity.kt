@@ -53,8 +53,6 @@ class EditMyPlaceActivity : BaseActivity() {
     }
 
     override fun setValues() {
-        txtTitle.text = "출발지 선택"
-
         val fm = supportFragmentManager
         val mapFragment = fm.findFragmentById(R.id.fragment_naver_map) as MapFragment?
             ?: MapFragment.newInstance().also {

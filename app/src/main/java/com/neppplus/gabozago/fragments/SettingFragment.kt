@@ -81,8 +81,6 @@ class SettingFragment : BaseFragment() {
     }
 
     override fun setValues() {
-        txtTitle.text = "설정"
-
         setUserInfo()
     }
 
