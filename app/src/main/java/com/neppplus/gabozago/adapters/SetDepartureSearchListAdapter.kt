@@ -8,9 +8,10 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.neppplus.gabozago.R
 import com.neppplus.gabozago.databinding.ItemSetDepartureSearchListBinding
+import com.neppplus.gabozago.datas.Documents
 import com.neppplus.gabozago.datas.SearchPlaceData
 
-class SetDepartureSearchListAdapter(val mList: List<SearchPlaceData>) :
+class SetDepartureSearchListAdapter(val mList: SearchPlaceData) :
     RecyclerView.Adapter<SetDepartureSearchListAdapter.ViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder = ViewHolder(
         DataBindingUtil.inflate(
@@ -22,18 +23,18 @@ class SetDepartureSearchListAdapter(val mList: List<SearchPlaceData>) :
     )
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.onBind(mList[position])
+        holder.onBind(mList.documents[position])
 
-        if (position == mList.size - 1) holder.viewDivisionLine.visibility = View.GONE
+        if (position == mList.documents.size - 1) holder.viewDivisionLine.visibility = View.GONE
     }
 
-    override fun getItemCount(): Int = mList.size
+    override fun getItemCount(): Int = mList.documents.size
 
     class ViewHolder(private val binding: ItemSetDepartureSearchListBinding) :
         RecyclerView.ViewHolder(binding.root) {
         val viewDivisionLine = binding.viewDivisionLine
 
-        fun onBind(item: SearchPlaceData) {
+        fun onBind(item: Documents) {
             binding.txtPlaceName.text = item.placeName
             binding.txtPlaceAddress.text = item.addressName
 

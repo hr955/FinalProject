@@ -1,24 +1,19 @@
 package com.neppplus.gabozago
 
 import android.os.Bundle
-import android.util.Log
-import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.neppplus.gabozago.adapters.SetDepartureMyPlaceListAdapter
 import com.neppplus.gabozago.adapters.SetDepartureSearchListAdapter
 import com.neppplus.gabozago.databinding.ActivitySetDepartureBinding
 import com.neppplus.gabozago.datas.BasicResponse
-import com.neppplus.gabozago.datas.PlaceData
 import com.neppplus.gabozago.datas.SearchPlaceData
-import okhttp3.HttpUrl
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import org.json.JSONObject
+import com.neppplus.gabozago.web.KakaoAPIService
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.io.IOException
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 class SetDepartureActivity : BaseActivity() {
 
@@ -33,7 +28,13 @@ class SetDepartureActivity : BaseActivity() {
     }
 
     override fun setupEvents() {
-        searchDeparture()
+        getPlaceSearchList { response ->
+            binding.rvDepartureSearchList.apply {
+                adapter = SetDepartureSearchListAdapter(response)
+                layoutManager =
+                    LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false)
+            }
+        }
     }
 
     override fun setValues() {
@@ -60,57 +61,28 @@ class SetDepartureActivity : BaseActivity() {
     }
 
     // 출발지 키워드 검색
-    private fun searchDeparture() {
+    private fun getPlaceSearchList(success: (response: SearchPlaceData) -> Unit) {
         binding.ivSearchDeparture.setOnClickListener {
             val inputPlaceName = binding.edtSearchDeparture.text.toString()
 
-            if (inputPlaceName.length < 2) {
-                Toast.makeText(mContext, "검색어는 2자 이상 입력해주세요", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            val url =
-                HttpUrl.parse("https://dapi.kakao.com/v2/local/search/keyword.json")!!.newBuilder()
-            url.addQueryParameter("query", inputPlaceName)
-
-            val urlString = url.toString()
-
-            val request = Request.Builder()
-                .url(urlString)
-                .get()
-                .header("Authorization", getString(R.string.kakao_rest_api_key))
+            val retrofit = Retrofit.Builder()
+                .baseUrl("https://dapi.kakao.com/")
+                .addConverterFactory(GsonConverterFactory.create())
                 .build()
+            val service = retrofit.create(KakaoAPIService::class.java)
+                .getRequestSearchPlace(getString(R.string.kakao_rest_api_key), inputPlaceName)
 
-            val client = OkHttpClient()
-            client.newCall(request).enqueue(object : okhttp3.Callback {
-                override fun onFailure(call: okhttp3.Call, e: IOException) {
+            service.enqueue(object : Callback<SearchPlaceData>{
+                override fun onResponse(
+                    call: Call<SearchPlaceData>,
+                    response: Response<SearchPlaceData>
+                ) {
+                    if(response.isSuccessful){
+                        success(response.body()!!)
+                    }
                 }
 
-                override fun onResponse(call: okhttp3.Call, response: okhttp3.Response) {
-                    val jsonObj = JSONObject(response.body()!!.string())
-
-                    val documentsArr = jsonObj.getJSONArray("documents")
-
-                    val searchPlaceList = ArrayList<SearchPlaceData>()
-
-                    Log.d("searchPlaceList", documentsArr.length().toString())
-
-                    for (i in 0 until documentsArr.length()) {
-                        val docu = documentsArr.getJSONObject(i)
-                        val addressName = docu.getString("address_name")
-                        val placeName = docu.getString("place_name")
-                        val lat = docu.getString("y").toDouble()
-                        val lng = docu.getString("x").toDouble()
-
-                        searchPlaceList.add(SearchPlaceData(addressName, placeName, lat, lng))
-                    }
-
-                    runOnUiThread {
-                        binding.rvDepartureSearchList.apply {
-                            adapter = SetDepartureSearchListAdapter(searchPlaceList)
-                            layoutManager = LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false)
-                        }
-                    }
+                override fun onFailure(call: Call<SearchPlaceData>, t: Throwable) {
                 }
             })
         }
