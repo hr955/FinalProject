@@ -7,79 +7,76 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.databinding.DataBindingUtil
+import com.bumptech.glide.Glide
 import com.neppplus.gabozago.R
+import com.neppplus.gabozago.databinding.ItemSpinnerFriendListBinding
 import com.neppplus.gabozago.datas.UserData
 
 class AddFriendSpinnerAdapter(
     val mContext: Context,
     resId: Int,
-    val mList: List<UserData>
+    private val mList: List<UserData>
 ) : ArrayAdapter<UserData>(mContext, resId, mList) {
 
-    val mInflater = LayoutInflater.from(mContext)
-
+    lateinit var binding: ItemSpinnerFriendListBinding
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        var row = convertView
-
-        if (row == null) {
-            row = mInflater.inflate(R.layout.item_friend_list, null)
-        }
-        row!!
-
+        binding = DataBindingUtil.inflate(
+            mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater,
+            R.layout.item_spinner_friend_list,
+            parent,
+            false
+        )
         val data = mList[position]
 
-        val txtFriendNickname = row.findViewById<TextView>(R.id.txt_friend_nickname)
-        val ivProvider = row.findViewById<ImageView>(R.id.iv_provider)
+        binding.txtNickname.text = data.nickname
+        Glide.with(mContext).load(data.profileImgURL).into(binding.ivProfileImage)
 
-        txtFriendNickname.text = data.nickname
+//        ivProvider.apply {
+//            when (data.provider) {
+//                "facebook" -> {
+//                    setImageResource(R.drawable.ic_facebook_logo_color)
+//                    visibility = View.VISIBLE
+//                }
+//                "kakao" -> {
+//                    setImageResource(R.drawable.ic_kakao_logo)
+//                    visibility = View.VISIBLE
+//                }
+//                else -> visibility = View.GONE
+//            }
+//        }
 
-        ivProvider.apply {
-            when (data.provider) {
-                "facebook" -> {
-                    setImageResource(R.drawable.ic_facebook_logo_color)
-                    visibility = View.VISIBLE
-                }
-                "kakao" -> {
-                    setImageResource(R.drawable.ic_kakao_logo)
-                    visibility = View.VISIBLE
-                }
-                else -> visibility = View.GONE
-            }
-        }
-
-        return row
+        return binding.root
     }
 
     override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
-        var row = convertView
-
-        if (row == null) {
-            row = mInflater.inflate(R.layout.item_friend_list, null)
-        }
-        row!!
+        binding = DataBindingUtil.inflate(
+            mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater,
+            R.layout.item_spinner_friend_list,
+            parent,
+            false
+        )
 
         val data = mList[position]
 
-        val txtFriendNickname = row.findViewById<TextView>(R.id.txt_friend_nickname)
-        val ivProvider = row.findViewById<ImageView>(R.id.iv_provider)
+        binding.txtNickname.text = data.nickname
+        Glide.with(mContext).load(data.profileImgURL).into(binding.ivProfileImage)
+//
+//        ivProvider.apply {
+//            when (data.provider) {
+//                "facebook" -> {
+//                    setImageResource(R.drawable.ic_facebook_logo_color)
+//                    visibility = View.VISIBLE
+//                }
+//                "kakao" -> {
+//                    setImageResource(R.drawable.ic_kakao_logo)
+//                    visibility = View.VISIBLE
+//                }
+//                else -> visibility = View.GONE
+//            }
+//        }
 
-        ivProvider.apply {
-            when (data.provider) {
-                "facebook" -> {
-                    setImageResource(R.drawable.ic_facebook_logo_color)
-                    visibility = View.VISIBLE
-                }
-                "kakao" -> {
-                    setImageResource(R.drawable.ic_kakao_logo)
-                    visibility = View.VISIBLE
-                }
-                else -> visibility = View.GONE
-            }
-        }
-
-        txtFriendNickname.text = data.nickname
-
-        return row
+        return binding.root
     }
 }

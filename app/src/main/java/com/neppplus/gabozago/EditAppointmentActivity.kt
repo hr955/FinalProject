@@ -2,45 +2,36 @@ package com.neppplus.gabozago
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
-import android.app.job.JobInfo
-import android.app.job.JobScheduler
-import android.content.ComponentName
+import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.view.View
-import android.widget.AdapterView
+import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat
+import androidx.core.view.marginLeft
 import androidx.core.view.setPadding
 import androidx.databinding.DataBindingUtil
+import com.naver.maps.map.*
+import com.naver.maps.map.overlay.InfoWindow
+import com.naver.maps.map.overlay.Marker
+import com.naver.maps.map.overlay.PathOverlay
 import com.neppplus.gabozago.adapters.AddFriendSpinnerAdapter
 import com.neppplus.gabozago.adapters.StartPlaceAdapter
 import com.neppplus.gabozago.databinding.ActivityEditAppointmentBinding
 import com.neppplus.gabozago.datas.BasicResponse
 import com.neppplus.gabozago.datas.PlaceData
 import com.neppplus.gabozago.datas.UserData
-import com.neppplus.gabozago.services.MyJobService
 import com.neppplus.gabozago.utils.SizeUtil
-import com.naver.maps.geometry.LatLng
-import com.naver.maps.map.*
-import com.naver.maps.map.overlay.InfoWindow
-import com.naver.maps.map.overlay.Marker
-import com.naver.maps.map.overlay.OverlayImage
-import com.naver.maps.map.overlay.PathOverlay
-import com.odsay.odsayandroidsdk.API
-import com.odsay.odsayandroidsdk.ODsayData
-import com.odsay.odsayandroidsdk.ODsayService
-import com.odsay.odsayandroidsdk.OnResultCallbackListener
-import okhttp3.HttpUrl
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
-import java.util.concurrent.TimeUnit
+import kotlin.collections.ArrayList
 
 class EditAppointmentActivity : BaseActivity() {
 
@@ -76,6 +67,134 @@ class EditAppointmentActivity : BaseActivity() {
     }
 
     override fun setupEvents() {
+        binding.btnClose.setOnClickListener {
+            finish()
+        }
+
+        dateSelectButtonClickEvent()
+        timeSelectButtonClickEvent()
+        addFriendButtonClickEvent()
+
+//        dateSelectButtonClickEvent()
+//        saveButtonClickEvent()
+    }
+
+    override fun setValues() {
+//        setNaverMap()
+//        getMyPlaceListFromServer()
+        getMyFriendListFromServer()
+//
+//        mStartPlaceSpinnerAdapter =
+//            StartPlaceAdapter(mContext, R.layout.item_my_place_list, mStartPlaceList)
+//        binding.spinnerStartPlace.adapter = mStartPlaceSpinnerAdapter
+//
+        mAddFriendSpinnerAdapter =
+            AddFriendSpinnerAdapter(mContext, R.layout.item_spinner_friend_list, mFriendList)
+        binding.spinnerFriendList.adapter = mAddFriendSpinnerAdapter
+
+    }
+
+    // 친구 목록 불러오기
+    private fun getMyFriendListFromServer() {
+        apiService.getRequestFriendList("my").enqueue(object : Callback<BasicResponse> {
+            override fun onResponse(call: Call<BasicResponse>, response: Response<BasicResponse>) {
+                mFriendList.clear()
+                mFriendList.addAll(response.body()!!.data.friends)
+
+                mAddFriendSpinnerAdapter.notifyDataSetChanged()
+            }
+
+            override fun onFailure(call: Call<BasicResponse>, t: Throwable) {
+                TODO("Not yet implemented")
+            }
+        })
+    }
+
+    // 날짜 선택 버튼
+    private fun dateSelectButtonClickEvent() {
+        binding.txtSelectDate.setOnClickListener {
+            val dateSetListener =
+                DatePickerDialog.OnDateSetListener { view, year, month, dayOfMonth ->
+                    mSelectedDateTime.set(year, month, dayOfMonth)
+                    binding.txtSelectDate.text =
+                        SimpleDateFormat("yyyy. M. d (E)").format(mSelectedDateTime.time)
+                }
+
+            val datePicker = DatePickerDialog(
+                mContext,
+                dateSetListener,
+                mSelectedDateTime.get(Calendar.YEAR),
+                mSelectedDateTime.get(Calendar.MONTH),
+                mSelectedDateTime.get(Calendar.DAY_OF_MONTH)
+            )
+            datePicker.datePicker.minDate = Calendar.getInstance().timeInMillis
+            datePicker.show()
+        }
+    }
+
+    // 시간 선택 버튼
+    private fun timeSelectButtonClickEvent() {
+        binding.txtSelectTime.setOnClickListener {
+            val timeSetListener =
+                TimePickerDialog.OnTimeSetListener { timePicker, hourOfDay, minute ->
+                    mSelectedDateTime.set(Calendar.HOUR_OF_DAY, hourOfDay)
+                    mSelectedDateTime.set(Calendar.MINUTE, minute)
+
+                    binding.txtSelectTime.text =
+                        SimpleDateFormat("a hh : mm").format(mSelectedDateTime.time)
+                }
+            val timepicker = TimePickerDialog(
+                this,
+                timeSetListener,
+                mSelectedDateTime.get(Calendar.HOUR_OF_DAY),
+                mSelectedDateTime.get(Calendar.MINUTE),
+                false
+            )
+            timepicker.setTitle("시간 선택")
+            timepicker.show()
+        }
+    }
+
+    // 초대할 친구 추가 및 삭제
+    private fun addFriendButtonClickEvent() {
+        binding.btnAddFriend.setOnClickListener {
+
+            val selectedFriend = mFriendList[binding.spinnerFriendList.selectedItemPosition]
+
+            if (mSelectedFriendList.contains(selectedFriend)) {
+                Toast.makeText(mContext, "이미 추가된 친구입니다", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            val textView = TextView(mContext)
+            textView.setBackgroundResource(R.drawable.background_pink_border_square)
+            textView.text = selectedFriend.nickname
+            textView.setPadding(
+                SizeUtil.dpToPx(mContext, 10f).toInt(),
+                SizeUtil.dpToPx(mContext, 5f).toInt(),
+                SizeUtil.dpToPx(mContext, 10f).toInt(),
+                SizeUtil.dpToPx(mContext, 5f).toInt()
+            )
+            textView.setTextColor(ContextCompat.getColor(mContext, R.color.white))
+            val param = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+            param.marginEnd = SizeUtil.dpToPx(mContext, 5f).toInt()
+            textView.layoutParams = param
+
+            mSelectedFriendList.add(selectedFriend)
+            textView.text = selectedFriend.nickname
+            binding.flAddFriend.addView(textView)
+
+            textView.setOnClickListener {
+                binding.flAddFriend.removeView(textView)
+                mSelectedFriendList.remove(selectedFriend)
+            }
+        }
+    }
+
+//    fun 임시함수(){
 //        binding.btnSearchPlace.setOnClickListener {
 //            val inputPlaceName = binding.edtPlace.text.toString()
 //
@@ -132,38 +251,6 @@ class EditAppointmentActivity : BaseActivity() {
 //                }
 //            })
 //        }
-//
-//
-//
-//        binding.btnAddFriendToList.setOnClickListener {
-//
-//            val selectedFriend = mFriendList[binding.spinnerMyFriends.selectedItemPosition]
-//
-//            if (mSelectedFriendList.contains(selectedFriend)) {
-//                Toast.makeText(mContext, "이미 추가된 친구입니다", Toast.LENGTH_SHORT).show()
-//                return@setOnClickListener
-//            }
-//
-//            val textView = TextView(mContext)
-//            textView.setBackgroundResource(R.drawable.login_button_background)
-//            textView.text = selectedFriend.nickname
-//            textView.setPadding(SizeUtil.dpToPx(mContext, 5f).toInt())
-//
-////            val inflater = layoutInflater
-////            val row = inflater.inflate(R.layout.item_add_friend_list, null)
-////            val txtFriendNickname = row.findViewById<TextView>(R.id.txt_friend_nickname)
-////            val btnDelete = row.findViewById<ImageView>(R.id.btn_delete)
-//
-//            mSelectedFriendList.add(selectedFriend)
-//            textView.text = selectedFriend.nickname
-//            binding.layoutFriendList.addView(textView)
-//
-//            textView.setOnClickListener {
-//                binding.layoutFriendList.removeView(textView)
-//                mSelectedFriendList.remove(selectedFriend)
-//            }
-//        }
-//
 //        // 지도영역이 터치되면 스크롤뷰 정지
 //        binding.txtScrollHelp.setOnTouchListener { view, motionEvent ->
 //            binding.scrollView.requestDisallowInterceptTouchEvent(true)
@@ -187,29 +274,9 @@ class EditAppointmentActivity : BaseActivity() {
 //
 //                override fun onNothingSelected(p0: AdapterView<*>?) {}
 //            }
-//
-//        dateSelectButtonClickEvent()
-//        saveButtonClickEvent()
-    }
+//    }
 
-    override fun setValues() {
-//        txtTitle.text = "일정 추가"
-//
-//        setNaverMap()
-//        getMyPlaceListFromServer()
-//        getMyFriendListFromServer()
-//
-//        mStartPlaceSpinnerAdapter =
-//            StartPlaceAdapter(mContext, R.layout.item_my_place_list, mStartPlaceList)
-//        binding.spinnerStartPlace.adapter = mStartPlaceSpinnerAdapter
-//
-//        mAddFriendSpinnerAdapter =
-//            AddFriendSpinnerAdapter(mContext, R.layout.item_friend_list, mFriendList)
-//        binding.spinnerMyFriends.adapter = mAddFriendSpinnerAdapter
-
-    }
-
-//    // 출발지 목록 불러오기
+    //    // 출발지 목록 불러오기
 //    fun getMyPlaceListFromServer() {
 //        apiService.getRequestMyPlaceList().enqueue(object : Callback<BasicResponse> {
 //            override fun onResponse(call: Call<BasicResponse>, response: Response<BasicResponse>) {
@@ -225,21 +292,6 @@ class EditAppointmentActivity : BaseActivity() {
 //        })
 //    }
 //
-//    // 친구 목록 불러오기
-//    fun getMyFriendListFromServer() {
-//        apiService.getRequestFriendList("my").enqueue(object : Callback<BasicResponse> {
-//            override fun onResponse(call: Call<BasicResponse>, response: Response<BasicResponse>) {
-//                mFriendList.clear()
-//                mFriendList.addAll(response.body()!!.data.friends)
-//
-//                mAddFriendSpinnerAdapter.notifyDataSetChanged()
-//            }
-//
-//            override fun onFailure(call: Call<BasicResponse>, t: Throwable) {
-//                TODO("Not yet implemented")
-//            }
-//        })
-//    }
 //
 //    // 네이버 지도 표시하기
 //    fun setNaverMap() {
@@ -337,40 +389,8 @@ class EditAppointmentActivity : BaseActivity() {
 //            }
 //        )
 //    }
-//
-//    // 날짜 선택 버튼 클릭 이벤트
-//    fun dateSelectButtonClickEvent() {
-//        binding.btnSelectDate.setOnClickListener {
-//            val dateSetListener =
-//                DatePickerDialog.OnDateSetListener { datePicker, year, month, day ->
-//                    mSelectedDateTime.set(year, month, day)
-//
-//                    val timeSetListener =
-//                        TimePickerDialog.OnTimeSetListener { timePicker, hourOfDay, minute ->
-//                            mSelectedDateTime.set(Calendar.HOUR_OF_DAY, hourOfDay)
-//                            mSelectedDateTime.set(Calendar.MINUTE, minute)
-//
-//                            binding.txtDate.text =
-//                                SimpleDateFormat("yyyy. M. d (E) HH:mm").format(mSelectedDateTime.time)
-//                        }
-//                    TimePickerDialog(
-//                        this,
-//                        timeSetListener,
-//                        mSelectedDateTime.get(Calendar.HOUR_OF_DAY),
-//                        mSelectedDateTime.get(Calendar.MINUTE),
-//                        true
-//                    ).show()
-//                }
-//            DatePickerDialog(
-//                this,
-//                dateSetListener,
-//                mSelectedDateTime.get(Calendar.YEAR),
-//                mSelectedDateTime.get(Calendar.MONTH),
-//                mSelectedDateTime.get(Calendar.DAY_OF_MONTH)
-//            ).show()
-//        }
-//    }
-//
+
+
 //    // 서버에 전달할 친구id 목록 string 가공
 //    fun setFriendListString(): String {
 //        val sb = StringBuilder()

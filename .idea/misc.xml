@@ -9,10 +9,12 @@
         <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/drawable/background_lavender_round_square.xml" value="0.17395833333333333" />
         <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/drawable/background_login_naver_button.xml" value="0.27076923076923076" />
         <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/drawable/background_mint_round_square.xml" value="0.17395833333333333" />
+        <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/drawable/background_pink_border_square.xml" value="0.27076923076923076" />
         <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/drawable/background_pink_round_square.xml" value="0.17395833333333333" />
         <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/drawable/background_profile_image_change.xml" value="0.275" />
         <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/drawable/background_purple_oval.xml" value="0.27076923076923076" />
         <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/drawable/background_request_friend.xml" value="0.275" />
+        <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/drawable/background_spinner.xml" value="0.27076923076923076" />
         <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/drawable/background_yellow_oval.xml" value="0.27076923076923076" />
         <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/drawable/custom_button_background.xml" value="0.275" />
         <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/drawable/edittext_background.xml" value="0.275" />
@@ -56,6 +58,7 @@
         <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/layout/item_my_place_list.xml" value="0.25885416666666666" />
         <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/layout/item_notification.xml" value="0.264" />
         <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/layout/item_search_friend_list.xml" value="0.25885416666666666" />
+        <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/layout/item_spinner_friend_list.xml" value="0.25885416666666666" />
         <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/layout/my_custom_action_bar.xml" value="0.32432432432432434" />
         <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/layout/my_custom_info_window.xml" value="0.25885416666666666" />
         <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/layout/my_custom_notification_badge.xml" value="0.264" />

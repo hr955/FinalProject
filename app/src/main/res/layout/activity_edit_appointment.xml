@@ -108,13 +108,13 @@
 
                 <View
                     android:id="@+id/view_friend"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_marginStart="20dp"
                     android:layout_marginTop="10dp"
                     android:layout_marginEnd="20dp"
                     android:background="@drawable/background_pink_round_square"
-                    app:layout_constraintBottom_toTopOf="@+id/view_departure"
+                    app:layout_constraintBottom_toTopOf="@id/view_departure"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/txt_select_date" />
@@ -123,54 +123,54 @@
                     android:id="@+id/txt_friend"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginEnd="5dp"
-                    android:layout_marginBottom="10dp"
-                    android:text="친구"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginEnd="15dp"
+                    android:layout_marginBottom="15dp"
+                    android:gravity="center"
+                    android:text="약속에\n초대할 친구"
                     android:textColor="@color/black"
                     android:textSize="15sp"
                     android:textStyle="bold"
-                    app:layout_constraintEnd_toStartOf="@id/spinner_friend"
+                    app:layout_constraintBottom_toBottomOf="@id/view_friend"
+                    app:layout_constraintEnd_toStartOf="@id/spinner_friend_list"
                     app:layout_constraintStart_toStartOf="@id/view_friend"
-                    app:layout_constraintTop_toTopOf="@id/view_friend" />
+                    app:layout_constraintTop_toTopOf="@id/view_friend"
+                    app:layout_constraintVertical_bias="0.0" />
 
                 <Spinner
-                    android:id="@+id/spinner_friend"
+                    android:id="@+id/spinner_friend_list"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginEnd="5dp"
-                    android:layout_marginBottom="5dp"
-                    app:layout_constraintBottom_toTopOf="@+id/fl_add_friend"
-                    app:layout_constraintEnd_toStartOf="@+id/btn_add_friend"
-                    app:layout_constraintStart_toEndOf="@+id/txt_friend"
-                    app:layout_constraintTop_toTopOf="@+id/view_friend" />
+                    android:background="@drawable/background_spinner"
+                    app:layout_constraintBottom_toBottomOf="@id/txt_friend"
+                    app:layout_constraintEnd_toStartOf="@id/btn_add_friend"
+                    app:layout_constraintStart_toEndOf="@id/txt_friend"
+                    app:layout_constraintTop_toTopOf="@id/txt_friend" />
 
                 <ImageView
                     android:id="@+id/btn_add_friend"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginEnd="10dp"
-                    android:layout_marginBottom="10dp"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="5dp"
                     android:padding="10dp"
                     android:src="@drawable/ic_add"
-                    app:layout_constraintBottom_toBottomOf="@id/view_friend"
+                    app:layout_constraintBottom_toBottomOf="@id/txt_friend"
                     app:layout_constraintEnd_toEndOf="@+id/view_friend"
-                    app:layout_constraintStart_toEndOf="@+id/spinner_friend"
-                    app:layout_constraintTop_toTopOf="@+id/view_friend" />
+                    app:layout_constraintStart_toEndOf="@+id/spinner_friend_list"
+                    app:layout_constraintTop_toTopOf="@+id/txt_friend" />
 
                 <com.nex3z.flowlayout.FlowLayout
                     android:id="@+id/fl_add_friend"
-                    android:layout_width="wrap_content"
-                    android:layout_height="0dp"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
+                    android:layout_marginBottom="5dp"
                     app:layout_constraintBottom_toBottomOf="@id/view_friend"
-                    app:layout_constraintEnd_toEndOf="@+id/spinner_friend"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toStartOf="@+id/spinner_friend"
-                    app:layout_constraintTop_toBottomOf="@+id/spinner_friend" />
+                    app:layout_constraintEnd_toEndOf="@+id/spinner_friend_list"
+                    app:layout_constraintStart_toStartOf="@+id/spinner_friend_list"
+                    app:layout_constraintTop_toBottomOf="@id/spinner_friend_list" />
 
                 <View
                     android:id="@+id/view_departure"
@@ -272,7 +272,11 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/fragment_naver_map"
                     app:layout_constraintVertical_bias="1.0" />
+
             </androidx.constraintlayout.widget.ConstraintLayout>
+
         </ScrollView>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 </layout>
