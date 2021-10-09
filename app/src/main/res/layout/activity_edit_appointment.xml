@@ -41,6 +41,7 @@
             app:layout_constraintTop_toBottomOf="@id/tb_edit_appointment" />
 
         <ScrollView
+            android:id="@+id/scrollview"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_constraintBottom_toBottomOf="parent"

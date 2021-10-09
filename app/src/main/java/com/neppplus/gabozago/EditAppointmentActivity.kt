@@ -2,6 +2,7 @@ package com.neppplus.gabozago
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.widget.ImageView
@@ -68,6 +69,16 @@ class EditAppointmentActivity : BaseActivity() {
         dateSelectButtonClickEvent()
         timeSelectButtonClickEvent()
         addFriendButtonClickEvent()
+
+        // 지도영역이 터치되면 스크롤뷰 정지
+        binding.txtScrollHelp.setOnTouchListener { view, motionEvent ->
+            binding.scrollview.requestDisallowInterceptTouchEvent(true)
+            return@setOnTouchListener false
+        }
+
+        binding.viewDeparture.setOnClickListener {
+            startActivity(Intent(mContext, SetDepartureActivity::class.java))
+        }
 
 //        dateSelectButtonClickEvent()
 //        saveButtonClickEvent()
@@ -160,7 +171,8 @@ class EditAppointmentActivity : BaseActivity() {
                 return@setOnClickListener
             }
 
-            val inflater = LayoutInflater.from(mContext).inflate(R.layout.item_add_friend_list, null)
+            val inflater =
+                LayoutInflater.from(mContext).inflate(R.layout.item_add_friend_list, null)
             val layout = inflater.findViewById<LinearLayout>(R.id.linear_layout)
             val txtFriendNickname = inflater.findViewById<TextView>(R.id.txt_friend_nickname)
             val btnDelete = inflater.findViewById<ImageView>(R.id.btn_delete)
