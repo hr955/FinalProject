@@ -2,18 +2,12 @@ package com.neppplus.gabozago
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
-import android.graphics.Color
-import android.os.Build
 import android.os.Bundle
-import android.view.View
+import android.view.LayoutInflater
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
-import androidx.annotation.RequiresApi
-import androidx.core.content.ContextCompat
-import androidx.core.view.marginLeft
-import androidx.core.view.setPadding
 import androidx.databinding.DataBindingUtil
 import com.naver.maps.map.*
 import com.naver.maps.map.overlay.InfoWindow
@@ -166,29 +160,25 @@ class EditAppointmentActivity : BaseActivity() {
                 return@setOnClickListener
             }
 
-            val textView = TextView(mContext)
-            textView.setBackgroundResource(R.drawable.background_pink_border_square)
-            textView.text = selectedFriend.nickname
-            textView.setPadding(
-                SizeUtil.dpToPx(mContext, 10f).toInt(),
-                SizeUtil.dpToPx(mContext, 5f).toInt(),
-                SizeUtil.dpToPx(mContext, 10f).toInt(),
-                SizeUtil.dpToPx(mContext, 5f).toInt()
-            )
-            textView.setTextColor(ContextCompat.getColor(mContext, R.color.white))
+            val inflater = LayoutInflater.from(mContext).inflate(R.layout.item_add_friend_list, null)
+            val layout = inflater.findViewById<LinearLayout>(R.id.linear_layout)
+            val txtFriendNickname = inflater.findViewById<TextView>(R.id.txt_friend_nickname)
+            val btnDelete = inflater.findViewById<ImageView>(R.id.btn_delete)
+
             val param = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
             )
             param.marginEnd = SizeUtil.dpToPx(mContext, 5f).toInt()
-            textView.layoutParams = param
+            layout.layoutParams = param
+
+            txtFriendNickname.text = selectedFriend.nickname
 
             mSelectedFriendList.add(selectedFriend)
-            textView.text = selectedFriend.nickname
-            binding.flAddFriend.addView(textView)
+            binding.flAddFriend.addView(layout)
 
-            textView.setOnClickListener {
-                binding.flAddFriend.removeView(textView)
+            btnDelete.setOnClickListener {
+                binding.flAddFriend.removeView(layout)
                 mSelectedFriendList.remove(selectedFriend)
             }
         }
