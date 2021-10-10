@@ -1,6 +1,7 @@
 package com.neppplus.gabozago.datas
 
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 
 class PlaceData(
     var id: Int,
@@ -11,5 +12,5 @@ class PlaceData(
     var longitude: Double,
     @SerializedName("is_primary")
     var isPrimary: Boolean
-) {
+) : Serializable {
 }

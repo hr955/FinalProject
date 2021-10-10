@@ -40,8 +40,8 @@ class SetDepartureActivity : BaseActivity() {
     override fun setValues() {
         getMyPlaceListFromServer { response ->
             binding.rvMyPlaceList.apply {
-                adapter = SetDepartureMyPlaceListAdapter(response.data.places)
-                layoutManager = LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false)
+                adapter = SetDepartureMyPlaceListAdapter(mContext, response.data.places)
+                layoutManager = LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false)
             }
         }
     }

@@ -4,11 +4,15 @@ import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.databinding.DataBindingUtil
 import com.naver.maps.map.*
 import com.naver.maps.map.overlay.InfoWindow
@@ -41,6 +45,8 @@ class EditAppointmentActivity : BaseActivity() {
     val mStartPlaceMarker = Marker()
     val mPath = PathOverlay()
 
+    lateinit var mPlaceName: String
+
     val mSelectedFriendList = ArrayList<UserData>()
 
     val selectedPointMarker = Marker()
@@ -66,6 +72,7 @@ class EditAppointmentActivity : BaseActivity() {
             finish()
         }
 
+        setDeparture()
         dateSelectButtonClickEvent()
         timeSelectButtonClickEvent()
         addFriendButtonClickEvent()
@@ -76,9 +83,6 @@ class EditAppointmentActivity : BaseActivity() {
             return@setOnTouchListener false
         }
 
-        binding.viewDeparture.setOnClickListener {
-            startActivity(Intent(mContext, SetDepartureActivity::class.java))
-        }
 
 //        dateSelectButtonClickEvent()
 //        saveButtonClickEvent()
@@ -87,12 +91,9 @@ class EditAppointmentActivity : BaseActivity() {
     override fun setValues() {
 //        setNaverMap()
 //        getMyPlaceListFromServer()
+
         getMyFriendListFromServer()
-//
-//        mStartPlaceSpinnerAdapter =
-//            StartPlaceAdapter(mContext, R.layout.item_my_place_list, mStartPlaceList)
-//        binding.spinnerStartPlace.adapter = mStartPlaceSpinnerAdapter
-//
+
         mAddFriendSpinnerAdapter =
             AddFriendSpinnerAdapter(mContext, R.layout.item_spinner_friend_list, mFriendList)
         binding.spinnerFriendList.adapter = mAddFriendSpinnerAdapter
@@ -196,6 +197,21 @@ class EditAppointmentActivity : BaseActivity() {
         }
     }
 
+    // 출발지 설정
+    private fun setDeparture() {
+        binding.viewDeparture.setOnClickListener {
+            startForSetDeparture.launch(Intent(this, SetDepartureActivity::class.java))
+        }
+    }
+
+    private val startForSetDeparture: ActivityResultLauncher<Intent> =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+            if (result.resultCode == RESULT_OK) {
+                val myData = result.data!!.getSerializableExtra("PlaceData") as PlaceData
+                binding.txtSelectDeparture.text = myData?.name
+            }
+        }
+
 //    fun 임시함수(){
 //        binding.btnSearchPlace.setOnClickListener {
 //            val inputPlaceName = binding.edtPlace.text.toString()
@@ -252,11 +268,6 @@ class EditAppointmentActivity : BaseActivity() {
 //                    }
 //                }
 //            })
-//        }
-//        // 지도영역이 터치되면 스크롤뷰 정지
-//        binding.txtScrollHelp.setOnTouchListener { view, motionEvent ->
-//            binding.scrollView.requestDisallowInterceptTouchEvent(true)
-//            return@setOnTouchListener false
 //        }
 //
 //        binding.spinnerStartPlace.onItemSelectedListener =
