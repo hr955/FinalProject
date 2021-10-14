@@ -50,9 +50,7 @@ class EditAppointmentActivity : BaseActivity() {
     val mSelectedFriendList = ArrayList<UserData>()
 
     val selectedPointMarker = Marker()
-
     val mInfoWindow = InfoWindow()
-
     var mNaverMap: NaverMap? = null
 
     var mSelectedLat = 0.0
@@ -72,10 +70,10 @@ class EditAppointmentActivity : BaseActivity() {
             finish()
         }
 
-        setDeparture()
-        dateSelectButtonClickEvent()
-        timeSelectButtonClickEvent()
-        addFriendButtonClickEvent()
+        dateSelectButtonClickEvent() // 날짜 설정
+        timeSelectButtonClickEvent() // 시간 설정
+        addFriendButtonClickEvent() // 약속에 초대할 친구 추가
+        setDeparture() // 출발지 설정
 
         // 지도영역이 터치되면 스크롤뷰 정지
         binding.txtScrollHelp.setOnTouchListener { view, motionEvent ->
@@ -92,7 +90,7 @@ class EditAppointmentActivity : BaseActivity() {
 //        setNaverMap()
 //        getMyPlaceListFromServer()
 
-        getMyFriendListFromServer()
+        getMyFriendListFromServer() // 친구 목록 불러오기
 
         mAddFriendSpinnerAdapter =
             AddFriendSpinnerAdapter(mContext, R.layout.item_spinner_friend_list, mFriendList)
@@ -110,9 +108,7 @@ class EditAppointmentActivity : BaseActivity() {
                 mAddFriendSpinnerAdapter.notifyDataSetChanged()
             }
 
-            override fun onFailure(call: Call<BasicResponse>, t: Throwable) {
-                TODO("Not yet implemented")
-            }
+            override fun onFailure(call: Call<BasicResponse>, t: Throwable) {}
         })
     }
 
@@ -207,8 +203,22 @@ class EditAppointmentActivity : BaseActivity() {
     private val startForSetDeparture: ActivityResultLauncher<Intent> =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
             if (result.resultCode == RESULT_OK) {
-                val myData = result.data!!.getSerializableExtra("PlaceData") as PlaceData
-                binding.txtSelectDeparture.text = myData?.name
+                val myData = result.data!!.getSerializableExtra("DepartureData") as PlaceData
+                binding.txtSelectDeparture.text = "출발지 | ${myData?.name}"
+            }
+        }
+
+    // 도착지 설정
+    private fun setDestination() {
+        binding.viewDestination.setOnClickListener {
+
+        }
+    }
+
+    private val startForSetDestination: ActivityResultLauncher<Intent> =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+            if (result.resultCode == RESULT_OK) {
+
             }
         }
 
