@@ -74,6 +74,7 @@ class EditAppointmentActivity : BaseActivity() {
         timeSelectButtonClickEvent() // 시간 설정
         addFriendButtonClickEvent() // 약속에 초대할 친구 추가
         setDeparture() // 출발지 설정
+        setDestination() // 도착지 설정
 
         // 지도영역이 터치되면 스크롤뷰 정지
         binding.txtScrollHelp.setOnTouchListener { view, motionEvent ->
@@ -211,7 +212,7 @@ class EditAppointmentActivity : BaseActivity() {
     // 도착지 설정
     private fun setDestination() {
         binding.viewDestination.setOnClickListener {
-
+            startForSetDestination.launch(Intent(this, SetDestinationActivity::class.java))
         }
     }
 

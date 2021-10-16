@@ -4,16 +4,14 @@ import android.os.Bundle
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.neppplus.gabozago.adapters.SetDepartureMyPlaceListAdapter
-import com.neppplus.gabozago.adapters.SetDepartureSearchListAdapter
+import com.neppplus.gabozago.adapters.SetPlaceSearchListAdapter
 import com.neppplus.gabozago.databinding.ActivitySetDepartureBinding
 import com.neppplus.gabozago.datas.BasicResponse
 import com.neppplus.gabozago.datas.SearchPlaceData
-import com.neppplus.gabozago.web.KakaoAPIService
+import com.neppplus.gabozago.web.KakaoAPI
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 class SetDepartureActivity : BaseActivity() {
 
@@ -30,7 +28,7 @@ class SetDepartureActivity : BaseActivity() {
     override fun setupEvents() {
         getPlaceSearchList { response ->
             binding.rvDepartureSearchList.apply {
-                adapter = SetDepartureSearchListAdapter(response)
+                adapter = SetPlaceSearchListAdapter(response)
                 layoutManager =
                     LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false)
             }
@@ -65,11 +63,7 @@ class SetDepartureActivity : BaseActivity() {
         binding.ivSearchDeparture.setOnClickListener {
             val inputPlaceName = binding.edtSearchDeparture.text.toString()
 
-            val retrofit = Retrofit.Builder()
-                .baseUrl("https://dapi.kakao.com/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
-            val service = retrofit.create(KakaoAPIService::class.java)
+            val service = KakaoAPI.getRetrofit()
                 .getRequestSearchPlace(getString(R.string.kakao_rest_api_key), inputPlaceName)
 
             service.enqueue(object : Callback<SearchPlaceData>{
