@@ -29,7 +29,7 @@ class SetDestinationActivity : BaseActivity() {
         // 도착지 검색
         getPlaceSearchList { response ->
             binding.rvDestinationSearchList.apply {
-                adapter = SetPlaceSearchListAdapter(response)
+                adapter = SetPlaceSearchListAdapter(mContext, response)
                 layoutManager = LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false)
             }
         }

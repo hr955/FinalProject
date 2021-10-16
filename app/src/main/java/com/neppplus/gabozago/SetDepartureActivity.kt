@@ -28,7 +28,7 @@ class SetDepartureActivity : BaseActivity() {
     override fun setupEvents() {
         getPlaceSearchList { response ->
             binding.rvDepartureSearchList.apply {
-                adapter = SetPlaceSearchListAdapter(response)
+                adapter = SetPlaceSearchListAdapter(mContext, response)
                 layoutManager =
                     LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false)
             }

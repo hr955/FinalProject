@@ -14,6 +14,7 @@ import retrofit2.Response
 class ChangePasswordActivity : BaseActivity() {
 
     lateinit var binding: ActivityChangePasswordBinding
+    val MAX_PW_LENGTH = 8
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,7 +30,7 @@ class ChangePasswordActivity : BaseActivity() {
             val newPW = binding.edtNewPassword.text.toString()
             val newPWCheck = binding.edtNewPasswordCheck.text.toString()
 
-            if (newPW.length < 8) {
+            if (newPW.length < MAX_PW_LENGTH) {
                 binding.txtNewPasswordWarning.text = getString(R.string.password_length_warning)
                 return@setOnClickListener
             }

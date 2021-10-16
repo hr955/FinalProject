@@ -27,6 +27,7 @@ class SetDepartureMyPlaceListAdapter(val mContext: Context, val mList: List<Plac
 
         holder.itemView.setOnClickListener {
             val activity = mContext as SetDepartureActivity
+            activity.intent.putExtra("DepartureType", "MyPlaceList")
             activity.intent.putExtra("DepartureData", mList[position])
             activity.setResult(Activity.RESULT_OK, activity.intent)
             activity.finish()

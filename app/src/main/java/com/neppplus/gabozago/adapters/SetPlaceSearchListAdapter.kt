@@ -1,5 +1,6 @@
 package com.neppplus.gabozago.adapters
 
+import android.app.Activity
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
@@ -7,11 +8,13 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.neppplus.gabozago.R
+import com.neppplus.gabozago.SetDepartureActivity
+import com.neppplus.gabozago.SetDestinationActivity
 import com.neppplus.gabozago.databinding.ItemSetPlaceSearchListBinding
 import com.neppplus.gabozago.datas.Documents
 import com.neppplus.gabozago.datas.SearchPlaceData
 
-class SetPlaceSearchListAdapter(val mList: SearchPlaceData) :
+class SetPlaceSearchListAdapter(val mContext: Context, val mList: SearchPlaceData) :
     RecyclerView.Adapter<SetPlaceSearchListAdapter.ViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder = ViewHolder(
         DataBindingUtil.inflate(
@@ -24,6 +27,14 @@ class SetPlaceSearchListAdapter(val mList: SearchPlaceData) :
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.onBind(mList.documents[position])
+
+        holder.itemView.setOnClickListener {
+            val activity = mContext as Activity
+            activity.intent.putExtra("DepartureType", "SearchList")
+            activity.intent.putExtra("SearchPlaceData", mList.documents[position])
+            activity.setResult(Activity.RESULT_OK, activity.intent)
+            activity.finish()
+        }
 
         if (position == mList.documents.size - 1) holder.viewDivisionLine.visibility = View.GONE
     }

@@ -1,6 +1,7 @@
 package com.neppplus.gabozago.datas
 
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 
 data class SearchPlaceData(
     var documents: List<Documents>
@@ -15,4 +16,4 @@ data class Documents(
     var latitude: Double,
     @SerializedName("x")
     var longitude: Double
-)
+) : Serializable

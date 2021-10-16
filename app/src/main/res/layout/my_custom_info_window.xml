@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:gravity="center_horizontal"
     android:orientation="vertical"
     android:padding="5dp">
 
@@ -9,19 +10,20 @@
         android:id="@+id/txt_place"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="약속장소명" />
+        android:text="출발 | 강남역"
+        android:textColor="@color/black" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginTop="5dp"
         android:layout_marginBottom="5dp"
-        android:background="#DFDFDF" />
+        android:background="@color/grey" />
 
     <TextView
         android:id="@+id/txt_arrival_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="예상 소요 시간" />
+        android:text="-" />
 
 </LinearLayout>

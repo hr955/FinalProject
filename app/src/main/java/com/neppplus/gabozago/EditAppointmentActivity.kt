@@ -4,8 +4,8 @@ import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -14,17 +14,19 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.databinding.DataBindingUtil
+import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.*
 import com.naver.maps.map.overlay.InfoWindow
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.PathOverlay
 import com.neppplus.gabozago.adapters.AddFriendSpinnerAdapter
-import com.neppplus.gabozago.adapters.StartPlaceAdapter
 import com.neppplus.gabozago.databinding.ActivityEditAppointmentBinding
-import com.neppplus.gabozago.datas.BasicResponse
-import com.neppplus.gabozago.datas.PlaceData
-import com.neppplus.gabozago.datas.UserData
+import com.neppplus.gabozago.datas.*
 import com.neppplus.gabozago.utils.SizeUtil
+import com.odsay.odsayandroidsdk.API
+import com.odsay.odsayandroidsdk.ODsayData
+import com.odsay.odsayandroidsdk.ODsayService
+import com.odsay.odsayandroidsdk.OnResultCallbackListener
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -35,26 +37,23 @@ import kotlin.collections.ArrayList
 class EditAppointmentActivity : BaseActivity() {
 
     lateinit var binding: ActivityEditAppointmentBinding
-    val mSelectedDateTime = Calendar.getInstance()
 
-    val mStartPlaceList = ArrayList<PlaceData>()
+    private val mSelectedDateTime = Calendar.getInstance()
+
     val mFriendList = ArrayList<UserData>()
-    lateinit var mStartPlaceSpinnerAdapter: StartPlaceAdapter
     lateinit var mAddFriendSpinnerAdapter: AddFriendSpinnerAdapter
-    lateinit var mSelectedStartPlace: PlaceData
-    val mStartPlaceMarker = Marker()
+    private val mSelectedFriendList = ArrayList<UserData>()
+
+    var mDepartureData = Documents("null", "null", 0.0, 0.0)
+    var mDestinationData = Documents("null", "null", 0.0, 0.0)
+
+    private val mDepartureMarker = Marker()
+    private val mDepartureInfoWindow = InfoWindow()
+
+    private val mDestinationMarker = Marker()
+    private val mDestinationInfoWindow = InfoWindow()
+
     val mPath = PathOverlay()
-
-    lateinit var mPlaceName: String
-
-    val mSelectedFriendList = ArrayList<UserData>()
-
-    val selectedPointMarker = Marker()
-    val mInfoWindow = InfoWindow()
-    var mNaverMap: NaverMap? = null
-
-    var mSelectedLat = 0.0
-    var mSelectedLng = 0.0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,6 +65,7 @@ class EditAppointmentActivity : BaseActivity() {
     }
 
     override fun setupEvents() {
+        // 뒤로가기 버튼
         binding.btnClose.setOnClickListener {
             finish()
         }
@@ -82,15 +82,10 @@ class EditAppointmentActivity : BaseActivity() {
             return@setOnTouchListener false
         }
 
-
-//        dateSelectButtonClickEvent()
 //        saveButtonClickEvent()
     }
 
     override fun setValues() {
-//        setNaverMap()
-//        getMyPlaceListFromServer()
-
         getMyFriendListFromServer() // 친구 목록 불러오기
 
         mAddFriendSpinnerAdapter =
@@ -194,7 +189,7 @@ class EditAppointmentActivity : BaseActivity() {
         }
     }
 
-    // 출발지 설정
+    // 출발지 설정 & Map Marker 표시
     private fun setDeparture() {
         binding.viewDeparture.setOnClickListener {
             startForSetDeparture.launch(Intent(this, SetDepartureActivity::class.java))
@@ -204,12 +199,72 @@ class EditAppointmentActivity : BaseActivity() {
     private val startForSetDeparture: ActivityResultLauncher<Intent> =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
             if (result.resultCode == RESULT_OK) {
-                val myData = result.data!!.getSerializableExtra("DepartureData") as PlaceData
-                binding.txtSelectDeparture.text = "출발지 | ${myData?.name}"
+
+                // 내 출발지 목록에서 선택했을때 or 검색하여 선택했을때
+                when (result.data!!.getStringExtra("DepartureType")) {
+                    "MyPlaceList" -> {
+                        val myData =
+                            result.data!!.getSerializableExtra("DepartureData") as PlaceData
+                        binding.txtSelectDeparture.text = "출발지 | ${myData?.name}"
+                        binding.txtDepartureWarning.visibility = View.GONE
+                        mDepartureData.apply {
+                            placeName = myData.name
+                            latitude = myData.latitude
+                            longitude = myData.longitude
+                        }
+                    }
+                    "SearchList" -> {
+                        val myData =
+                            result.data!!.getSerializableExtra("SearchPlaceData") as Documents
+                        binding.txtSelectDeparture.text = "출발지 | ${myData.placeName}"
+                        binding.txtDepartureWarning.visibility = View.GONE
+                        mDepartureData = myData
+                    }
+                }
+
+                setDepartureMarker()
             }
         }
 
-    // 도착지 설정
+    // 출발지 마커
+    private fun setDepartureMarker() {
+        val fm = supportFragmentManager
+        val mapFragment = fm.findFragmentById(R.id.fragment_naver_map) as MapFragment?
+            ?: MapFragment.newInstance().also {
+                fm.beginTransaction().add(R.id.fragment_naver_map, it).commit()
+            }
+        mapFragment.getMapAsync {
+            val departurePosition = LatLng(mDepartureData.latitude, mDepartureData.longitude)
+
+            val cameraUpdate = CameraUpdate.scrollTo(departurePosition)
+            it.moveCamera(cameraUpdate)
+
+            mDepartureMarker.position = departurePosition
+            mDepartureMarker.map = it
+
+            mDepartureInfoWindow.adapter = object : InfoWindow.DefaultViewAdapter(mContext) {
+                override fun getContentView(p0: InfoWindow): View {
+                    val view =
+                        LayoutInflater.from(mContext).inflate(R.layout.my_custom_info_window, null)
+                    val txtPlace = view.findViewById<TextView>(R.id.txt_place)
+                    val txtArrivalTime = view.findViewById<TextView>(R.id.txt_arrival_time)
+
+                    txtPlace.text = "출발 | ${mDepartureData.placeName}"
+                    txtArrivalTime.text = "-"
+
+                    return view
+                }
+            }
+
+            mDepartureInfoWindow.open(mDepartureMarker)
+
+            if (mDestinationData.placeName != "null") {
+                drawStartPlaceToDestination(it)
+            }
+        }
+    }
+
+    // 도착지 설정 & Map Marker 표시
     private fun setDestination() {
         binding.viewDestination.setOnClickListener {
             startForSetDestination.launch(Intent(this, SetDestinationActivity::class.java))
@@ -219,201 +274,127 @@ class EditAppointmentActivity : BaseActivity() {
     private val startForSetDestination: ActivityResultLauncher<Intent> =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
             if (result.resultCode == RESULT_OK) {
+                val myData =
+                    result.data!!.getSerializableExtra("SearchPlaceData") as Documents
+                binding.txtSelectDestination.text = "도착지 | ${myData.placeName}"
+                mDestinationData = myData
 
+                setDestinationMarker()
             }
         }
 
-//    fun 임시함수(){
-//        binding.btnSearchPlace.setOnClickListener {
-//            val inputPlaceName = binding.edtPlace.text.toString()
-//
-//            if(inputPlaceName.length < 2){
-//                Toast.makeText(mContext, "검색어는 2자 이상 입력해주세요", Toast.LENGTH_SHORT).show()
-//                return@setOnClickListener
-//            }
-//
-//            val url = HttpUrl.parse("https://dapi.kakao.com/v2/local/search/keyword.json")!!.newBuilder()
-//            url.addQueryParameter("query", inputPlaceName)
-//
-//            val urlString = url.toString()
-//
-//            val request = Request.Builder()
-//                .url(urlString)
-//                .get()
-//                .header("Authorization",getString(R.string.kakao_rest_api_key))
-//                .build()
-//
-//            val client = OkHttpClient()
-//            client.newCall(request).enqueue(object: okhttp3.Callback{
-//                override fun onFailure(call: okhttp3.Call, e: IOException) {
-//                }
-//
-//                override fun onResponse(call: okhttp3.Call, response: okhttp3.Response) {
-//                    val jsonObj = JSONObject(response.body()!!.string())
-//
-//                    val documentsArr = jsonObj.getJSONArray("documents")
-//                    for(i in 0 until documentsArr.length()){
-//                        val docu = documentsArr.getJSONObject(i)
-//                        val placeName = docu.getString("place_name")
-//                        val lat = docu.getString("y").toDouble()
-//                        val lng = docu.getString("x").toDouble()
-//
-//                        // 첫번째 검색 결과만 파싱
-//
-//                        runOnUiThread {
-//                            binding.edtPlace.setText(placeName)
-//
-//                            val findPlaceLatLng = LatLng(lat, lng)
-//
-//                            selectedPointMarker.position = findPlaceLatLng
-//                            selectedPointMarker.map = mNaverMap
-//
-//                            mNaverMap?.moveCamera(CameraUpdate.scrollTo(findPlaceLatLng))
-//
-//                            mSelectedLat = lat
-//                            mSelectedLng = lng
-//
-//                            drawStartPlaceToDestination(mNaverMap!!)
-//                        }
-//                            break
-//                    }
-//                }
-//            })
-//        }
-//
-//        binding.spinnerStartPlace.onItemSelectedListener =
-//            object : AdapterView.OnItemSelectedListener {
-//                override fun onItemSelected(
-//                    p0: AdapterView<*>?,
-//                    p1: View?,
-//                    position: Int,
-//                    p3: Long
-//                ) {
-//                    mSelectedStartPlace = mStartPlaceList[position]
-//
-//                    mNaverMap?.let {
-//                        drawStartPlaceToDestination(it)
-//                    }
-//                }
-//
-//                override fun onNothingSelected(p0: AdapterView<*>?) {}
-//            }
-//    }
+    private fun setDestinationMarker() {
+        val fm = supportFragmentManager
+        val mapFragment = fm.findFragmentById(R.id.fragment_naver_map) as MapFragment?
+            ?: MapFragment.newInstance().also {
+                fm.beginTransaction().add(R.id.fragment_naver_map, it).commit()
+            }
+        mapFragment.getMapAsync {
+            val destinationPosition = LatLng(mDestinationData.latitude, mDestinationData.longitude)
 
-    //    // 출발지 목록 불러오기
-//    fun getMyPlaceListFromServer() {
-//        apiService.getRequestMyPlaceList().enqueue(object : Callback<BasicResponse> {
-//            override fun onResponse(call: Call<BasicResponse>, response: Response<BasicResponse>) {
-//                mStartPlaceList.clear()
-//                mStartPlaceList.addAll(response.body()!!.data.places)
-//
-//                mStartPlaceSpinnerAdapter.notifyDataSetChanged()
-//            }
-//
-//            override fun onFailure(call: Call<BasicResponse>, t: Throwable) {
-//                TODO("Not yet implemented")
-//            }
-//        })
-//    }
-//
-//
-//    // 네이버 지도 표시하기
-//    fun setNaverMap() {
-//        val fm = supportFragmentManager
-//        val mapFragment = fm.findFragmentById(R.id.fragment_naver_map) as MapFragment?
-//            ?: MapFragment.newInstance().also {
-//                fm.beginTransaction().add(R.id.fragment_naver_map, it).commit()
-//            }
-//        mapFragment.getMapAsync {
-//            mNaverMap = it
-//
-//            val coord = LatLng(37.497846, 127.027357)
-//
-//            val cameraUpdate = CameraUpdate.scrollTo(coord)
-//            it.moveCamera(cameraUpdate)
-//
-//            val uiSettings = it.uiSettings
-//            uiSettings.isCompassEnabled = true
-//
-//            selectedPointMarker.icon = OverlayImage.fromResource(R.drawable.ic_pink_marker)
-//
-//            it.setOnMapClickListener { point, coord ->
-//                Toast.makeText(
-//                    this, "${coord.latitude}, ${coord.longitude}",
-//                    Toast.LENGTH_SHORT
-//                ).show()
-//                mSelectedLat = coord.latitude
-//                mSelectedLng = coord.longitude
-//
-//                selectedPointMarker.position = LatLng(mSelectedLat, mSelectedLng)
-//                selectedPointMarker.map = it
-//                drawStartPlaceToDestination(it)
-//            }
-//        }
-//    }
-//
-//    // 지도에 경로를 그려주는 함수
-//    fun drawStartPlaceToDestination(naverMap: NaverMap) {
-//        mStartPlaceMarker.position =
-//            LatLng(mSelectedStartPlace.latitude, mSelectedStartPlace.longitude)
-//        mStartPlaceMarker.map = naverMap
-//        val points = ArrayList<LatLng>()
-//        points.add(LatLng(mSelectedStartPlace.latitude, mSelectedStartPlace.longitude))
-//
-//        val odsay = ODsayService.init(mContext, getString(R.string.odsay_app_key))
-//        odsay.requestSearchPubTransPath(
-//            mSelectedStartPlace.longitude.toString(),
-//            mSelectedStartPlace.latitude.toString(),
-//            mSelectedLng.toString(),
-//            mSelectedLat.toString(),
-//            null,
-//            null,
-//            null,
-//            object : OnResultCallbackListener {
-//                override fun onSuccess(p0: ODsayData?, p1: API?) {
-//                    val jsonObj = p0!!.json
-//                    val resultObj = jsonObj.getJSONObject("result")
-//                    val pathArr = resultObj.getJSONArray("path")
-//                    val firstPathObj = pathArr.getJSONObject(0)
-//
-//                    val infoObj = firstPathObj.getJSONObject("info")
-//                    val totalTime = infoObj.getInt("totalTime")
-//                    mInfoWindow.adapter = object : InfoWindow.DefaultTextAdapter(mContext) {
-//                        override fun getText(p0: InfoWindow): CharSequence {
-//                            return "${totalTime}분 소요예정"
-//                        }
-//                    }
-//
-//                    mInfoWindow.open(selectedPointMarker)
-//
-//                    val subPathArr = firstPathObj.getJSONArray("subPath")
-//                    for (i in 0 until subPathArr.length()) {
-//                        val subPathObj = subPathArr.getJSONObject(i)
-//                        if (!subPathObj.isNull("passStopList")) {
-//                            val passStopListObj = subPathObj.getJSONObject("passStopList")
-//                            val stationsArr = passStopListObj.getJSONArray("stations")
-//                            for (j in 0 until stationsArr.length()) {
-//                                val stationObj = stationsArr.getJSONObject(j)
-//                                points.add(
-//                                    LatLng(
-//                                        stationObj.getString("y").toDouble(),
-//                                        stationObj.getString("x").toDouble()
-//                                    )
-//                                )
-//                            }
-//                        }
-//                    }
-//                    points.add(LatLng(mSelectedLat, mSelectedLng))
-//
-//                    mPath.coords = points
-//                    mPath.map = naverMap
-//                }
-//
-//                override fun onError(p0: Int, p1: String?, p2: API?) {}
-//            }
-//        )
-//    }
+            val cameraUpdate = CameraUpdate.scrollTo(destinationPosition)
+            it.moveCamera(cameraUpdate)
 
+            mDestinationMarker.position = destinationPosition
+            mDestinationMarker.map = it
+
+            // 출발지 미설정시 ( 소요시간 및 경로 미제공 )
+            if (mDepartureData.placeName == "null") {
+                mDestinationMarker.position = destinationPosition
+                mDestinationMarker.map = it
+
+                mDestinationInfoWindow.adapter = object : InfoWindow.DefaultViewAdapter(mContext) {
+                    override fun getContentView(p0: InfoWindow): View {
+                        val view =
+                            LayoutInflater.from(mContext)
+                                .inflate(R.layout.my_custom_info_window, null)
+                        val txtPlace = view.findViewById<TextView>(R.id.txt_place)
+                        val txtArrivalTime = view.findViewById<TextView>(R.id.txt_arrival_time)
+
+                        txtPlace.text = "도착 | ${mDestinationData.placeName}"
+                        txtArrivalTime.text = "-"
+                        return view
+                    }
+                }
+
+                mDestinationInfoWindow.open(mDestinationMarker)
+            } else {
+                // 출발지 설정시
+                drawStartPlaceToDestination(it)
+            }
+        }
+    }
+
+    // 지도에 경로를 그려주는 함수 ( 출발지가 설정된 경우 )
+    private fun drawStartPlaceToDestination(naverMap: NaverMap) {
+        val points = ArrayList<LatLng>()
+        points.add(LatLng(mDepartureData.latitude, mDepartureData.longitude))
+
+        val odsay = ODsayService.init(mContext, getString(R.string.odsay_app_key))
+        odsay.requestSearchPubTransPath(
+            mDepartureData.longitude.toString(),
+            mDepartureData.latitude.toString(),
+            mDestinationData.longitude.toString(),
+            mDestinationData.latitude.toString(),
+            null,
+            null,
+            null,
+            object : OnResultCallbackListener {
+                override fun onSuccess(p0: ODsayData?, p1: API?) {
+                    val jsonObj = p0!!.json
+                    val resultObj = jsonObj.getJSONObject("result")
+                    val pathArr = resultObj.getJSONArray("path")
+                    val firstPathObj = pathArr.getJSONObject(0)
+
+                    val infoObj = firstPathObj.getJSONObject("info")
+                    val totalTime = infoObj.getInt("totalTime")
+
+                    mDestinationInfoWindow.adapter =
+                        object : InfoWindow.DefaultViewAdapter(mContext) {
+                            override fun getContentView(p0: InfoWindow): View {
+                                val view =
+                                    LayoutInflater.from(mContext)
+                                        .inflate(R.layout.my_custom_info_window, null)
+                                val txtPlace = view.findViewById<TextView>(R.id.txt_place)
+                                val txtArrivalTime =
+                                    view.findViewById<TextView>(R.id.txt_arrival_time)
+
+                                txtPlace.text = "도착 | ${mDestinationData.placeName}"
+                                txtArrivalTime.text = "${totalTime} 분 소요"
+
+                                return view
+                            }
+                        }
+
+                    mDestinationInfoWindow.open(mDestinationMarker)
+
+                    val subPathArr = firstPathObj.getJSONArray("subPath")
+                    for (i in 0 until subPathArr.length()) {
+                        val subPathObj = subPathArr.getJSONObject(i)
+                        if (!subPathObj.isNull("passStopList")) {
+                            val passStopListObj = subPathObj.getJSONObject("passStopList")
+                            val stationsArr = passStopListObj.getJSONArray("stations")
+                            for (j in 0 until stationsArr.length()) {
+                                val stationObj = stationsArr.getJSONObject(j)
+                                points.add(
+                                    LatLng(
+                                        stationObj.getString("y").toDouble(),
+                                        stationObj.getString("x").toDouble()
+                                    )
+                                )
+                            }
+                        }
+                    }
+                    points.add(LatLng(mDestinationData.latitude, mDestinationData.longitude))
+
+                    mPath.coords = points
+                    mPath.map = naverMap
+                }
+
+                override fun onError(p0: Int, p1: String?, p2: API?) {}
+            }
+        )
+    }
 
 //    // 서버에 전달할 친구id 목록 string 가공
 //    fun setFriendListString(): String {
