@@ -12,6 +12,7 @@
             android:id="@+id/tb_edit_appointment"
             android:layout_width="match_parent"
             android:layout_height="50dp"
+            app:contentInsetStart="0dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
@@ -28,19 +29,22 @@
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_gravity="left|center_vertical"
-                android:layout_marginRight="10dp"
+                android:layout_marginStart="10dp"
                 android:padding="10dp"
                 android:src="@drawable/ic_left_arrow" />
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="17sp"
+                android:id="@+id/btn_save"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:layout_gravity="right|center_vertical"
-                android:layout_marginEnd="25dp"
-                android:textStyle="bold"
+                android:layout_marginEnd="20dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:gravity="center"
+                android:text="완료"
                 android:textColor="@color/main_purple"
-                android:text="완료"/>
+                android:textSize="17sp"
+                android:textStyle="bold" />
         </androidx.appcompat.widget.Toolbar>
 
         <View
@@ -70,11 +74,14 @@
                     android:id="@+id/edt_appointment_title"
                     android:layout_width="0dp"
                     android:layout_height="60dp"
+                    android:imeOptions="actionDone"
                     android:layout_marginStart="20dp"
                     android:layout_marginTop="20dp"
                     android:layout_marginEnd="20dp"
                     android:background="@drawable/background_lavender_round_square"
                     android:hint="제목"
+                    android:inputType="text"
+                    android:maxLines="1"
                     android:paddingStart="20dp"
                     android:textSize="15sp"
                     android:textStyle="bold"
@@ -165,6 +172,7 @@
                     android:layout_height="40dp"
                     android:layout_marginStart="5dp"
                     android:layout_marginEnd="5dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
                     android:padding="10dp"
                     android:src="@drawable/ic_add"
                     app:layout_constraintBottom_toBottomOf="@id/txt_friend"
@@ -208,18 +216,6 @@
                     app:layout_constraintStart_toStartOf="@id/view_departure"
                     app:layout_constraintTop_toTopOf="@id/view_departure" />
 
-                <TextView
-                    android:id="@+id/txt_departure_warning"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="출발지 미설정시 소요시간 정보가 제공되지 않습니다"
-                    android:textSize="10sp"
-                    app:layout_constraintBottom_toBottomOf="@id/view_departure"
-                    app:layout_constraintEnd_toEndOf="@id/view_departure"
-                    app:layout_constraintStart_toStartOf="@id/view_departure"
-                    app:layout_constraintTop_toBottomOf="@+id/txt_select_departure" />
-
-
                 <View
                     android:id="@+id/view_destination"
                     android:layout_width="match_parent"
@@ -249,12 +245,12 @@
                     android:id="@+id/fragment_naver_map"
                     android:name="com.naver.maps.map.MapFragment"
                     android:layout_width="match_parent"
-                    android:layout_height="400dp"
+                    android:layout_height="350dp"
                     android:layout_marginStart="20dp"
                     android:layout_marginTop="10dp"
                     android:layout_marginEnd="20dp"
                     android:layout_marginBottom="20dp"
-                    app:layout_constraintTop_toBottomOf="@id/view_destination"/>
+                    app:layout_constraintTop_toBottomOf="@id/view_destination" />
 
                 <TextView
                     android:id="@+id/txt_scroll_help"
@@ -266,24 +262,24 @@
                     app:layout_constraintStart_toStartOf="@id/fragment_naver_map"
                     app:layout_constraintTop_toTopOf="@id/fragment_naver_map" />
 
-<!--                <TextView-->
-<!--                    android:id="@+id/btn_login"-->
-<!--                    android:layout_width="0dp"-->
-<!--                    android:layout_height="45dp"-->
-<!--                    android:layout_marginStart="20dp"-->
-<!--                    android:layout_marginTop="50dp"-->
-<!--                    android:layout_marginEnd="20dp"-->
-<!--                    android:layout_marginBottom="10dp"-->
-<!--                    android:background="@drawable/background_purple_border_square"-->
-<!--                    android:gravity="center"-->
-<!--                    android:text="약속 등록"-->
-<!--                    android:textColor="@color/white"-->
-<!--                    android:textSize="17sp"-->
-<!--                    app:layout_constraintBottom_toBottomOf="parent"-->
-<!--                    app:layout_constraintEnd_toEndOf="parent"-->
-<!--                    app:layout_constraintStart_toStartOf="parent"-->
-<!--                    app:layout_constraintTop_toBottomOf="@id/fragment_naver_map"-->
-<!--                    app:layout_constraintVertical_bias="1.0" />-->
+                <!--                <TextView-->
+                <!--                    android:id="@+id/btn_login"-->
+                <!--                    android:layout_width="0dp"-->
+                <!--                    android:layout_height="45dp"-->
+                <!--                    android:layout_marginStart="20dp"-->
+                <!--                    android:layout_marginTop="50dp"-->
+                <!--                    android:layout_marginEnd="20dp"-->
+                <!--                    android:layout_marginBottom="10dp"-->
+                <!--                    android:background="@drawable/background_purple_border_square"-->
+                <!--                    android:gravity="center"-->
+                <!--                    android:text="약속 등록"-->
+                <!--                    android:textColor="@color/white"-->
+                <!--                    android:textSize="17sp"-->
+                <!--                    app:layout_constraintBottom_toBottomOf="parent"-->
+                <!--                    app:layout_constraintEnd_toEndOf="parent"-->
+                <!--                    app:layout_constraintStart_toStartOf="parent"-->
+                <!--                    app:layout_constraintTop_toBottomOf="@id/fragment_naver_map"-->
+                <!--                    app:layout_constraintVertical_bias="1.0" />-->
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

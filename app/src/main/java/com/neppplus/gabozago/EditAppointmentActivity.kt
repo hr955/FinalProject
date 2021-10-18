@@ -2,10 +2,18 @@ package com.neppplus.gabozago
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.app.job.JobInfo
+import android.app.job.JobScheduler
+import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -19,9 +27,11 @@ import com.naver.maps.map.*
 import com.naver.maps.map.overlay.InfoWindow
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.PathOverlay
+import com.naver.maps.map.util.MarkerIcons
 import com.neppplus.gabozago.adapters.AddFriendSpinnerAdapter
 import com.neppplus.gabozago.databinding.ActivityEditAppointmentBinding
 import com.neppplus.gabozago.datas.*
+import com.neppplus.gabozago.services.MyJobService
 import com.neppplus.gabozago.utils.SizeUtil
 import com.odsay.odsayandroidsdk.API
 import com.odsay.odsayandroidsdk.ODsayData
@@ -32,6 +42,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.concurrent.TimeUnit
 import kotlin.collections.ArrayList
 
 class EditAppointmentActivity : BaseActivity() {
@@ -52,7 +63,6 @@ class EditAppointmentActivity : BaseActivity() {
 
     private val mDestinationMarker = Marker()
     private val mDestinationInfoWindow = InfoWindow()
-
     val mPath = PathOverlay()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,16 +75,17 @@ class EditAppointmentActivity : BaseActivity() {
     }
 
     override fun setupEvents() {
-        // 뒤로가기 버튼
-        binding.btnClose.setOnClickListener {
-            finish()
-        }
-
         dateSelectButtonClickEvent() // 날짜 설정
         timeSelectButtonClickEvent() // 시간 설정
         addFriendButtonClickEvent() // 약속에 초대할 친구 추가
         setDeparture() // 출발지 설정
         setDestination() // 도착지 설정
+        saveButtonClickEvent() // 일정 등록 완료 버튼
+
+        // 뒤로가기 버튼
+        binding.btnClose.setOnClickListener {
+            finish()
+        }
 
         // 지도영역이 터치되면 스크롤뷰 정지
         binding.txtScrollHelp.setOnTouchListener { view, motionEvent ->
@@ -82,7 +93,18 @@ class EditAppointmentActivity : BaseActivity() {
             return@setOnTouchListener false
         }
 
-//        saveButtonClickEvent()
+        // 제목 입력 후 완료 클릭시 키보드 숨기기
+        binding.edtAppointmentTitle.setOnEditorActionListener { v, actionId, event ->
+            var handled = false
+
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                inputMethodManager.hideSoftInputFromWindow(binding.edtAppointmentTitle.windowToken, 0)
+                handled = true
+            }
+
+            handled
+        }
     }
 
     override fun setValues() {
@@ -140,6 +162,9 @@ class EditAppointmentActivity : BaseActivity() {
 
                     binding.txtSelectTime.text =
                         SimpleDateFormat("a hh : mm").format(mSelectedDateTime.time)
+
+                    Log.d("TimeTest", Calendar.getInstance().timeInMillis.toString())
+                    Log.d("TimeTest2", mSelectedDateTime.timeInMillis.toString())
                 }
             val timepicker = TimePickerDialog(
                 this,
@@ -206,7 +231,6 @@ class EditAppointmentActivity : BaseActivity() {
                         val myData =
                             result.data!!.getSerializableExtra("DepartureData") as PlaceData
                         binding.txtSelectDeparture.text = "출발지 | ${myData?.name}"
-                        binding.txtDepartureWarning.visibility = View.GONE
                         mDepartureData.apply {
                             placeName = myData.name
                             latitude = myData.latitude
@@ -217,7 +241,6 @@ class EditAppointmentActivity : BaseActivity() {
                         val myData =
                             result.data!!.getSerializableExtra("SearchPlaceData") as Documents
                         binding.txtSelectDeparture.text = "출발지 | ${myData.placeName}"
-                        binding.txtDepartureWarning.visibility = View.GONE
                         mDepartureData = myData
                     }
                 }
@@ -258,6 +281,7 @@ class EditAppointmentActivity : BaseActivity() {
 
             mDepartureInfoWindow.open(mDepartureMarker)
 
+            // 도착지가 설정되어있을 때 지도에 경로 표시
             if (mDestinationData.placeName != "null") {
                 drawStartPlaceToDestination(it)
             }
@@ -283,6 +307,7 @@ class EditAppointmentActivity : BaseActivity() {
             }
         }
 
+    // 도착지 마커
     private fun setDestinationMarker() {
         val fm = supportFragmentManager
         val mapFragment = fm.findFragmentById(R.id.fragment_naver_map) as MapFragment?
@@ -292,10 +317,12 @@ class EditAppointmentActivity : BaseActivity() {
         mapFragment.getMapAsync {
             val destinationPosition = LatLng(mDestinationData.latitude, mDestinationData.longitude)
 
-            val cameraUpdate = CameraUpdate.scrollTo(destinationPosition)
+            var cameraUpdate = CameraUpdate.scrollTo(destinationPosition)
             it.moveCamera(cameraUpdate)
 
             mDestinationMarker.position = destinationPosition
+            mDestinationMarker.icon = MarkerIcons.BLACK
+            mDestinationMarker.iconTintColor = Color.RED
             mDestinationMarker.map = it
 
             // 출발지 미설정시 ( 소요시간 및 경로 미제공 )
@@ -328,6 +355,8 @@ class EditAppointmentActivity : BaseActivity() {
     // 지도에 경로를 그려주는 함수 ( 출발지가 설정된 경우 )
     private fun drawStartPlaceToDestination(naverMap: NaverMap) {
         val points = ArrayList<LatLng>()
+        mPath.map = null
+
         points.add(LatLng(mDepartureData.latitude, mDepartureData.longitude))
 
         val odsay = ODsayService.init(mContext, getString(R.string.odsay_app_key))
@@ -342,53 +371,62 @@ class EditAppointmentActivity : BaseActivity() {
             object : OnResultCallbackListener {
                 override fun onSuccess(p0: ODsayData?, p1: API?) {
                     val jsonObj = p0!!.json
-                    val resultObj = jsonObj.getJSONObject("result")
-                    val pathArr = resultObj.getJSONArray("path")
-                    val firstPathObj = pathArr.getJSONObject(0)
 
-                    val infoObj = firstPathObj.getJSONObject("info")
-                    val totalTime = infoObj.getInt("totalTime")
+                    when (jsonObj.names().get(0)) {
+                        "result" -> {
+                            val resultObj = jsonObj.getJSONObject("result")
 
-                    mDestinationInfoWindow.adapter =
-                        object : InfoWindow.DefaultViewAdapter(mContext) {
-                            override fun getContentView(p0: InfoWindow): View {
-                                val view =
-                                    LayoutInflater.from(mContext)
-                                        .inflate(R.layout.my_custom_info_window, null)
-                                val txtPlace = view.findViewById<TextView>(R.id.txt_place)
-                                val txtArrivalTime =
-                                    view.findViewById<TextView>(R.id.txt_arrival_time)
+                            val pathArr = resultObj.getJSONArray("path")
+                            val firstPathObj = pathArr.getJSONObject(0)
 
-                                txtPlace.text = "도착 | ${mDestinationData.placeName}"
-                                txtArrivalTime.text = "${totalTime} 분 소요"
+                            val infoObj = firstPathObj.getJSONObject("info")
+                            val totalTime = infoObj.getInt("totalTime")
 
-                                return view
+                            setDestinationInfoWindow("$totalTime 분 소요")
+
+                            mDestinationInfoWindow.open(mDestinationMarker)
+
+                            val subPathArr = firstPathObj.getJSONArray("subPath")
+                            for (i in 0 until subPathArr.length()) {
+                                val subPathObj = subPathArr.getJSONObject(i)
+                                if (!subPathObj.isNull("passStopList")) {
+                                    val passStopListObj = subPathObj.getJSONObject("passStopList")
+                                    val stationsArr = passStopListObj.getJSONArray("stations")
+                                    for (j in 0 until stationsArr.length()) {
+                                        val stationObj = stationsArr.getJSONObject(j)
+                                        points.add(
+                                            LatLng(
+                                                stationObj.getString("y").toDouble(),
+                                                stationObj.getString("x").toDouble()
+                                            )
+                                        )
+                                    }
+                                }
                             }
-                        }
-
-                    mDestinationInfoWindow.open(mDestinationMarker)
-
-                    val subPathArr = firstPathObj.getJSONArray("subPath")
-                    for (i in 0 until subPathArr.length()) {
-                        val subPathObj = subPathArr.getJSONObject(i)
-                        if (!subPathObj.isNull("passStopList")) {
-                            val passStopListObj = subPathObj.getJSONObject("passStopList")
-                            val stationsArr = passStopListObj.getJSONArray("stations")
-                            for (j in 0 until stationsArr.length()) {
-                                val stationObj = stationsArr.getJSONObject(j)
-                                points.add(
-                                    LatLng(
-                                        stationObj.getString("y").toDouble(),
-                                        stationObj.getString("x").toDouble()
-                                    )
+                            points.add(
+                                LatLng(
+                                    mDestinationData.latitude,
+                                    mDestinationData.longitude
                                 )
+                            )
+
+                            mPath.coords = points
+                            mPath.map = naverMap
+                        }
+                        "error" -> {
+                            val errorObj = jsonObj.getJSONObject("error")
+                            val errorCode = errorObj.getInt("code")
+                            if (errorCode == -98) {
+                                Toast.makeText(
+                                    mContext,
+                                    "출발지와 도착지의 거리가 700m 이내로\n소요시간 정보가 제공되지 않습니다",
+                                    Toast.LENGTH_LONG
+                                ).show()
+
+                                setDestinationInfoWindow("-")
                             }
                         }
                     }
-                    points.add(LatLng(mDestinationData.latitude, mDestinationData.longitude))
-
-                    mPath.coords = points
-                    mPath.map = naverMap
                 }
 
                 override fun onError(p0: Int, p1: String?, p2: API?) {}
@@ -396,88 +434,117 @@ class EditAppointmentActivity : BaseActivity() {
         )
     }
 
-//    // 서버에 전달할 친구id 목록 string 가공
-//    fun setFriendListString(): String {
-//        val sb = StringBuilder()
-//
-//        for (i in mSelectedFriendList) {
-//            sb.append(i.id).append(",")
-//        }
-//        sb.deleteAt(sb.lastIndex)
-//
-//        return sb.toString()
-//    }
-//
-//    // 저장 버튼 클릭 이벤트 -> 일정 저장 API 호출
-//    fun saveButtonClickEvent() {
-//
-//        binding.btnSave.setOnClickListener {
-//            val inputTitle = binding.edtAppointmentTitle.text.toString()
-//            val inputPlace = binding.edtPlace.text.toString()
-//            val inputDate = SimpleDateFormat("yyyy-MM-dd HH:mm").format(mSelectedDateTime.time)
-//
-//            val myTimeZone = mSelectedDateTime.timeZone
-//            val myTimeOffset = myTimeZone.rawOffset / 1000 / 60 / 60
-//            mSelectedDateTime.add(Calendar.HOUR_OF_DAY, -myTimeOffset)
-//
-//            if (inputTitle == "") {
-//                Toast.makeText(mContext, "제목을 작성해주세요", Toast.LENGTH_SHORT).show()
-//                return@setOnClickListener
-//            }
-//            if (inputDate == "") {
-//                Toast.makeText(mContext, "날짜를 선택해주세요", Toast.LENGTH_SHORT).show()
-//                return@setOnClickListener
-//            }
-//            if (mSelectedLat == 0.0 && mSelectedLng == 0.0) {
-//                Toast.makeText(mContext, "장소을 선택해주세요", Toast.LENGTH_SHORT).show()
-//                return@setOnClickListener
-//            }
-//            if (inputPlace == "") {
-//                Toast.makeText(mContext, "장소를 입력해주세요", Toast.LENGTH_SHORT).show()
-//                return@setOnClickListener
-//            }
-//
-//            apiService.postRequestAddAppointment(
-//                inputTitle,
-//                inputDate,
-//                mSelectedStartPlace.name,
-//                mSelectedStartPlace.latitude,
-//                mSelectedStartPlace.longitude,
-//                inputPlace,
-//                mSelectedLat,
-//                mSelectedLng,
-//                setFriendListString()
-//            ).enqueue(object : Callback<BasicResponse> {
-//                override fun onResponse(
-//                    call: Call<BasicResponse>,
-//                    response: Response<BasicResponse>
-//                ) {
-//                    val js = getSystemService(JOB_SCHEDULER_SERVICE) as JobScheduler
-//                    val serviceComponent = ComponentName(mContext, MyJobService::class.java)
-//
-//                    mSelectedDateTime.add(Calendar.HOUR_OF_DAY, -2)
-//
-//                    val now = Calendar.getInstance()
-//                    val timeOffset = now.timeZone.rawOffset / 1000 / 60 / 60
-//                    now.add(Calendar.HOUR_OF_DAY, -timeOffset)
-//
-//                    val jobTime = mSelectedDateTime.timeInMillis - now.timeInMillis
-//
-//                    val basicResponse = response.body()!!
-//
-//                    val jobInfo =
-//                        JobInfo.Builder(basicResponse.data.appointment.id, serviceComponent)
-//                            .setMinimumLatency(jobTime)
-//                            //.setMinimumLatency(TimeUnit.SECONDS.toMillis(20))
-//                            .setOverrideDeadline(TimeUnit.MINUTES.toMillis(3))
-//                            .build()
-//
-//                    js.schedule(jobInfo)
-//                    finish()
-//                }
-//
-//                override fun onFailure(call: Call<BasicResponse>, t: Throwable) {}
-//            })
-//        }
-//    }
+    // 도착지 정보창
+    fun setDestinationInfoWindow(value: String) {
+        mDestinationInfoWindow.adapter =
+            object : InfoWindow.DefaultViewAdapter(mContext) {
+                override fun getContentView(p0: InfoWindow): View {
+                    val view =
+                        LayoutInflater.from(mContext)
+                            .inflate(R.layout.my_custom_info_window, null)
+                    val txtPlace = view.findViewById<TextView>(R.id.txt_place)
+                    val txtArrivalTime =
+                        view.findViewById<TextView>(R.id.txt_arrival_time)
+
+                    txtPlace.text = "도착 | ${mDestinationData.placeName}"
+                    txtArrivalTime.text = value
+
+                    return view
+                }
+            }
+
+        mDestinationInfoWindow.open(mDestinationMarker)
+    }
+
+    // 서버에 전달할 친구id 목록 string 가공
+    private fun setFriendListString(): String? {
+        val sb = StringBuilder()
+
+        if (mSelectedFriendList.isEmpty()) {
+            return null
+        } else {
+            for (i in mSelectedFriendList) {
+                sb.append(i.id).append(",")
+            }
+            sb.deleteAt(sb.lastIndex)
+
+            return sb.toString()
+        }
+    }
+
+    // 저장 버튼 클릭 이벤트 -> 일정 저장 API 호출
+    private fun saveButtonClickEvent() {
+
+        binding.btnSave.setOnClickListener {
+            val inputTitle = binding.edtAppointmentTitle.text.toString()
+            val inputDate = SimpleDateFormat("yyyy-MM-dd HH:mm").format(mSelectedDateTime.time)
+
+            if (inputTitle == "") {
+                Toast.makeText(mContext, "제목을 설정해주세요", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            if (binding.txtSelectDate.text == "날짜 선택") {
+                Toast.makeText(mContext, "날짜를 선택해주세요", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            if (binding.txtSelectTime.text == "시간 선택") {
+                Toast.makeText(mContext, "시간을 선택해주세요", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            if (mDepartureData.placeName == "null") {
+                Toast.makeText(mContext, "출발지를 설정해주세요", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            if (mDestinationData.placeName == "null") {
+                Toast.makeText(mContext, "도착지를 설정해주세요", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            if (Calendar.getInstance().timeInMillis - mSelectedDateTime.timeInMillis > 0) {
+                Toast.makeText(mContext, "현재보다 이전인 시간은\n약속시간으로 설정이 불가능해요", Toast.LENGTH_SHORT)
+                    .show()
+                return@setOnClickListener
+            }
+
+            apiService.postRequestAddAppointment(
+                inputTitle,
+                inputDate,
+                mDepartureData.placeName,
+                mDepartureData.latitude,
+                mDepartureData.longitude,
+                mDestinationData.placeName,
+                mDestinationData.latitude,
+                mDestinationData.longitude,
+                setFriendListString()
+            ).enqueue(object : Callback<BasicResponse> {
+                override fun onResponse(
+                    call: Call<BasicResponse>,
+                    response: Response<BasicResponse>
+                ) {
+                    val js = getSystemService(JOB_SCHEDULER_SERVICE) as JobScheduler
+                    val serviceComponent = ComponentName(mContext, MyJobService::class.java)
+
+                    mSelectedDateTime.add(Calendar.HOUR_OF_DAY, -2)
+
+                    val now = Calendar.getInstance()
+                    val timeOffset = now.timeZone.rawOffset / 1000 / 60 / 60
+                    now.add(Calendar.HOUR_OF_DAY, -timeOffset)
+
+                    val jobTime = mSelectedDateTime.timeInMillis - now.timeInMillis
+
+                    val basicResponse = response.body()!!
+
+                    val jobInfo =
+                        JobInfo.Builder(basicResponse.data.appointment.id, serviceComponent)
+                            .setMinimumLatency(jobTime)
+                            .setOverrideDeadline(TimeUnit.MINUTES.toMillis(3))
+                            .build()
+
+                    js.schedule(jobInfo)
+                    finish()
+                }
+
+                override fun onFailure(call: Call<BasicResponse>, t: Throwable) {}
+            })
+        }
+    }
 }

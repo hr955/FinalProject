@@ -52,7 +52,7 @@ interface ServerAPIService {
         @Field("place") place: String,
         @Field("latitude") latitude: Double,
         @Field("longitude") longitude: Double,
-        @Field("friend_list") friendList: String
+        @Field("friend_list") friendList: String?
     ): Call<BasicResponse>
 
     // 일정 목록 조회 API

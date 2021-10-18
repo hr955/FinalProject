@@ -1,6 +1,9 @@
 package com.neppplus.gabozago
 
+import android.content.Context
 import android.os.Bundle
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.neppplus.gabozago.adapters.SetDepartureMyPlaceListAdapter
@@ -26,12 +29,27 @@ class SetDepartureActivity : BaseActivity() {
     }
 
     override fun setupEvents() {
-        getPlaceSearchList { response ->
-            binding.rvDepartureSearchList.apply {
-                adapter = SetPlaceSearchListAdapter(mContext, response)
-                layoutManager =
-                    LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false)
+        binding.edtSearchDeparture.setOnEditorActionListener { v, actionId, event ->
+            var handled = false
+
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                val inputMethodManager =
+                    getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                inputMethodManager.hideSoftInputFromWindow(
+                    binding.edtSearchDeparture.windowToken,
+                    0
+                )
+
+                setSearchListAdapter()
+
+                handled = true
             }
+
+            handled
+        }
+
+        binding.ivSearchDeparture.setOnClickListener {
+            setSearchListAdapter()
         }
     }
 
@@ -60,25 +78,34 @@ class SetDepartureActivity : BaseActivity() {
 
     // 출발지 키워드 검색
     private fun getPlaceSearchList(success: (response: SearchPlaceData) -> Unit) {
-        binding.ivSearchDeparture.setOnClickListener {
-            val inputPlaceName = binding.edtSearchDeparture.text.toString()
+        val inputPlaceName = binding.edtSearchDeparture.text.toString()
 
-            val service = KakaoAPI.getRetrofit()
-                .getRequestSearchPlace(getString(R.string.kakao_rest_api_key), inputPlaceName)
+        val service = KakaoAPI.getRetrofit()
+            .getRequestSearchPlace(getString(R.string.kakao_rest_api_key), inputPlaceName)
 
-            service.enqueue(object : Callback<SearchPlaceData>{
-                override fun onResponse(
-                    call: Call<SearchPlaceData>,
-                    response: Response<SearchPlaceData>
-                ) {
-                    if(response.isSuccessful){
-                        success(response.body()!!)
-                    }
+        service.enqueue(object : Callback<SearchPlaceData> {
+            override fun onResponse(
+                call: Call<SearchPlaceData>,
+                response: Response<SearchPlaceData>
+            ) {
+                if (response.isSuccessful) {
+                    success(response.body()!!)
                 }
+            }
 
-                override fun onFailure(call: Call<SearchPlaceData>, t: Throwable) {
-                }
-            })
+            override fun onFailure(call: Call<SearchPlaceData>, t: Throwable) {
+            }
+        })
+    }
+
+    // 리사이클러뷰 어댑터 및 레이아웃 매니저 설정
+    private fun setSearchListAdapter(){
+        getPlaceSearchList { response ->
+            binding.rvDepartureSearchList.apply {
+                adapter = SetPlaceSearchListAdapter(mContext, response)
+                layoutManager =
+                    LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false)
+            }
         }
     }
 }
