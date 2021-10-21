@@ -28,7 +28,7 @@ class InvitedAppointmentListAdapter(val mContext: Context, val mList: List<Appoi
 
     override fun onBindViewHolder(holder: InvitedAppointmentListAdapterViewHolder, position: Int) {
         holder.onBind(mList[position])
-        holder.onMapClickEvent(mList[position], mContext)
+        //holder.onMapClickEvent(mList[position], mContext)
     }
 
     override fun getItemCount(): Int = mList.size
@@ -37,21 +37,21 @@ class InvitedAppointmentListAdapter(val mContext: Context, val mList: List<Appoi
         fun onBind(item: AppointmentData) {
             binding.txtTitle.text = item.title
             binding.txtDate.text = item.getFormattedDateTime()
-            binding.txtPlace.text = item.place
+            binding.txtDestination.text = item.place
         }
 
-        fun onMapClickEvent(item: AppointmentData, context: Context) {
-            binding.btnMapDetail.setOnClickListener {
-                val myIntent = Intent(context, ViewMapActivity::class.java)
-                myIntent.putExtra("AppointmentData", item)
-                context.startActivity(myIntent)
-            }
-
-            binding.layoutRoot.setOnClickListener {
-                val myIntent = Intent(context, ViewAppointmentDetailActivity::class.java)
-                myIntent.putExtra("AppointmentData", item)
-                context.startActivity(myIntent)
-            }
-        }
+//        fun onMapClickEvent(item: AppointmentData, context: Context) {
+//            binding.btnMapDetail.setOnClickListener {
+//                val myIntent = Intent(context, ViewMapActivity::class.java)
+//                myIntent.putExtra("AppointmentData", item)
+//                context.startActivity(myIntent)
+//            }
+//
+//            binding.layoutRoot.setOnClickListener {
+//                val myIntent = Intent(context, ViewAppointmentDetailActivity::class.java)
+//                myIntent.putExtra("AppointmentData", item)
+//                context.startActivity(myIntent)
+//            }
+//        }
     }
 }

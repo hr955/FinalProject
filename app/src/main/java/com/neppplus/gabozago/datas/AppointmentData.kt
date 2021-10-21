@@ -28,19 +28,29 @@ class AppointmentData(
 ) : Serializable {
 
     fun getFormattedDateTime(): String {
+        return SimpleDateFormat("M/d (E) a h:mm").format(this.datetime.time - Calendar.getInstance().timeZone.rawOffset)
+    }
+
+    fun getDDay(): String? {
+        val ONE_DAY = 24 * 60 * 60 * 1000
+        val ONE_HOUR = 60 * 60 * 1000
+        val ONE_MINUTE = 60 * 1000
         val nowDate = Calendar.getInstance()
+        val nowDateMillis = nowDate.timeInMillis
+        val dateTimeToTimeZone = this.datetime.time - nowDate.timeZone.rawOffset
 
-        val diff = this.datetime.time - nowDate.timeInMillis
-        val diffHour = diff / 1000 / 60 / 60
+        val diffMin = dateTimeToTimeZone / ONE_MINUTE - nowDateMillis / ONE_MINUTE
+        val diffHour = dateTimeToTimeZone / ONE_HOUR - nowDateMillis / ONE_HOUR
+        val diffDay = dateTimeToTimeZone / ONE_DAY - nowDateMillis / ONE_DAY
 
-        if (diffHour in 1..0) {
-            val diffMinute = diff / 1000 / 60
-            return "약속 ${diffMinute}분 전"
-        } else if (diffHour in 1..4) {
-            return "약속 ${diffHour}시간 전"
-        } else {
-            val dateTimeFormat = SimpleDateFormat("M/d (E) a h:mm")
-            return dateTimeFormat.format(this.datetime.time)
+        return if (diffMin <= 0){
+            null
+        }else if (diffMin <= 59){
+            "${diffMin}분 전"
+        }else if (diffHour <= 23){
+            "${diffHour}시간 전"
+        }else {
+            "D - $diffDay"
         }
     }
 }
