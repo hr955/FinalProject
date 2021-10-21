@@ -49,13 +49,16 @@ class NotificationFragment : BaseFragment() {
         apiService.getRequestNotificationList("true").enqueue(object: Callback<BasicResponse>{
             override fun onResponse(call: Call<BasicResponse>, response: Response<BasicResponse>) {
                 if(response.isSuccessful){
-                    mNotificationList.addAll(response.body()!!.data.notifications)
-                    binding.rvNotificationList.apply{
-                        adapter = NotificationAdapter(mContext, mNotificationList)
-                        layoutManager =
-                            LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false)
+                    if(response.body()!!.data.notifications.isNotEmpty()) {
+                        binding.txtEmptyNoti.visibility == View.GONE
+                        mNotificationList.addAll(response.body()!!.data.notifications)
+                        binding.rvNotificationList.apply {
+                            adapter = NotificationAdapter(mContext, mNotificationList)
+                            layoutManager =
+                                LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false)
+                        }
+                        setNotiIsRead()
                     }
-                    setNotiIsRead()
                 }
             }
 
