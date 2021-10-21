@@ -2,6 +2,7 @@ package com.neppplus.gabozago.adapters
 
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
@@ -28,7 +29,12 @@ class InvitedAppointmentListAdapter(val mContext: Context, val mList: List<Appoi
 
     override fun onBindViewHolder(holder: InvitedAppointmentListAdapterViewHolder, position: Int) {
         holder.onBind(mList[position])
-        //holder.onMapClickEvent(mList[position], mContext)
+
+        holder.itemView.setOnClickListener {
+            val myIntent = Intent(mContext, ViewAppointmentDetailActivity::class.java)
+            myIntent.putExtra("AppointmentData", mList[position])
+            mContext.startActivity(myIntent)
+        }
     }
 
     override fun getItemCount(): Int = mList.size
@@ -36,22 +42,10 @@ class InvitedAppointmentListAdapter(val mContext: Context, val mList: List<Appoi
         RecyclerView.ViewHolder(binding.root) {
         fun onBind(item: AppointmentData) {
             binding.txtTitle.text = item.title
+            Log.d("appointmentDate", item.datetime.toString())
             binding.txtDate.text = item.getFormattedDateTime()
             binding.txtDestination.text = item.place
+            binding.txtDDay.text = item.getDDay()
         }
-
-//        fun onMapClickEvent(item: AppointmentData, context: Context) {
-//            binding.btnMapDetail.setOnClickListener {
-//                val myIntent = Intent(context, ViewMapActivity::class.java)
-//                myIntent.putExtra("AppointmentData", item)
-//                context.startActivity(myIntent)
-//            }
-//
-//            binding.layoutRoot.setOnClickListener {
-//                val myIntent = Intent(context, ViewAppointmentDetailActivity::class.java)
-//                myIntent.putExtra("AppointmentData", item)
-//                context.startActivity(myIntent)
-//            }
-//        }
     }
 }
