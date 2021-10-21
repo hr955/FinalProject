@@ -3,6 +3,7 @@ package com.neppplus.gabozago.datas
 import com.google.gson.annotations.SerializedName
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.time.milliseconds
 
 class NotificationData(
     var id: Int,
@@ -16,28 +17,29 @@ class NotificationData(
     @SerializedName("is_read")
     var isRead: Boolean
 ) {
+    enum class TimeValue(val value: Int,val maximum : Int, val msg : String) {
+        SEC(60,60,"분 전"),
+        MIN(60,24,"시간 전"),
+        HOUR(24,30,"일 전"),
+        DAY(30,12,"달 전"),
+        MONTH(12,Int.MAX_VALUE,"년 전")
+    }
 
-    fun getFormattedDateTime(): String {
-        val nowDate = Calendar.getInstance()
-
-        // 디바이스 시간과 맞도록 시간 보정
-        val dateTimeToTimeZone = this.createdAt.time + nowDate.timeZone.rawOffset
-
-        // 몇시간 전에 온 알림인지 시간 계산
-        val diff = nowDate.timeInMillis - dateTimeToTimeZone
-        val diffHour = diff / 1000 / 60 / 60
-        val diffDay = diffHour/24
-
-        if (diffHour < 1) {
-            val diffMinute = diff / 1000 / 60
-            return "${diffMinute}분 전"
-        } else if (diffHour < 24) {
-            return "${diffHour}시간 전"
-        } else if (diffHour >= 24 && diffDay <7) {
-            return "${diffDay}일 전"
-        } else {
-            val dateTimeFormat = SimpleDateFormat("yyyy.MM.dd")
-            return dateTimeFormat.format(dateTimeToTimeZone)
+    fun getFormattedDateTime(): String? {
+        val curTime = System.currentTimeMillis()
+        var gapTime = (curTime - this.createdAt.time) / 1000
+        var msg: String? = null
+        if (this.createdAt.time < TimeValue.SEC.value)
+            msg = "방금 전"
+        else {
+            for (i in TimeValue.values()) {
+                gapTime /= i.value
+                if (gapTime < i.maximum) {
+                    msg = "${gapTime}${i.msg}"
+                    break
+                }
+            }
         }
+        return msg
     }
 }

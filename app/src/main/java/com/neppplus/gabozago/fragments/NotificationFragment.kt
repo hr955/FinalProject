@@ -20,7 +20,7 @@ class NotificationFragment : BaseFragment() {
 
 
     lateinit var binding: FragmentNotificationBinding
-    val mNotificationList = ArrayList<NotificationData>()
+    private val mNotificationList = ArrayList<NotificationData>()
 
 
     override fun onCreateView(
@@ -45,20 +45,28 @@ class NotificationFragment : BaseFragment() {
     }
 
     override fun setValues() {
-        // 알림 목록 불러오기
-        apiService.getRequestNotificationList("true").enqueue(object: Callback<BasicResponse>{
+        getNotificationListFromServer { response ->
+            binding.rvNotificationList.apply {
+                mNotificationList.addAll(response.data.notifications)
+
+                binding.txtEmptyNoti.visibility = View.GONE
+
+                setNotiIsRead(mNotificationList[0].id)
+
+                adapter = NotificationAdapter(mContext, mNotificationList)
+                layoutManager =
+                    LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false)
+            }
+        }
+    }
+
+
+    // 알림 목록 불러오기
+    private fun getNotificationListFromServer(success: (response: BasicResponse) -> Unit) {
+        apiService.getRequestNotificationList("true").enqueue(object : Callback<BasicResponse> {
             override fun onResponse(call: Call<BasicResponse>, response: Response<BasicResponse>) {
-                if(response.isSuccessful){
-                    if(response.body()!!.data.notifications.isNotEmpty()) {
-                        binding.txtEmptyNoti.visibility == View.GONE
-                        mNotificationList.addAll(response.body()!!.data.notifications)
-                        binding.rvNotificationList.apply {
-                            adapter = NotificationAdapter(mContext, mNotificationList)
-                            layoutManager =
-                                LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false)
-                        }
-                        setNotiIsRead()
-                    }
+                if (response.body()!!.data.notifications.isNotEmpty()) {
+                    success(response.body()!!)
                 }
             }
 
@@ -68,13 +76,17 @@ class NotificationFragment : BaseFragment() {
     }
 
     // 알림 읽음 처리
-    fun setNotiIsRead(){
-        apiService.postRequestNotiIsRead(mNotificationList[0].id).enqueue(object : Callback<BasicResponse> {
-            override fun onResponse(call: Call<BasicResponse>, response: Response<BasicResponse>) {
-                Log.d("NotificationFragment", "NotificationIsRead Success")
-            }
+    fun setNotiIsRead(notiId: Int) {
+        apiService.postRequestNotiIsRead(notiId)
+            .enqueue(object : Callback<BasicResponse> {
+                override fun onResponse(
+                    call: Call<BasicResponse>,
+                    response: Response<BasicResponse>
+                ) {
+                    Log.d("NotificationFragment", "NotificationIsRead Success")
+                }
 
-            override fun onFailure(call: Call<BasicResponse>, t: Throwable) {}
-        })
+                override fun onFailure(call: Call<BasicResponse>, t: Throwable) {}
+            })
     }
 }
