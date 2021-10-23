@@ -86,7 +86,6 @@ class EditAppointmentActivity : BaseActivity() {
         addFriendButtonClickEvent() // 약속에 초대할 친구 추가
         setDeparture() // 출발지 설정
         setDestination() // 도착지 설정
-
         saveButtonClickEvent() // 일정 등록 완료 버튼
 
         // 뒤로가기 버튼
@@ -115,7 +114,7 @@ class EditAppointmentActivity : BaseActivity() {
     }
 
     override fun setValues() {
-        setDataFromViewAppointmentActivity() // 약속 수정시 데이터 설정
+        setDataFromViewAppointmentActivity() // 약속 수정모드일 경우 데이터 설정
         getMyFriendListFromServer() // 친구 목록 불러오기
 
         mAddFriendSpinnerAdapter =
@@ -199,6 +198,7 @@ class EditAppointmentActivity : BaseActivity() {
         }
     }
 
+    // 초대할 친구 목록 레이아웃 설정
     private fun inflateFlowLayoutItem(selectedFriend: UserData){
         val inflater =
             LayoutInflater.from(mContext).inflate(R.layout.item_add_friend_list, null)
@@ -509,7 +509,8 @@ class EditAppointmentActivity : BaseActivity() {
             }
 
             when (mEditMode) {
-                true -> saveAPI(
+                // 약속 수정
+                true -> callSaveAPI(
                     apiService.putRequestEditAppointment(
                         mAppointmentId,
                         inputTitle,
@@ -523,8 +524,8 @@ class EditAppointmentActivity : BaseActivity() {
                         setFriendListString()
                     )
                 )
-
-                false -> saveAPI(
+                // 약속 신규 등록
+                false -> callSaveAPI(
                     apiService.postRequestAddAppointment(
                         inputTitle,
                         inputDate,
@@ -541,7 +542,8 @@ class EditAppointmentActivity : BaseActivity() {
         }
     }
 
-    private fun saveAPI(apiService: Call<BasicResponse>){
+    // 약속 데이터 저장 API 호출
+    private fun callSaveAPI(apiService: Call<BasicResponse>){
         apiService.enqueue(object : Callback<BasicResponse> {
             override fun onResponse(
                 call: Call<BasicResponse>,
@@ -567,6 +569,10 @@ class EditAppointmentActivity : BaseActivity() {
                         .build()
 
                 js.schedule(jobInfo)
+
+                if(mEditMode){
+                    setResult(RESULT_OK, intent)
+                }
                 finish()
             }
 
@@ -575,6 +581,7 @@ class EditAppointmentActivity : BaseActivity() {
 
     }
 
+    // 약속 수정모드일 경우 데이터 설정
     private fun setDataFromViewAppointmentActivity() {
         mEditMode = intent.getBooleanExtra("EditMode", false)
         if(mEditMode){

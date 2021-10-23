@@ -54,6 +54,8 @@ class ViewAppointmentDetailActivity : BaseActivity() {
     lateinit var binding: ActivityViewAppointmentDetailBinding
     lateinit var mAppointmentData: AppointmentData
 
+    private var mAppointmentId = 0
+
     var needLocationSendServer = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -75,134 +77,42 @@ class ViewAppointmentDetailActivity : BaseActivity() {
             editAppointment()
         }
 
-        // 도착 인증 버튼
-        binding.btnArrival.setOnClickListener {
-
-            // 서버에 위치를 보내야한다고 flag값을 true
-            needLocationSendServer = true
-            Log.d("테스트1", "테스트1")
-
-            val pl = object : PermissionListener {
-                override fun onPermissionGranted() {
-                    if (ActivityCompat.checkSelfPermission(
-                            mContext,
-                            Manifest.permission.ACCESS_FINE_LOCATION
-                        ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                            mContext,
-                            Manifest.permission.ACCESS_COARSE_LOCATION
-                        ) != PackageManager.PERMISSION_GRANTED
-                    ) {
-
-                        return
-                    }
-
-                    val locationManager = getSystemService(LOCATION_SERVICE) as LocationManager
-
-                    locationManager.requestLocationUpdates(
-                        LocationManager.GPS_PROVIDER,
-                        0L,
-                        0f,
-                        object : LocationListener {
-                            override fun onLocationChanged(p0: Location) {
-                                if (needLocationSendServer) {
-                                    // 서버에 위경도값 보내주기.
-                                    apiService.postRequestArrival(
-                                        mAppointmentData.id,
-                                        p0.latitude,
-                                        p0.longitude
-                                    ).enqueue(object : Callback<BasicResponse> {
-                                        override fun onResponse(
-                                            call: Call<BasicResponse>,
-                                            response: Response<BasicResponse>
-                                        ) {
-                                            if (response.isSuccessful) {
-                                                needLocationSendServer = false
-                                                Toast.makeText(
-                                                    mContext,
-                                                    "약속 인증에 성공했습니다.",
-                                                    Toast.LENGTH_SHORT
-                                                )
-                                                    .show()
-                                            } else {
-                                                val jsonObj =
-                                                    JSONObject(response.errorBody()!!.string())
-                                                Log.d("응답전문", jsonObj.toString())
-
-                                                val message = jsonObj.getString("message")
-
-                                                Toast.makeText(
-                                                    mContext,
-                                                    message,
-                                                    Toast.LENGTH_SHORT
-                                                )
-                                                    .show()
-
-                                            }
-                                        }
-
-                                        override fun onFailure(
-                                            call: Call<BasicResponse>,
-                                            t: Throwable
-                                        ) {
-                                        }
-                                    })
-//                                  응답이 성공적으로 돌아오면 => 서버에 안보내기.
-                                }
-                            }
-
-                            override fun onStatusChanged(
-                                provider: String?,
-                                status: Int,
-                                extras: Bundle?
-                            ) {
-
-                            }
-
-                            override fun onProviderEnabled(provider: String) {
-
-                            }
-
-                            override fun onProviderDisabled(provider: String) {
-
-                            }
-                        })
-                }
-
-                override fun onPermissionDenied(deniedPermissions: MutableList<String>?) {
-                    Toast.makeText(mContext, "현재 위치 정보를 파악해야 약속 도착 인증이 가능합니다.", Toast.LENGTH_SHORT)
-                        .show()
-                }
-
-            }
-            TedPermission.create()
-                .setPermissionListener(pl)
-                .setPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
-                .check()
-        }
-
-        // 약속 삭제
-        deleteAppointment()
-
+        arrivalCheck() // 도착 인증 버튼
+        deleteAppointment() // 약속 삭제
 
     }
 
     override fun setValues() {
-        setAppointmentData(intent.getSerializableExtra("AppointmentData") as AppointmentData)
+        mAppointmentId = intent.getIntExtra("AppointmentId", 0)
+        setAppointmentData()
     }
 
+
     // 약속 데이터 설정
-    private fun setAppointmentData(appointmentData: AppointmentData) {
-        mAppointmentData = appointmentData
+    private fun getAppointmentDataFromServer(success: (response: BasicResponse) -> Unit) {
+        apiService.getRequestAppointmentDetail(mAppointmentId).enqueue(object: Callback<BasicResponse>{
+            override fun onResponse(call: Call<BasicResponse>, response: Response<BasicResponse>) {
+                success(response.body()!!)
+            }
 
-        binding.txtTitle.text = mAppointmentData.title
-        binding.txtPlace.text = mAppointmentData.place
+            override fun onFailure(call: Call<BasicResponse>, t: Throwable) {}
+        })
+    }
 
-        binding.txtFriendCount.text = "( 참여 인원 : ${mAppointmentData.invitedFriendList.size}명 )"
+    private fun setAppointmentData() {
+        getAppointmentDataFromServer { response ->
+            mAppointmentData = response.data.appointment
 
-        binding.txtDate.text = mAppointmentData.getFormattedDateTime()
-        setArrivalMarker()
+            binding.txtTitle.text = mAppointmentData.title
+            binding.txtPlace.text = mAppointmentData.place
 
-        getAppointmentFromServer()
+            binding.txtFriendCount.text = "( 참여 인원 : ${mAppointmentData.invitedFriendList.size}명 )"
+
+            binding.txtDate.text = mAppointmentData.getFormattedDateTime()
+            setArrivalMarker()
+
+            getAppointmentFromServer()
+        }
     }
 
     // 서버에서 친구 도착정보 가져오기
@@ -387,13 +297,101 @@ class ViewAppointmentDetailActivity : BaseActivity() {
         myIntent.putExtra("AppointmentData", mAppointmentData)
         myIntent.putExtra("EditMode", true)
         startForEditAppointment.launch(myIntent)
-
     }
 
     private val startForEditAppointment: ActivityResultLauncher<Intent> =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
             if(result.resultCode == RESULT_OK){
-                setAppointmentData(result.data!!.getSerializableExtra("AppointmentData") as AppointmentData)
+                setAppointmentData()
             }
         }
+
+    // 도착인증
+    private fun arrivalCheck(){
+        binding.btnArrival.setOnClickListener {
+
+            // 서버에 위치를 보내야한다고 flag값을 true
+            needLocationSendServer = true
+
+            val pl = object : PermissionListener {
+                override fun onPermissionGranted() {
+                    if (ActivityCompat.checkSelfPermission(
+                            mContext,
+                            Manifest.permission.ACCESS_FINE_LOCATION
+                        ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                            mContext,
+                            Manifest.permission.ACCESS_COARSE_LOCATION
+                        ) != PackageManager.PERMISSION_GRANTED
+                    ) { return }
+
+                    val locationManager = getSystemService(LOCATION_SERVICE) as LocationManager
+
+                    locationManager.requestLocationUpdates(
+                        LocationManager.GPS_PROVIDER,
+                        0L,
+                        0f,
+                        object : LocationListener {
+                            override fun onLocationChanged(p0: Location) {
+                                if (needLocationSendServer) {
+                                    // 서버에 위경도값 보내주기.
+                                    apiService.postRequestArrival(
+                                        mAppointmentData.id,
+                                        p0.latitude,
+                                        p0.longitude
+                                    ).enqueue(object : Callback<BasicResponse> {
+                                        override fun onResponse(
+                                            call: Call<BasicResponse>,
+                                            response: Response<BasicResponse>
+                                        ) {
+                                            if (response.isSuccessful) {
+                                                needLocationSendServer = false
+                                                Toast.makeText(
+                                                    mContext,
+                                                    "약속 인증에 성공했습니다.",
+                                                    Toast.LENGTH_SHORT
+                                                )
+                                                    .show()
+                                            } else {
+                                                val jsonObj =
+                                                    JSONObject(response.errorBody()!!.string())
+                                                Log.d("응답전문", jsonObj.toString())
+
+                                                val message = jsonObj.getString("message")
+
+                                                Toast.makeText(
+                                                    mContext,
+                                                    message,
+                                                    Toast.LENGTH_SHORT
+                                                )
+                                                    .show()
+
+                                            }
+                                        }
+                                        override fun onFailure(call: Call<BasicResponse>, t: Throwable) {}
+                                    })
+                                    // 응답이 성공적으로 돌아오면 => 서버에 안보내기.
+                                }
+                            }
+
+                            override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {}
+
+                            override fun onProviderEnabled(provider: String) {}
+
+                            override fun onProviderDisabled(provider: String) {}
+                        })
+                }
+
+                override fun onPermissionDenied(deniedPermissions: MutableList<String>?) {
+                    Toast.makeText(mContext, "현재 위치 정보를 파악해야 약속 도착 인증이 가능합니다.", Toast.LENGTH_SHORT)
+                        .show()
+                }
+
+            }
+            TedPermission.create()
+                .setPermissionListener(pl)
+                .setPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
+                .check()
+        }
+
+    }
 }

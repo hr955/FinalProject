@@ -31,7 +31,7 @@ class AppointmentListAdapter(val mContext: Context, private val mList: List<Appo
         holder.onBind(mList[position])
         holder.itemView.setOnClickListener {
             val myIntent = Intent(mContext, ViewAppointmentDetailActivity::class.java)
-            myIntent.putExtra("AppointmentData", mList[position])
+            myIntent.putExtra("AppointmentId", mList[position].id)
             mContext.startActivity(myIntent)
         }
     }
