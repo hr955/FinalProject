@@ -174,4 +174,20 @@ interface ServerAPIService {
         @Query("text") acceptStr: String
     ): Call<BasicResponse>
 
+    // 약속 수정 API
+    @FormUrlEncoded
+    @PUT("/appointment")
+    fun putRequestEditAppointment(
+        @Field("appointment_id") appointmentId: Int,
+        @Field("title") title: String,
+        @Field("datetime") date: String,
+        @Field("start_place") startPlace: String,
+        @Field("start_latitude") startLatitude: Double,
+        @Field("start_longitude") startLongitude: Double,
+        @Field("place") place: String,
+        @Field("latitude") latitude: Double,
+        @Field("longitude") longitude: Double,
+        @Field("friend_list") friendList: String?
+    ): Call<BasicResponse>
+
 }

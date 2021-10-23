@@ -32,6 +32,7 @@ import com.neppplus.gabozago.adapters.AddFriendSpinnerAdapter
 import com.neppplus.gabozago.databinding.ActivityEditAppointmentBinding
 import com.neppplus.gabozago.datas.*
 import com.neppplus.gabozago.services.MyJobService
+import com.neppplus.gabozago.utils.GlobalData
 import com.neppplus.gabozago.utils.SizeUtil
 import com.odsay.odsayandroidsdk.API
 import com.odsay.odsayandroidsdk.ODsayData
@@ -49,7 +50,12 @@ class EditAppointmentActivity : BaseActivity() {
 
     lateinit var binding: ActivityEditAppointmentBinding
 
+    private var mEditMode = false
+    private var mAppointmentId = 0
+
     private val mSelectedDateTime = Calendar.getInstance()
+    private val mDateFormat = SimpleDateFormat("yyyy. M. d (E)")
+    private val mTimeFormat = SimpleDateFormat("a hh : mm")
 
     val mFriendList = ArrayList<UserData>()
     lateinit var mAddFriendSpinnerAdapter: AddFriendSpinnerAdapter
@@ -80,6 +86,7 @@ class EditAppointmentActivity : BaseActivity() {
         addFriendButtonClickEvent() // 약속에 초대할 친구 추가
         setDeparture() // 출발지 설정
         setDestination() // 도착지 설정
+
         saveButtonClickEvent() // 일정 등록 완료 버튼
 
         // 뒤로가기 버튼
@@ -108,6 +115,7 @@ class EditAppointmentActivity : BaseActivity() {
     }
 
     override fun setValues() {
+        setDataFromViewAppointmentActivity() // 약속 수정시 데이터 설정
         getMyFriendListFromServer() // 친구 목록 불러오기
 
         mAddFriendSpinnerAdapter =
@@ -136,8 +144,7 @@ class EditAppointmentActivity : BaseActivity() {
             val dateSetListener =
                 DatePickerDialog.OnDateSetListener { view, year, month, dayOfMonth ->
                     mSelectedDateTime.set(year, month, dayOfMonth)
-                    binding.txtSelectDate.text =
-                        SimpleDateFormat("yyyy. M. d (E)").format(mSelectedDateTime.time)
+                    binding.txtSelectDate.text = mDateFormat.format(mSelectedDateTime.time)
                 }
 
             val datePicker = DatePickerDialog(
@@ -160,8 +167,7 @@ class EditAppointmentActivity : BaseActivity() {
                     mSelectedDateTime.set(Calendar.HOUR_OF_DAY, hourOfDay)
                     mSelectedDateTime.set(Calendar.MINUTE, minute)
 
-                    binding.txtSelectTime.text =
-                        SimpleDateFormat("a hh : mm").format(mSelectedDateTime.time)
+                    binding.txtSelectTime.text = mTimeFormat.format(mSelectedDateTime.time)
 
                     Log.d("TimeTest", Calendar.getInstance().timeInMillis.toString())
                     Log.d("TimeTest2", mSelectedDateTime.timeInMillis.toString())
@@ -189,28 +195,32 @@ class EditAppointmentActivity : BaseActivity() {
                 return@setOnClickListener
             }
 
-            val inflater =
-                LayoutInflater.from(mContext).inflate(R.layout.item_add_friend_list, null)
-            val layout = inflater.findViewById<LinearLayout>(R.id.linear_layout)
-            val txtFriendNickname = inflater.findViewById<TextView>(R.id.txt_friend_nickname)
-            val btnDelete = inflater.findViewById<ImageView>(R.id.btn_delete)
+            inflateFlowLayoutItem(selectedFriend)
+        }
+    }
 
-            val param = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            )
-            param.marginEnd = SizeUtil.dpToPx(mContext, 5f).toInt()
-            layout.layoutParams = param
+    private fun inflateFlowLayoutItem(selectedFriend: UserData){
+        val inflater =
+            LayoutInflater.from(mContext).inflate(R.layout.item_add_friend_list, null)
+        val layout = inflater.findViewById<LinearLayout>(R.id.linear_layout)
+        val txtFriendNickname = inflater.findViewById<TextView>(R.id.txt_friend_nickname)
+        val btnDelete = inflater.findViewById<ImageView>(R.id.btn_delete)
 
-            txtFriendNickname.text = selectedFriend.nickname
+        val param = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.WRAP_CONTENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+        )
+        param.marginEnd = SizeUtil.dpToPx(mContext, 5f).toInt()
+        layout.layoutParams = param
 
-            mSelectedFriendList.add(selectedFriend)
-            binding.flAddFriend.addView(layout)
+        txtFriendNickname.text = selectedFriend.nickname
 
-            btnDelete.setOnClickListener {
-                binding.flAddFriend.removeView(layout)
-                mSelectedFriendList.remove(selectedFriend)
-            }
+        mSelectedFriendList.add(selectedFriend)
+        binding.flAddFriend.addView(layout)
+
+        btnDelete.setOnClickListener {
+            binding.flAddFriend.removeView(layout)
+            mSelectedFriendList.remove(selectedFriend)
         }
     }
 
@@ -338,7 +348,7 @@ class EditAppointmentActivity : BaseActivity() {
                         val txtPlace = view.findViewById<TextView>(R.id.txt_place)
                         val txtArrivalTime = view.findViewById<TextView>(R.id.txt_arrival_time)
 
-                        txtPlace.text = "도착 | ${mDestinationData.placeName}"
+                        txtPlace.text = "도착지 | ${mDestinationData.placeName}"
                         txtArrivalTime.text = "-"
                         return view
                     }
@@ -403,12 +413,7 @@ class EditAppointmentActivity : BaseActivity() {
                                     }
                                 }
                             }
-                            points.add(
-                                LatLng(
-                                    mDestinationData.latitude,
-                                    mDestinationData.longitude
-                                )
-                            )
+                            points.add(LatLng(mDestinationData.latitude, mDestinationData.longitude))
 
                             mPath.coords = points
                             mPath.map = naverMap
@@ -439,9 +444,7 @@ class EditAppointmentActivity : BaseActivity() {
         mDestinationInfoWindow.adapter =
             object : InfoWindow.DefaultViewAdapter(mContext) {
                 override fun getContentView(p0: InfoWindow): View {
-                    val view =
-                        LayoutInflater.from(mContext)
-                            .inflate(R.layout.my_custom_info_window, null)
+                    val view = LayoutInflater.from(mContext).inflate(R.layout.my_custom_info_window, null)
                     val txtPlace = view.findViewById<TextView>(R.id.txt_place)
                     val txtArrivalTime =
                         view.findViewById<TextView>(R.id.txt_arrival_time)
@@ -505,46 +508,109 @@ class EditAppointmentActivity : BaseActivity() {
                 return@setOnClickListener
             }
 
-            apiService.postRequestAddAppointment(
-                inputTitle,
-                inputDate,
-                mDepartureData.placeName,
-                mDepartureData.latitude,
-                mDepartureData.longitude,
-                mDestinationData.placeName,
-                mDestinationData.latitude,
-                mDestinationData.longitude,
-                setFriendListString()
-            ).enqueue(object : Callback<BasicResponse> {
-                override fun onResponse(
-                    call: Call<BasicResponse>,
-                    response: Response<BasicResponse>
-                ) {
-                    val js = getSystemService(JOB_SCHEDULER_SERVICE) as JobScheduler
-                    val serviceComponent = ComponentName(mContext, MyJobService::class.java)
+            when (mEditMode) {
+                true -> saveAPI(
+                    apiService.putRequestEditAppointment(
+                        mAppointmentId,
+                        inputTitle,
+                        inputDate,
+                        mDepartureData.placeName,
+                        mDepartureData.latitude,
+                        mDepartureData.longitude,
+                        mDestinationData.placeName,
+                        mDestinationData.latitude,
+                        mDestinationData.longitude,
+                        setFriendListString()
+                    )
+                )
 
-                    mSelectedDateTime.add(Calendar.HOUR_OF_DAY, -2)
+                false -> saveAPI(
+                    apiService.postRequestAddAppointment(
+                        inputTitle,
+                        inputDate,
+                        mDepartureData.placeName,
+                        mDepartureData.latitude,
+                        mDepartureData.longitude,
+                        mDestinationData.placeName,
+                        mDestinationData.latitude,
+                        mDestinationData.longitude,
+                        setFriendListString()
+                    )
+                )
+            }
+        }
+    }
 
-                    val now = Calendar.getInstance()
-                    val timeOffset = now.timeZone.rawOffset / 1000 / 60 / 60
-                    now.add(Calendar.HOUR_OF_DAY, -timeOffset)
+    private fun saveAPI(apiService: Call<BasicResponse>){
+        apiService.enqueue(object : Callback<BasicResponse> {
+            override fun onResponse(
+                call: Call<BasicResponse>,
+                response: Response<BasicResponse>
+            ) {
+                val js = getSystemService(JOB_SCHEDULER_SERVICE) as JobScheduler
+                val serviceComponent = ComponentName(mContext, MyJobService::class.java)
 
-                    val jobTime = mSelectedDateTime.timeInMillis - now.timeInMillis
+                mSelectedDateTime.add(Calendar.HOUR_OF_DAY, -2)
 
-                    val basicResponse = response.body()!!
+                val now = Calendar.getInstance()
+                val timeOffset = now.timeZone.rawOffset / 1000 / 60 / 60
+                now.add(Calendar.HOUR_OF_DAY, -timeOffset)
 
-                    val jobInfo =
-                        JobInfo.Builder(basicResponse.data.appointment.id, serviceComponent)
-                            .setMinimumLatency(jobTime)
-                            .setOverrideDeadline(TimeUnit.MINUTES.toMillis(3))
-                            .build()
+                val jobTime = mSelectedDateTime.timeInMillis - now.timeInMillis
 
-                    js.schedule(jobInfo)
-                    finish()
-                }
+                val basicResponse = response.body()!!
 
-                override fun onFailure(call: Call<BasicResponse>, t: Throwable) {}
-            })
+                val jobInfo =
+                    JobInfo.Builder(basicResponse.data.appointment.id, serviceComponent)
+                        .setMinimumLatency(jobTime)
+                        .setOverrideDeadline(TimeUnit.MINUTES.toMillis(3))
+                        .build()
+
+                js.schedule(jobInfo)
+                finish()
+            }
+
+            override fun onFailure(call: Call<BasicResponse>, t: Throwable) {}
+        })
+
+    }
+
+    private fun setDataFromViewAppointmentActivity() {
+        mEditMode = intent.getBooleanExtra("EditMode", false)
+        if(mEditMode){
+            binding.txtToolbarTitle.text = "약속 수정"
+
+            val appointmentData = intent.getSerializableExtra("AppointmentData") as AppointmentData
+            mSelectedDateTime.time = Date(appointmentData.datetime.time - Calendar.getInstance().timeZone.rawOffset)
+
+            mAppointmentId = appointmentData.id
+
+            mDepartureData.apply {
+                placeName = appointmentData.startPlace
+                latitude = appointmentData.startlatitude
+                longitude = appointmentData.startlongitude
+
+            }
+            mDestinationData.apply {
+                placeName = appointmentData.place
+                latitude = appointmentData.latitude
+                longitude = appointmentData.longitude
+            }
+
+            binding.edtAppointmentTitle.setText(appointmentData.title)
+            binding.txtSelectDate.text = mDateFormat.format(mSelectedDateTime.time)
+            binding.txtSelectTime.text = mTimeFormat.format(mSelectedDateTime.time)
+            binding.txtSelectDeparture.text = "출발지 | ${mDepartureData.placeName}"
+            binding.txtSelectDestination.text = "도착지 | ${mDestinationData.placeName}"
+
+            mSelectedFriendList.add(GlobalData.loginUser!!)
+
+            for(i in 1 until appointmentData.invitedFriendList.size){
+                inflateFlowLayoutItem(appointmentData.invitedFriendList[i])
+            }
+
+            setDepartureMarker()
+            setDestinationMarker()
         }
     }
 }

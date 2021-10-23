@@ -3,6 +3,7 @@ package com.neppplus.gabozago
 import android.Manifest
 import android.app.AlertDialog
 import android.content.DialogInterface
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.location.Location
@@ -15,7 +16,13 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.ActivityResultRegistry
+import androidx.activity.result.contract.ActivityResultContract
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
+import androidx.core.app.ActivityOptionsCompat
 import androidx.databinding.DataBindingUtil
 import com.bumptech.glide.Glide
 import com.neppplus.gabozago.databinding.ActivityViewAppointmentDetailBinding
@@ -49,7 +56,6 @@ class ViewAppointmentDetailActivity : BaseActivity() {
 
     var needLocationSendServer = false
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_view_appointment_detail)
@@ -64,10 +70,15 @@ class ViewAppointmentDetailActivity : BaseActivity() {
             getAppointmentFromServer()
         }
 
+        // 약속 수정
+        binding.btnEditAppointment.setOnClickListener {
+            editAppointment()
+        }
+
         // 도착 인증 버튼
         binding.btnArrival.setOnClickListener {
 
-//            서버에 위치를 보내야한다고 flag값을 true
+            // 서버에 위치를 보내야한다고 flag값을 true
             needLocationSendServer = true
             Log.d("테스트1", "테스트1")
 
@@ -93,25 +104,18 @@ class ViewAppointmentDetailActivity : BaseActivity() {
                         0f,
                         object : LocationListener {
                             override fun onLocationChanged(p0: Location) {
-                                Log.d("테스트2", "테스트2")
-
                                 if (needLocationSendServer) {
-
-//                                    서버에 위경도값 보내주기.
-                                    Log.d("위도", p0.latitude.toString())
-                                    Log.d("경도", p0.longitude.toString())
-
-
+                                    // 서버에 위경도값 보내주기.
                                     apiService.postRequestArrival(
                                         mAppointmentData.id,
                                         p0.latitude,
                                         p0.longitude
-                                    ).enqueue(object: Callback<BasicResponse>{
+                                    ).enqueue(object : Callback<BasicResponse> {
                                         override fun onResponse(
                                             call: Call<BasicResponse>,
                                             response: Response<BasicResponse>
                                         ) {
-                                            if(response.isSuccessful){
+                                            if (response.isSuccessful) {
                                                 needLocationSendServer = false
                                                 Toast.makeText(
                                                     mContext,
@@ -119,13 +123,18 @@ class ViewAppointmentDetailActivity : BaseActivity() {
                                                     Toast.LENGTH_SHORT
                                                 )
                                                     .show()
-                                            }else{
-                                                val jsonObj = JSONObject(response.errorBody()!!.string())
+                                            } else {
+                                                val jsonObj =
+                                                    JSONObject(response.errorBody()!!.string())
                                                 Log.d("응답전문", jsonObj.toString())
 
                                                 val message = jsonObj.getString("message")
 
-                                                Toast.makeText(mContext, message, Toast.LENGTH_SHORT)
+                                                Toast.makeText(
+                                                    mContext,
+                                                    message,
+                                                    Toast.LENGTH_SHORT
+                                                )
                                                     .show()
 
                                             }
@@ -136,11 +145,9 @@ class ViewAppointmentDetailActivity : BaseActivity() {
                                             t: Throwable
                                         ) {
                                         }
-
                                     })
-//                                    응답이 성공적으로 돌아오면 => 서버에 안보내기.
+//                                  응답이 성공적으로 돌아오면 => 서버에 안보내기.
                                 }
-
                             }
 
                             override fun onStatusChanged(
@@ -173,46 +180,46 @@ class ViewAppointmentDetailActivity : BaseActivity() {
                 .check()
         }
 
-        // 약속 삭제 버튼
-        binding.btnDeleteAppointment.setOnClickListener {
-            val alert = AlertDialog.Builder(mContext)
-            alert.setTitle("약속을 삭제하시겠습니까?")
-            alert.setPositiveButton("삭제", DialogInterface.OnClickListener { dialogInterface, i ->
-                deleteAppointment()
-                finish()
-            })
-            alert.setNegativeButton("취소", null)
-            alert.show()
-        }
+        // 약속 삭제
+        deleteAppointment()
+
+
     }
 
     override fun setValues() {
-        mAppointmentData = intent.getSerializableExtra("AppointmentData") as AppointmentData
+        setAppointmentData(intent.getSerializableExtra("AppointmentData") as AppointmentData)
+    }
+
+    // 약속 데이터 설정
+    private fun setAppointmentData(appointmentData: AppointmentData) {
+        mAppointmentData = appointmentData
 
         binding.txtTitle.text = mAppointmentData.title
         binding.txtPlace.text = mAppointmentData.place
 
         binding.txtFriendCount.text = "( 참여 인원 : ${mAppointmentData.invitedFriendList.size}명 )"
 
-        val sdf = SimpleDateFormat("M/d a H:mm")
-        binding.txtDate.text = sdf.format(mAppointmentData.datetime)
+        binding.txtDate.text = mAppointmentData.getFormattedDateTime()
         setArrivalMarker()
 
         getAppointmentFromServer()
     }
 
-    fun getAppointmentFromServer(){
-        apiService.getRequestAppointmentDetail(mAppointmentData.id).enqueue(object: Callback<BasicResponse>{
-            override fun onResponse(call: Call<BasicResponse>, response: Response<BasicResponse>) {
-                val basicResponse = response.body()!!
+    // 서버에서 친구 도착정보 가져오기
+    private fun getAppointmentFromServer() {
+        apiService.getRequestAppointmentDetail(mAppointmentData.id)
+            .enqueue(object : Callback<BasicResponse> {
+                override fun onResponse(
+                    call: Call<BasicResponse>,
+                    response: Response<BasicResponse>
+                ) {
+                    val basicResponse = response.body()!!
 
-                mAppointmentData = basicResponse.data.appointment
+                    mAppointmentData = basicResponse.data.appointment
+                }
 
-            }
-
-            override fun onFailure(call: Call<BasicResponse>, t: Throwable) {
-            }
-        })
+                override fun onFailure(call: Call<BasicResponse>, t: Throwable) {}
+            })
 
         binding.layoutFriendList.removeAllViews()
 
@@ -226,9 +233,9 @@ class ViewAppointmentDetailActivity : BaseActivity() {
             val txtFriendNickname = friendView.findViewById<TextView>(R.id.txt_friend_nickname)
             val txtArrivalStatus = friendView.findViewById<TextView>(R.id.txt_arrival_status)
 
-            if(friend.arrivedAt == null){
+            if (friend.arrivedAt == null) {
                 txtArrivalStatus.text = "도착 전"
-            }else{
+            } else {
                 txtArrivalStatus.text = sdf.format(friend.arrivedAt)
             }
 
@@ -240,7 +247,7 @@ class ViewAppointmentDetailActivity : BaseActivity() {
         }
     }
 
-    fun setArrivalMarker() {
+    private fun setArrivalMarker() {
         val fm = supportFragmentManager
         val infoWindow = InfoWindow()
         val path = PathOverlay()
@@ -354,13 +361,39 @@ class ViewAppointmentDetailActivity : BaseActivity() {
     }
 
     // 약속 삭제
-    fun deleteAppointment(){
-        apiService.deleteRequestAppointment(mAppointmentData.id).enqueue(object: Callback<BasicResponse>{
-            override fun onResponse(call: Call<BasicResponse>, response: Response<BasicResponse>) {
-                if(response.isSuccessful) Log.d("deleteAppointment", "Delete Appointment Successful")
-            }
+    private fun deleteAppointment() {
+        binding.btnDeleteAppointment.setOnClickListener {
+            val alert = AlertDialog.Builder(mContext)
+            alert.setTitle("약속을 삭제하시겠습니까?")
+            alert.setPositiveButton("삭제", DialogInterface.OnClickListener { dialogInterface, i ->
+                apiService.deleteRequestAppointment(mAppointmentData.id)
+                    .enqueue(object : Callback<BasicResponse> {
+                        override fun onResponse(call: Call<BasicResponse>, response: Response<BasicResponse>) {
+                            if (response.isSuccessful) Log.d("deleteAppointment", "Delete Appointment Successful")
+                        }
 
-            override fun onFailure(call: Call<BasicResponse>, t: Throwable) {}
-        })
+                        override fun onFailure(call: Call<BasicResponse>, t: Throwable) {}
+                    })
+                finish()
+            })
+            alert.setNegativeButton("취소", null)
+            alert.show()
+        }
     }
+
+    // 약속 수정
+    private fun editAppointment(){
+        val myIntent = Intent(mContext, EditAppointmentActivity::class.java)
+        myIntent.putExtra("AppointmentData", mAppointmentData)
+        myIntent.putExtra("EditMode", true)
+        startForEditAppointment.launch(myIntent)
+
+    }
+
+    private val startForEditAppointment: ActivityResultLauncher<Intent> =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+            if(result.resultCode == RESULT_OK){
+                setAppointmentData(result.data!!.getSerializableExtra("AppointmentData") as AppointmentData)
+            }
+        }
 }
