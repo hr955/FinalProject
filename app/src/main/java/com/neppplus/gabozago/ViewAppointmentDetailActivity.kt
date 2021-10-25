@@ -68,9 +68,9 @@ class ViewAppointmentDetailActivity : BaseActivity() {
 
     override fun setupEvents() {
         // 친구목록 새로고침 (도착여부 확인)
-        binding.btnRefresh.setOnClickListener {
-            getAppointmentFromServer()
-        }
+//        binding.btnRefresh.setOnClickListener {
+//            getAppointmentFromServer()
+//        }
 
         // 약속 수정
         binding.btnEditAppointment.setOnClickListener {
@@ -103,12 +103,10 @@ class ViewAppointmentDetailActivity : BaseActivity() {
         getAppointmentDataFromServer { response ->
             mAppointmentData = response.data.appointment
 
-            binding.txtTitle.text = mAppointmentData.title
-            binding.txtPlace.text = mAppointmentData.place
+            binding.txtAppointmentTitle.text = mAppointmentData.title
+            binding.txtAppointmentPlace.text = mAppointmentData.place
 
-            binding.txtFriendCount.text = "( 참여 인원 : ${mAppointmentData.invitedFriendList.size}명 )"
-
-            binding.txtDate.text = mAppointmentData.getFormattedDateTime()
+            binding.txtAppointmentDate.text = mAppointmentData.getFormattedDateTime()
             setArrivalMarker()
 
             getAppointmentFromServer()
@@ -334,42 +332,20 @@ class ViewAppointmentDetailActivity : BaseActivity() {
                             override fun onLocationChanged(p0: Location) {
                                 if (needLocationSendServer) {
                                     // 서버에 위경도값 보내주기.
-                                    apiService.postRequestArrival(
-                                        mAppointmentData.id,
-                                        p0.latitude,
-                                        p0.longitude
-                                    ).enqueue(object : Callback<BasicResponse> {
-                                        override fun onResponse(
-                                            call: Call<BasicResponse>,
-                                            response: Response<BasicResponse>
-                                        ) {
+                                    apiService.postRequestArrival(mAppointmentData.id, p0.latitude, p0.longitude).enqueue(object : Callback<BasicResponse> {
+                                        override fun onResponse(call: Call<BasicResponse>, response: Response<BasicResponse>) {
                                             if (response.isSuccessful) {
                                                 needLocationSendServer = false
-                                                Toast.makeText(
-                                                    mContext,
-                                                    "약속 인증에 성공했습니다.",
-                                                    Toast.LENGTH_SHORT
-                                                )
-                                                    .show()
+                                                Toast.makeText(mContext, "도착 인증 완료!", Toast.LENGTH_SHORT).show()
                                             } else {
-                                                val jsonObj =
-                                                    JSONObject(response.errorBody()!!.string())
-                                                Log.d("응답전문", jsonObj.toString())
-
+                                                val jsonObj = JSONObject(response.errorBody()!!.string())
                                                 val message = jsonObj.getString("message")
 
-                                                Toast.makeText(
-                                                    mContext,
-                                                    message,
-                                                    Toast.LENGTH_SHORT
-                                                )
-                                                    .show()
-
+                                                Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show()
                                             }
                                         }
                                         override fun onFailure(call: Call<BasicResponse>, t: Throwable) {}
                                     })
-                                    // 응답이 성공적으로 돌아오면 => 서버에 안보내기.
                                 }
                             }
 
@@ -382,7 +358,7 @@ class ViewAppointmentDetailActivity : BaseActivity() {
                 }
 
                 override fun onPermissionDenied(deniedPermissions: MutableList<String>?) {
-                    Toast.makeText(mContext, "현재 위치 정보를 파악해야 약속 도착 인증이 가능합니다.", Toast.LENGTH_SHORT)
+                    Toast.makeText(mContext, "[위치]권한이 허용되어야\n약속 도착 인증이 가능합니다.", Toast.LENGTH_SHORT)
                         .show()
                 }
 
@@ -392,6 +368,5 @@ class ViewAppointmentDetailActivity : BaseActivity() {
                 .setPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
                 .check()
         }
-
     }
 }

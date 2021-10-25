@@ -12,6 +12,8 @@
         android:layout_width="25dp"
         android:layout_height="25dp"
         android:src="@mipmap/ic_launcher"
+        android:layout_marginStart="20dp"
+        app:civ_border_color="@color/grey"
         app:civ_border_width="1dp" />
 
     <TextView
@@ -32,6 +34,7 @@
         android:id="@+id/txt_arrival_status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="20dp"
         android:text="도착전/도착후" />
 
 </LinearLayout>

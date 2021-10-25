@@ -449,7 +449,7 @@ class EditAppointmentActivity : BaseActivity() {
                     val txtArrivalTime =
                         view.findViewById<TextView>(R.id.txt_arrival_time)
 
-                    txtPlace.text = "도착 | ${mDestinationData.placeName}"
+                    txtPlace.text = "도착지 | ${mDestinationData.placeName}"
                     txtArrivalTime.text = value
 
                     return view
