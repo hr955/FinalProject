@@ -1,15 +1,13 @@
 package com.neppplus.gabozago.fragments
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.neppplus.gabozago.FindFriendActivity
 import com.neppplus.gabozago.R
-import com.neppplus.gabozago.adapters.FriendsListAdapter
+import com.neppplus.gabozago.adapters.FriendListAdapter
 import com.neppplus.gabozago.databinding.FragmentMyFriendsListBinding
 import com.neppplus.gabozago.datas.BasicResponse
 import com.neppplus.gabozago.datas.UserData
@@ -34,7 +32,7 @@ class MyFriendsListFragment : BaseFragment() {
 
     lateinit var binding: FragmentMyFriendsListBinding
     val mMyFriendList = ArrayList<UserData>()
-    lateinit var mFriendsListAdapter: FriendsListAdapter
+    lateinit var mFriendListAdapter: FriendListAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,10 +66,10 @@ class MyFriendsListFragment : BaseFragment() {
     }
 
     override fun setValues() {
-        mFriendsListAdapter = FriendsListAdapter(mContext, mMyFriendList)
+        mFriendListAdapter = FriendListAdapter(mContext, mMyFriendList)
 
         binding.rvFriendsList.apply {
-            adapter = mFriendsListAdapter
+            adapter = mFriendListAdapter
             layoutManager =
                 LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false)
         }
@@ -83,7 +81,7 @@ class MyFriendsListFragment : BaseFragment() {
                 if (response.isSuccessful) {
                     mMyFriendList.clear()
                     mMyFriendList.addAll(response.body()!!.data.friends)
-                    mFriendsListAdapter.notifyDataSetChanged()
+                    mFriendListAdapter.notifyDataSetChanged()
                 }
             }
 

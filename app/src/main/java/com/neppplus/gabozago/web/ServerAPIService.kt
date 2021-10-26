@@ -190,4 +190,10 @@ interface ServerAPIService {
         @Field("friend_list") friendList: String?
     ): Call<BasicResponse>
 
+    // 친구 삭제 API
+    @DELETE("/user/friend")
+    fun deleteRequestFriend(
+        @Query("user_id") userId: Int
+    ): Call<BasicResponse>
+
 }

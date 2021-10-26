@@ -8,14 +8,14 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import com.neppplus.gabozago.FindFriendActivity
 import com.neppplus.gabozago.R
-import com.neppplus.gabozago.adapters.FriendsListViewPagerAdapter
+import com.neppplus.gabozago.adapters.FriendViewPagerAdapter
 import com.neppplus.gabozago.databinding.FragmentFriendBinding
 import com.google.android.material.tabs.TabLayoutMediator
 
 class FriendFragment : BaseFragment(){
 
     lateinit var binding: FragmentFriendBinding
-    lateinit var mAdapter: FriendsListViewPagerAdapter
+    lateinit var mAdapter: FriendViewPagerAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -43,7 +43,7 @@ class FriendFragment : BaseFragment(){
     }
 
     override fun setValues() {
-        binding.vpFriend.adapter = FriendsListViewPagerAdapter(this)
+        binding.vpFriend.adapter = FriendViewPagerAdapter(this)
 
         TabLayoutMediator(binding.tabFriend, binding.vpFriend) { tab, position ->
             when(position){

@@ -5,7 +5,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.neppplus.gabozago.fragments.MyFriendsListFragment
 import com.neppplus.gabozago.fragments.RequestedFriendListFragment
 
-class FriendsListViewPagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
+class FriendViewPagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
     override fun getItemCount(): Int = 2
 
     override fun createFragment(position: Int): Fragment =
