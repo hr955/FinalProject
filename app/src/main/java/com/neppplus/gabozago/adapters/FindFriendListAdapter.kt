@@ -85,9 +85,7 @@ class FindFriendListAdapter(val mContext: Context, val mList: List<UserData>) :
                                 }
                             }
 
-                            override fun onFailure(call: Call<BasicResponse>, t: Throwable) {
-                                TODO("Not yet implemented")
-                            }
+                            override fun onFailure(call: Call<BasicResponse>, t: Throwable) {}
                         })
                     })
                 alert.setNegativeButton("취소", null)
