@@ -32,7 +32,8 @@ class InvitedAppointmentListAdapter(val mContext: Context, val mList: List<Appoi
 
         holder.itemView.setOnClickListener {
             val myIntent = Intent(mContext, ViewAppointmentDetailActivity::class.java)
-            myIntent.putExtra("AppointmentData", mList[position])
+            myIntent.putExtra("AppointmentId", mList[position].id)
+            myIntent.putExtra("ViewMode", "Invited")
             mContext.startActivity(myIntent)
         }
     }

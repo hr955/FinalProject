@@ -73,9 +73,10 @@ class ViewAppointmentDetailActivity : BaseActivity() {
 //        }
 
         // 약속 수정
-        binding.btnEditAppointment.setOnClickListener {
-            editAppointment()
-        }
+        binding.btnEditAppointment.setOnClickListener { editAppointment() }
+
+        // 뒤로가기
+        binding.btnClose.setOnClickListener { finish() }
 
         arrivalCheck() // 도착 인증 버튼
         deleteAppointment() // 약속 삭제
@@ -85,6 +86,15 @@ class ViewAppointmentDetailActivity : BaseActivity() {
     override fun setValues() {
         mAppointmentId = intent.getIntExtra("AppointmentId", 0)
         setAppointmentData()
+        setViewInvitedMode()
+    }
+
+    private fun setViewInvitedMode(){
+        val viewMode = intent.getStringExtra("ViewMode")
+        if(viewMode == "Invited"){
+            binding.btnDeleteAppointment.visibility = View.GONE
+            binding.btnEditAppointment.visibility = View.GONE
+        }
     }
 
 

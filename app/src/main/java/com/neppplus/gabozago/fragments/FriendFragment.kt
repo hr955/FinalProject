@@ -44,8 +44,8 @@ class FriendFragment : BaseFragment(){
 
         TabLayoutMediator(binding.tabFriend, binding.vpFriend) { tab, position ->
             when(position){
-                0-> tab.text = "친구목록"
-                else-> tab.text = "친구 수락 대기"
+                0-> tab.text = "친구 목록"
+                else-> tab.text = "친구 요청 목록"
             }
         }.attach()
     }
