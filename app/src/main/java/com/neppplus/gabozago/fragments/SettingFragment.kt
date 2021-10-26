@@ -24,6 +24,8 @@ import com.neppplus.gabozago.utils.GlobalData
 import com.neppplus.gabozago.utils.URIPathHelper
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.normal.TedPermission
+import com.neppplus.gabozago.web.ServerAPI
+import com.neppplus.gabozago.web.ServerAPIService
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -84,20 +86,32 @@ class SettingFragment : BaseFragment() {
         setUserInfo()
     }
 
-    fun leaveAppButtonClickEvent() {
+    private fun leaveAppButtonClickEvent() {
         binding.layoutLeaveApp.setOnClickListener {
-            apiService.deleteRequestLeaveApp("동의").enqueue(object: Callback<BasicResponse>{
-                override fun onResponse(
-                    call: Call<BasicResponse>,
-                    response: Response<BasicResponse>
-                ) {
-                    if(response.isSuccessful){
-                        Toast.makeText(mContext, "탈퇴완료", Toast.LENGTH_SHORT).show()
+            val alert = AlertDialog.Builder(mContext)
+            alert.setTitle("회원 탈퇴")
+            alert.setMessage("탈퇴시 회원 정보가 모두 삭제됩니다.\n정말 탈퇴하시겠습니까?")
+            alert.setPositiveButton("확인", DialogInterface.OnClickListener { dialogInterface, i ->
+                apiService.deleteRequestLeaveApp("동의").enqueue(object: Callback<BasicResponse>{
+                    override fun onResponse(
+                        call: Call<BasicResponse>,
+                        response: Response<BasicResponse>
+                    ) {
+                        if(response.isSuccessful){
+                            Toast.makeText(mContext, "회원 탈퇴가 완료되었습니다", Toast.LENGTH_SHORT).show()
+
+                            val myIntent = Intent(mContext, LoginActivity::class.java)
+                            myIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                            startActivity(myIntent)
+                            (activity as MainActivity).finish()
+                        }
                     }
-                }
-                override fun onFailure(call: Call<BasicResponse>, t: Throwable) {
-                }
+                    override fun onFailure(call: Call<BasicResponse>, t: Throwable) {
+                    }
+                })
             })
+            alert.setNegativeButton("취소", null)
+            alert.show()
         }
     }
 
