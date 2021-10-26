@@ -43,6 +43,7 @@ class NotificationAdapter(val mContext: Context, val mList: List<NotificationDat
             when (item.type) {
                 "약속초대" -> binding.icInviteAppointment.visibility = View.VISIBLE
                 "친구추가요청" -> binding.icRequestFriend.visibility = View.VISIBLE
+                "약속변경" -> binding.icEditAppointment.visibility = View.VISIBLE
             }
 
             if(!item.isRead){

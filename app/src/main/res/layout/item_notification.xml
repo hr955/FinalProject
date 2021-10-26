@@ -28,11 +28,25 @@
             android:layout_marginStart="20dp"
             android:background="@drawable/background_purple_oval"
             android:padding="10dp"
-            android:src="@drawable/ic_letter"
+            android:src="@drawable/ic_email"
             android:visibility="invisible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/ic_edit_appointment"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="20dp"
+            android:background="@drawable/background_blue_oval"
+            android:padding="10dp"
+            android:visibility="invisible"
+            android:src="@drawable/ic_edit_white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
 
 
         <TextView

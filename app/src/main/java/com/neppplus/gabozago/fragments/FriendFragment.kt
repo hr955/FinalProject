@@ -36,6 +36,9 @@ class FriendFragment : BaseFragment(){
     }
 
     override fun setupEvents() {
+        binding.btnFindFriend.setOnClickListener {
+            startActivity(Intent(mContext, FindFriendActivity::class.java))
+        }
 
     }
 

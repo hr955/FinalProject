@@ -26,6 +26,7 @@
     <color name="action_bar_title">#414043</color>
     <color name="black_70">#B3000000</color>
     <color name="yellow">#EDB71E</color>
+    <color name="blue">#4CAF50</color>
 
     <color name="naver_color">#03C75A</color>
     <color name="kakao_color">#FEE500</color>
