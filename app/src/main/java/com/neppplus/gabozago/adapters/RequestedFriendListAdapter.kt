@@ -16,11 +16,11 @@ import com.neppplus.gabozago.web.ServerAPIService
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.util.*
 
 // 나에게 친구요청을 보낸 유저 목록
-class RequestedFriendListAdapter(val mContext: Context, val mList: List<UserData>) :
+class RequestedFriendListAdapter(val mContext: Context, val mList: ArrayList<UserData>) :
     RecyclerView.Adapter<RequestedFriendListAdapter.RequestedFriendViewHolder>() {
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RequestedFriendViewHolder =
         RequestedFriendViewHolder(
             DataBindingUtil.inflate(
@@ -37,7 +37,7 @@ class RequestedFriendListAdapter(val mContext: Context, val mList: List<UserData
 
     override fun getItemCount(): Int = mList.size
 
-    class RequestedFriendViewHolder(private val binding: ItemFriendRequestListBinding) :
+    inner class RequestedFriendViewHolder(private val binding: ItemFriendRequestListBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun onBind(context: Context, item: UserData) {
 
@@ -45,44 +45,42 @@ class RequestedFriendListAdapter(val mContext: Context, val mList: List<UserData
             Glide.with(context).load(item.profileImgURL).into(binding.ivFriendProfile)
 
             binding.ivProvider.apply {
-                when (item.provider) {
+                visibility = when (item.provider) {
                     "facebook" -> {
                         setImageResource(R.drawable.ic_facebook_logo_color)
-                        visibility = View.VISIBLE
+                        View.VISIBLE
                     }
                     "kakao" -> {
                         setImageResource(R.drawable.ic_kakao_logo)
-                        visibility = View.VISIBLE
+                        View.VISIBLE
                     }
-                    else -> visibility = View.GONE
+                    else -> View.GONE
                 }
             }
 
             val retrofit = ServerAPI.getRetrofit(context)
             val apiService = retrofit.create(ServerAPIService::class.java)
 
-            val setOkorNoToServer = object : View.OnClickListener {
-                override fun onClick(p0: View?) {
-                    var tag = p0!!.tag.toString()
+            val setOkOrNoToServer = View.OnClickListener { p0 ->
+                val tag = p0!!.tag.toString()
 
-                    apiService.putRequestFriendRequestResponse(item.id, "${tag}").enqueue(object :
-                        Callback<BasicResponse> {
-                        override fun onResponse(
-                            call: Call<BasicResponse>,
-                            response: Response<BasicResponse>
-                        ) {
+                apiService.putRequestFriendRequestResponse(item.id, tag).enqueue(object :
+                    Callback<BasicResponse> {
+                    override fun onResponse(
+                        call: Call<BasicResponse>,
+                        response: Response<BasicResponse>
+                    ) { }
 
-                        }
+                    override fun onFailure(call: Call<BasicResponse>, t: Throwable) { }
+                })
 
-                        override fun onFailure(call: Call<BasicResponse>, t: Throwable) {
-
-                        }
-                    })
-                }
+                mList.remove(item)
+                notifyItemRemoved(bindingAdapterPosition)
+                notifyItemRangeChanged(bindingAdapterPosition, mList.size)
             }
 
-            binding.btnAcceptFriend.setOnClickListener(setOkorNoToServer)
-            binding.btnDenialFriend.setOnClickListener(setOkorNoToServer)
+            binding.btnAcceptFriend.setOnClickListener(setOkOrNoToServer)
+            binding.btnDenialFriend.setOnClickListener(setOkOrNoToServer)
         }
     }
 }
