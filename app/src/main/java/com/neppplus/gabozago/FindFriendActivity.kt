@@ -48,14 +48,16 @@ class FindFriendActivity : BaseActivity() {
             var handled = false
 
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                inputMethodManager.hideSoftInputFromWindow(binding.edtKeyword.windowToken,0)
-
-                if (binding.edtKeyword.text.length < 2) {
+                handled = if (binding.edtKeyword.text.length < 2) {
                     Toast.makeText(mContext, "검색어는 2자 이상 입력해주세요", Toast.LENGTH_SHORT).show()
+                    binding.edtKeyword.requestFocus()
+                    true
                 } else{
+                    val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                    inputMethodManager.hideSoftInputFromWindow(binding.edtKeyword.windowToken,0)
+
                     getSearchUserListFromServer()
-                    handled = true
+                    true
                 }
             }
 
