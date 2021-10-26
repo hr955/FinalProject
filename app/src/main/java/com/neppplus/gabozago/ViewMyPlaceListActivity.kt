@@ -33,19 +33,21 @@ class ViewMyPlaceListActivity : com.neppplus.gabozago.BaseActivity() {
     }
 
     override fun setupEvents() {
-
+        binding.btnAddMyDeparture.setOnClickListener {
+            startActivity(Intent(mContext, EditMyPlaceActivity::class.java))
+        }
     }
 
     override fun setValues() {
         mPlaceAdapter = MyPlaceListAdapter(mContext, mMyPlaceList)
-        binding.rvMyPlaceList.apply {
+        binding.rvMyDepartureList.apply {
             adapter = mPlaceAdapter
             layoutManager =
                 LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false)
         }
     }
 
-    fun getMyPlaceListFromServer() {
+    private fun getMyPlaceListFromServer() {
         apiService.getRequestMyPlaceList().enqueue(object : Callback<BasicResponse> {
             override fun onResponse(call: Call<BasicResponse>, response: Response<BasicResponse>) {
                 if (response.isSuccessful) {

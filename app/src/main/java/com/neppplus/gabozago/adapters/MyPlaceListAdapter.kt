@@ -38,7 +38,7 @@ class MyPlaceListAdapter(val mContext: Context, private val mList: ArrayList<Pla
 
         holder.onBind(data)
 
-        holder.btnDeleteMyPlace.setOnClickListener {
+        holder.itemView.setOnLongClickListener {
             val retrofit = ServerAPI.getRetrofit(mContext)
             val apiService = retrofit.create(ServerAPIService::class.java)
 
@@ -61,6 +61,8 @@ class MyPlaceListAdapter(val mContext: Context, private val mList: ArrayList<Pla
             })
             alert.setNegativeButton("취소", null)
             alert.show()
+
+            true
         }
     }
 
@@ -68,15 +70,9 @@ class MyPlaceListAdapter(val mContext: Context, private val mList: ArrayList<Pla
 
     class MyPlaceListAdapterViewHolder(private val binding: ItemMyPlaceListBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        val btnDeleteMyPlace = binding.btnDeleteMyPlace
 
         fun onBind(item: PlaceData) {
             binding.txtMyPlaceName.text = item.name
-            if (item.isPrimary) {
-                binding.txtIsPrimary.visibility = View.VISIBLE
-            } else {
-                binding.txtIsPrimary.visibility = View.GONE
-            }
         }
     }
 }
