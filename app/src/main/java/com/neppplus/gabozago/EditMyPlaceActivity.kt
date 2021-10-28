@@ -41,6 +41,7 @@ class EditMyPlaceActivity : BaseActivity() {
 
         searchDeparture() // 장소 검색
         btnSaveClickEvent() // 저장
+        binding.btnClose.setOnClickListener { finish() }
     }
 
     override fun setValues() {
