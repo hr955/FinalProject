@@ -29,6 +29,9 @@
         <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/drawable/login_facebook_button_background.xml" value="0.27076923076923076" />
         <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/drawable/login_kakao_button_background.xml" value="0.27076923076923076" />
         <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/drawable/notification_badge_background.xml" value="0.27076923076923076" />
+        <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/drawable/selector_layout_background.xml" value="0.27076923076923076" />
+        <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/drawable/selector_selected_false.xml" value="0.27076923076923076" />
+        <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/drawable/selector_selected_true.xml" value="0.27076923076923076" />
         <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/layout/activity_add_friend.xml" value="0.25885416666666666" />
         <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/layout/activity_change_password.xml" value="0.264" />
         <entry key="..\:/Users/hey/AndroidStudioProjects/FinalProject/app/src/main/res/layout/activity_edit_appointment.xml" value="0.264" />

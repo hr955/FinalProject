@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -25,8 +26,8 @@ class EditMyPlaceActivity : BaseActivity() {
 
     lateinit var binding: ActivityEditMyPlaceBinding
 
-    var mSelectedLat = 0.0
-    var mSelectedLng = 0.0
+    var mSelectedLat: Double? = null
+    var mSelectedLng: Double? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,13 +38,33 @@ class EditMyPlaceActivity : BaseActivity() {
     }
 
     override fun setupEvents() {
-        searchDeparture() //장소 검색
 
+        searchDeparture() // 장소 검색
+        btnSaveClickEvent() // 저장
+    }
+
+    override fun setValues() {
+
+    }
+
+    private fun btnSaveClickEvent() {
         binding.btnSave.setOnClickListener {
+            if (binding.edtDepartureNickname.text.isEmpty()) {
+                Toast.makeText(mContext, "별칭을 정해주세요", Toast.LENGTH_SHORT).show()
+                binding.edtDepartureNickname.requestFocus()
+                return@setOnClickListener
+            }
+
+            if (mSelectedLat == null || mSelectedLng == null) {
+                Toast.makeText(mContext, "주소를 지정해주세요", Toast.LENGTH_SHORT).show()
+                binding.edtSearchDeparture.requestFocus()
+                return@setOnClickListener
+            }
+
             apiService.postRequestAddMyPlace(
                 binding.edtDepartureNickname.text.toString(),
-                mSelectedLat,
-                mSelectedLng,
+                mSelectedLat!!,
+                mSelectedLng!!,
                 true
             ).enqueue(object : Callback<BasicResponse> {
                 override fun onResponse(
@@ -58,10 +79,6 @@ class EditMyPlaceActivity : BaseActivity() {
         }
     }
 
-    override fun setValues() {
-
-    }
-
     private fun searchDeparture() {
         binding.edtSearchDeparture.setOnEditorActionListener { v, actionId, event ->
             var handled = false
@@ -69,17 +86,23 @@ class EditMyPlaceActivity : BaseActivity() {
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                 val inputMethodManager =
                     getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                inputMethodManager.hideSoftInputFromWindow(binding.edtSearchDeparture.windowToken, 0)
+                inputMethodManager.hideSoftInputFromWindow(
+                    binding.edtSearchDeparture.windowToken,
+                    0
+                )
 
-                KakaoAPI.getRetrofit().getRequestSearchPlace(getString(R.string.kakao_rest_api_key),
-                    binding.edtSearchDeparture.text.toString()).enqueue(object : Callback<SearchPlaceData>{
+                KakaoAPI.getRetrofit().getRequestSearchPlace(
+                    getString(R.string.kakao_rest_api_key),
+                    binding.edtSearchDeparture.text.toString()
+                ).enqueue(object : Callback<SearchPlaceData> {
                     override fun onResponse(
                         call: Call<SearchPlaceData>,
                         response: Response<SearchPlaceData>
                     ) {
-                        binding.rvSearchList.apply{
+                        binding.rvSearchList.apply {
                             adapter = MyDepartureSearchListAdapter(mContext, response.body()!!)
-                            layoutManager = LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false)
+                            layoutManager =
+                                LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false)
                         }
                     }
 
@@ -91,26 +114,4 @@ class EditMyPlaceActivity : BaseActivity() {
             handled
         }
     }
-
-//    fun selectDeparture(){
-//        binding.rvSearchList.apply {
-//            addOnItemTouchListener(object: RecyclerView.OnItemTouchListener{
-//                override fun onInterceptTouchEvent(rv: RecyclerView, e: MotionEvent): Boolean {
-//                    val child = rv.findChildViewUnder(e.x, e.y)
-//                    val position = rv.getChildAdapterPosition(child!!)
-//
-//                    return true
-//                }
-//
-//                override fun onTouchEvent(rv: RecyclerView, e: MotionEvent) {
-//                    TODO("Not yet implemented")
-//                }
-//
-//                override fun onRequestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {
-//                    TODO("Not yet implemented")
-//                }
-//
-//            })
-//        }
-//    }
 }

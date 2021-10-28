@@ -1,7 +1,6 @@
 package com.neppplus.gabozago.adapters
 
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
@@ -21,7 +20,7 @@ class MyDepartureSearchListAdapter(
     private var selectCheck: ArrayList<Int> = arrayListOf()
 
     init {
-        for(i in mSearchPlaceData.documents){
+        for (i in mSearchPlaceData.documents) {
             selectCheck.add(0)
         }
     }
@@ -36,21 +35,33 @@ class MyDepartureSearchListAdapter(
     )
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.onBind(mSearchPlaceData.documents[position])
-        holder.itemView.setOnClickListener {
-            val test = mContext as EditMyPlaceActivity
-            test.mSelectedLat = mSearchPlaceData.documents[position].latitude
-            test.mSelectedLng = mSearchPlaceData.documents[position].longitude
-        }
+        holder.onBind(mContext, mSearchPlaceData.documents[position])
     }
 
     override fun getItemCount(): Int = mSearchPlaceData.documents.size
 
-    class ViewHolder(val binding: ItemSetPlaceSearchListBinding) :
+    inner class ViewHolder(val binding: ItemSetPlaceSearchListBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun onBind(item: Documents) {
+        fun onBind(context: Context, item: Documents) {
             binding.txtPlaceName.text = item.placeName
             binding.txtPlaceAddress.text = item.addressName
+
+            binding.layoutSearchPlaceItem.isSelected = selectCheck[adapterPosition] == 1
+
+            binding.layoutSearchPlaceItem.setOnClickListener {
+                val editMyPlaceActivity = context as EditMyPlaceActivity
+                editMyPlaceActivity.mSelectedLat = item.latitude
+                editMyPlaceActivity.mSelectedLng = item.longitude
+
+                for (k in selectCheck.indices) {
+                    if (k == adapterPosition) {
+                        selectCheck[k] = 1
+                    } else {
+                        selectCheck[k] = 0
+                    }
+                }
+                notifyDataSetChanged()
+            }
         }
     }
 }
