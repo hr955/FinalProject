@@ -3,37 +3,92 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="20dp"
-        tools:context=".EditMyPlaceActivity"
-        android:orientation="vertical">
+        tools:context=".EditMyPlaceActivity">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/tb_edit_my_departure"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            app:contentInsetStart="0dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/txt_toolbar_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="내 출발지 추가"
+                android:textColor="@color/black"
+                android:textSize="15sp" />
+
+            <ImageView
+                android:id="@+id/btn_close"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="left|center_vertical"
+                android:layout_marginStart="10dp"
+                android:padding="10dp"
+                android:src="@drawable/ic_left_arrow" />
+
+            <TextView
+                android:id="@+id/btn_save"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="right|center_vertical"
+                android:layout_marginEnd="20dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:gravity="center"
+                android:text="완료"
+                android:textColor="@color/main_purple"
+                android:textSize="17sp"
+                android:textStyle="bold" />
+        </androidx.appcompat.widget.Toolbar>
+
+        <View
+            android:id="@+id/view"
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="@color/grey"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tb_edit_my_departure" />
+
         <EditText
-            android:id="@+id/edt_place_title"
+            android:id="@+id/edt_departure_nickname"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="장소 제목"/>
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="20dp"
+            android:hint="별칭"
+            android:imeOptions="actionDone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/view" />
 
-        <fragment
-            android:layout_marginTop="20dp"
-            android:id="@+id/fragment_naver_map"
+        <EditText
+            android:id="@+id/edt_search_departure"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="20dp"
+            android:maxLines="1"
+            android:inputType="text"
+            android:hint="검색"
+            android:imeOptions="actionSearch"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/edt_departure_nickname" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_search_list"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
-            android:name="com.naver.maps.map.MapFragment"/>
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/edt_search_departure" />
 
-        <TextView
-            android:id="@+id/btn_save"
-            android:layout_width="match_parent"
-            android:layout_height="45dp"
-            android:layout_marginTop="20dp"
-            android:textColor="#100522"
-            android:background="@drawable/login_button_background"
-            android:gravity="center"
-            android:text="저장"
-            android:textSize="17dp" />
-
-
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

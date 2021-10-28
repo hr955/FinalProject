@@ -15,5 +15,11 @@ data class Documents(
     @SerializedName("y")
     var latitude: Double,
     @SerializedName("x")
-    var longitude: Double
+    var longitude: Double,
+    var address: Address?
 ) : Serializable
+
+data class Address(
+    @SerializedName("address_name")
+    var addressName: String
+)

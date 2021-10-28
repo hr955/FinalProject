@@ -33,9 +33,13 @@ class ViewMyPlaceListActivity : com.neppplus.gabozago.BaseActivity() {
     }
 
     override fun setupEvents() {
+        // 내 출발지 추가
         binding.btnAddMyDeparture.setOnClickListener {
             startActivity(Intent(mContext, EditMyPlaceActivity::class.java))
         }
+
+        // 뒤로가기
+        binding.btnClose.setOnClickListener { finish() }
     }
 
     override fun setValues() {
@@ -58,9 +62,7 @@ class ViewMyPlaceListActivity : com.neppplus.gabozago.BaseActivity() {
                 }
             }
 
-            override fun onFailure(call: Call<BasicResponse>, t: Throwable) {
-                TODO("Not yet implemented")
-            }
+            override fun onFailure(call: Call<BasicResponse>, t: Throwable) {}
         })
 
     }

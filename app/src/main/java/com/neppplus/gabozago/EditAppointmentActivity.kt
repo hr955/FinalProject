@@ -34,6 +34,7 @@ import com.neppplus.gabozago.datas.*
 import com.neppplus.gabozago.services.MyJobService
 import com.neppplus.gabozago.utils.GlobalData
 import com.neppplus.gabozago.utils.SizeUtil
+import com.neppplus.gabozago.web.KakaoAPIService
 import com.odsay.odsayandroidsdk.API
 import com.odsay.odsayandroidsdk.ODsayData
 import com.odsay.odsayandroidsdk.ODsayService
@@ -61,8 +62,8 @@ class EditAppointmentActivity : BaseActivity() {
     lateinit var mAddFriendSpinnerAdapter: AddFriendSpinnerAdapter
     private val mSelectedFriendList = ArrayList<UserData>()
 
-    var mDepartureData = Documents("null", "null", 0.0, 0.0)
-    var mDestinationData = Documents("null", "null", 0.0, 0.0)
+    var mDepartureData = Documents("null", "null", 0.0, 0.0, null)
+    var mDestinationData = Documents("null", "null", 0.0, 0.0, null)
 
     private val mDepartureMarker = Marker()
     private val mDepartureInfoWindow = InfoWindow()

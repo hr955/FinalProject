@@ -1,17 +1,22 @@
 package com.neppplus.gabozago
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
+import android.view.MotionEvent
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import androidx.databinding.DataBindingUtil
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.neppplus.gabozago.adapters.MyDepartureSearchListAdapter
+import com.neppplus.gabozago.adapters.SetPlaceSearchListAdapter
 import com.neppplus.gabozago.databinding.ActivityEditMyPlaceBinding
 import com.neppplus.gabozago.datas.BasicResponse
-import com.naver.maps.geometry.LatLng
-import com.naver.maps.map.CameraAnimation
-import com.naver.maps.map.CameraUpdate
-import com.naver.maps.map.MapFragment
-import com.naver.maps.map.overlay.Marker
-import com.naver.maps.map.overlay.OverlayImage
+import com.neppplus.gabozago.datas.Documents
+import com.neppplus.gabozago.datas.SearchPlaceData
+import com.neppplus.gabozago.web.KakaoAPI
+import com.neppplus.gabozago.web.KakaoAPIService
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -32,10 +37,11 @@ class EditMyPlaceActivity : BaseActivity() {
     }
 
     override fun setupEvents() {
+        searchDeparture() //장소 검색
 
         binding.btnSave.setOnClickListener {
             apiService.postRequestAddMyPlace(
-                binding.edtPlaceTitle.text.toString(),
+                binding.edtDepartureNickname.text.toString(),
                 mSelectedLat,
                 mSelectedLng,
                 true
@@ -53,38 +59,58 @@ class EditMyPlaceActivity : BaseActivity() {
     }
 
     override fun setValues() {
-        val fm = supportFragmentManager
-        val mapFragment = fm.findFragmentById(R.id.fragment_naver_map) as MapFragment?
-            ?: MapFragment.newInstance().also {
-                fm.beginTransaction().add(R.id.fragment_naver_map, it).commit()
+
+    }
+
+    private fun searchDeparture() {
+        binding.edtSearchDeparture.setOnEditorActionListener { v, actionId, event ->
+            var handled = false
+
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                val inputMethodManager =
+                    getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                inputMethodManager.hideSoftInputFromWindow(binding.edtSearchDeparture.windowToken, 0)
+
+                KakaoAPI.getRetrofit().getRequestSearchPlace(getString(R.string.kakao_rest_api_key),
+                    binding.edtSearchDeparture.text.toString()).enqueue(object : Callback<SearchPlaceData>{
+                    override fun onResponse(
+                        call: Call<SearchPlaceData>,
+                        response: Response<SearchPlaceData>
+                    ) {
+                        binding.rvSearchList.apply{
+                            adapter = MyDepartureSearchListAdapter(mContext, response.body()!!)
+                            layoutManager = LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false)
+                        }
+                    }
+
+                    override fun onFailure(call: Call<SearchPlaceData>, t: Throwable) {}
+                })
+
+                handled = true
             }
-
-        mapFragment.getMapAsync {
-            Log.d("지도객체 가져오기", "지도객체 가져오기")
-
-            val coord = LatLng(37.497846, 127.027357)
-
-            val cameraUpdate = CameraUpdate.scrollTo(coord)
-                .animate(CameraAnimation.Easing)
-            it.moveCamera(cameraUpdate)
-
-            val uiSettings = it.uiSettings
-            uiSettings.isCompassEnabled = true
-
-            val selectedPointMarker = Marker()
-            selectedPointMarker.icon = OverlayImage.fromResource(R.drawable.ic_pink_marker)
-
-            it.setOnMapClickListener { point, coord ->
-                Toast.makeText(
-                    this, "${coord.latitude}, ${coord.longitude}",
-                    Toast.LENGTH_SHORT
-                ).show()
-                mSelectedLat = coord.latitude
-                mSelectedLng = coord.longitude
-
-                selectedPointMarker.position = LatLng(mSelectedLat, mSelectedLng)
-                selectedPointMarker.map = it
-            }
+            handled
         }
     }
+
+//    fun selectDeparture(){
+//        binding.rvSearchList.apply {
+//            addOnItemTouchListener(object: RecyclerView.OnItemTouchListener{
+//                override fun onInterceptTouchEvent(rv: RecyclerView, e: MotionEvent): Boolean {
+//                    val child = rv.findChildViewUnder(e.x, e.y)
+//                    val position = rv.getChildAdapterPosition(child!!)
+//
+//                    return true
+//                }
+//
+//                override fun onTouchEvent(rv: RecyclerView, e: MotionEvent) {
+//                    TODO("Not yet implemented")
+//                }
+//
+//                override fun onRequestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {
+//                    TODO("Not yet implemented")
+//                }
+//
+//            })
+//        }
+//    }
 }

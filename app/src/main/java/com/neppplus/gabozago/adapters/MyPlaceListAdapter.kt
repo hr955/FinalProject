@@ -43,7 +43,8 @@ class MyPlaceListAdapter(val mContext: Context, private val mList: ArrayList<Pla
             val apiService = retrofit.create(ServerAPIService::class.java)
 
             val alert = AlertDialog.Builder(mContext)
-            alert.setTitle("'${data.name}'을(를) 삭제하시겠습니까?")
+            alert.setTitle("출발지 삭제")
+            alert.setMessage("'${data.name}'을(를) 내 출발지 목록에서 삭제하시겠습니까?")
             alert.setPositiveButton("삭제", DialogInterface.OnClickListener { dialogInterface, i ->
                 apiService.deleteRequestMyPlace(data.id).enqueue(object : Callback<BasicResponse>{
                     override fun onResponse(
