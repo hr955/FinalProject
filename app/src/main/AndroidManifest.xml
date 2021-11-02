@@ -18,6 +18,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FinalProject">
         <activity
+            android:name=".EditNicknameActivity"
+            android:exported="true" />
+        <activity
             android:name=".SetDestinationActivity"
             android:exported="true" />
         <activity

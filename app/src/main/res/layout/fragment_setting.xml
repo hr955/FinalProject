@@ -8,10 +8,22 @@
         android:layout_height="match_parent"
         android:gravity="center_horizontal"
         android:orientation="vertical"
-        android:padding="20dp"
         tools:context=".MySettingActivity">
+        <androidx.appcompat.widget.Toolbar
+            android:layout_width="match_parent"
+            android:layout_height="50dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="설정"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+        </androidx.appcompat.widget.Toolbar>
 
         <FrameLayout
+            android:layout_marginTop="10dp"
             android:layout_width="100dp"
             android:layout_height="100dp">
 
@@ -68,6 +80,8 @@
         </LinearLayout>
 
         <ScrollView
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
