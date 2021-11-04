@@ -1,6 +1,7 @@
 package com.neppplus.gabozago.fragments
 
 import android.Manifest
+import android.app.Activity.RESULT_OK
 import android.app.AlertDialog
 import android.content.DialogInterface
 import android.content.Intent
@@ -16,16 +17,14 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.bumptech.glide.Glide
+import com.gun0912.tedpermission.PermissionListener
+import com.gun0912.tedpermission.normal.TedPermission
 import com.neppplus.gabozago.*
 import com.neppplus.gabozago.databinding.FragmentSettingBinding
 import com.neppplus.gabozago.datas.BasicResponse
 import com.neppplus.gabozago.utils.ContextUtil
 import com.neppplus.gabozago.utils.GlobalData
 import com.neppplus.gabozago.utils.URIPathHelper
-import com.gun0912.tedpermission.PermissionListener
-import com.gun0912.tedpermission.normal.TedPermission
-import com.neppplus.gabozago.web.ServerAPI
-import com.neppplus.gabozago.web.ServerAPIService
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -33,8 +32,6 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.io.File
-
-// TODO alertDialog 커스텀
 
 class SettingFragment : BaseFragment() {
     lateinit var binding: FragmentSettingBinding
@@ -63,7 +60,7 @@ class SettingFragment : BaseFragment() {
 
         // 닉네임 변경
         binding.btnEditNickname.setOnClickListener {
-            patchUserInfo("닉네임 입력", "nickname")
+            editNickname()
         }
 
         // 준비 시간 수정
@@ -86,6 +83,7 @@ class SettingFragment : BaseFragment() {
         setUserInfo()
     }
 
+    // 탈퇴
     private fun leaveAppButtonClickEvent() {
         binding.layoutLeaveApp.setOnClickListener {
             val alert = AlertDialog.Builder(mContext)
@@ -134,38 +132,6 @@ class SettingFragment : BaseFragment() {
         }
     }
 
-    // 프로필사진 변경 (갤러리로 이동)
-    private fun profileImageChangeButtonClickEvent() {
-
-        val changeProfileImgBtnClickListener  = object: View.OnClickListener{
-            override fun onClick(p0: View?) {
-                val permissionListener = object : PermissionListener {
-                    override fun onPermissionGranted() {
-                        val myIntent = Intent()
-                        myIntent.action = Intent.ACTION_PICK
-                        myIntent.type = "image/*"
-                        myIntent.type = android.provider.MediaStore.Images.Media.CONTENT_TYPE
-
-                        startForSelectedImageResult.launch(myIntent)
-                    }
-
-                    override fun onPermissionDenied(deniedPermissions: MutableList<String>?) {
-                        Toast.makeText(mContext, "접근 권한이 필요합니다", Toast.LENGTH_SHORT).show()
-                    }
-                }
-
-                TedPermission.create()
-                    .setPermissionListener(permissionListener)
-                    .setPermissions(Manifest.permission.READ_EXTERNAL_STORAGE)
-                    .setDeniedMessage("[설정] > [권한]에서 접근을 허용해주세요")
-                    .check()
-            }
-        }
-
-        binding.ivProfileImage.setOnClickListener(changeProfileImgBtnClickListener)
-        binding.ivChangeProfileImage.setOnClickListener(changeProfileImgBtnClickListener)
-    }
-
     // 사용자 정보 설정
     fun setUserInfo() {
         val loginUser = GlobalData.loginUser!!
@@ -205,7 +171,19 @@ class SettingFragment : BaseFragment() {
         }
     }
 
-    // 준비시간, 닉네임 수정
+    // 닉네임 변경
+    private fun editNickname() {
+        startForEditNickname.launch(Intent(mContext, EditNicknameActivity::class.java))
+    }
+
+    private val startForEditNickname: ActivityResultLauncher<Intent> =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+            if (result.resultCode == RESULT_OK) {
+                setUserInfo()
+            }
+        }
+
+    // 준비시간 변경
     private fun patchUserInfo(title: String, field: String) {
         val et = EditText(mContext)
         et.setPadding(50, 0, 50, 0)
@@ -229,6 +207,36 @@ class SettingFragment : BaseFragment() {
         })
         alert.setNegativeButton("취소", null)
         alert.show()
+    }
+
+    // 프로필사진 변경 (갤러리로 이동)
+    private fun profileImageChangeButtonClickEvent() {
+
+        val changeProfileImgBtnClickListener  = View.OnClickListener {
+            val permissionListener = object : PermissionListener {
+                override fun onPermissionGranted() {
+                    val myIntent = Intent()
+                    myIntent.action = Intent.ACTION_PICK
+                    myIntent.type = "image/*"
+                    myIntent.type = android.provider.MediaStore.Images.Media.CONTENT_TYPE
+
+                    startForSelectedImageResult.launch(myIntent)
+                }
+
+                override fun onPermissionDenied(deniedPermissions: MutableList<String>?) {
+                    Toast.makeText(mContext, "접근 권한이 필요합니다", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            TedPermission.create()
+                .setPermissionListener(permissionListener)
+                .setPermissions(Manifest.permission.READ_EXTERNAL_STORAGE)
+                .setDeniedMessage("[설정] > [권한]에서 접근을 허용해주세요")
+                .check()
+        }
+
+        binding.ivProfileImage.setOnClickListener(changeProfileImgBtnClickListener)
+        binding.ivChangeProfileImage.setOnClickListener(changeProfileImgBtnClickListener)
     }
 
     // 갤러리에서 이미지 선택후 실행될 동작
