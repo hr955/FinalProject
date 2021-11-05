@@ -3,13 +3,15 @@ package com.neppplus.gabozago.fragments
 import android.Manifest
 import android.app.Activity.RESULT_OK
 import android.app.AlertDialog
+import android.app.Dialog
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
+import android.view.Window
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
@@ -185,28 +187,42 @@ class SettingFragment : BaseFragment() {
 
     // 준비시간 변경
     private fun patchUserInfo(title: String, field: String) {
-        val et = EditText(mContext)
-        et.setPadding(50, 0, 50, 0)
+        val customDialog = Dialog(mContext)
+        customDialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        customDialog.setContentView(R.layout.my_custom_dialog)
 
-        val alert = AlertDialog.Builder(mContext)
-        alert.setTitle(title)
-        alert.setView(et)
-        alert.setPositiveButton("확인", DialogInterface.OnClickListener { dialogInterface, i ->
-            apiService.patchRequestMyInfo(field, et.text.toString())
-                .enqueue(object : Callback<BasicResponse> {
-                    override fun onResponse(
-                        call: Call<BasicResponse>,
-                        response: Response<BasicResponse>
-                    ) {
-                        GlobalData.loginUser = response.body()!!.data.user
-                        setUserInfo()
-                    }
+        val inflater = layoutInflater.inflate(R.layout.my_custom_dialog, null)
+        val btnCancel = inflater.findViewById<TextView>(R.id.btn_cancel)
 
-                    override fun onFailure(call: Call<BasicResponse>, t: Throwable) {}
-                })
-        })
-        alert.setNegativeButton("취소", null)
-        alert.show()
+        btnCancel.setOnClickListener {
+            customDialog.dismiss()
+        }
+
+        customDialog.show()
+
+
+//        val et = EditText(mContext)
+//        et.setPadding(50, 0, 50, 0)
+//
+//        val alert = AlertDialog.Builder(mContext)
+//        alert.setTitle(title)
+//        alert.setView(et)
+//        alert.setPositiveButton("확인", DialogInterface.OnClickListener { dialogInterface, i ->
+//            apiService.patchRequestMyInfo(field, et.text.toString())
+//                .enqueue(object : Callback<BasicResponse> {
+//                    override fun onResponse(
+//                        call: Call<BasicResponse>,
+//                        response: Response<BasicResponse>
+//                    ) {
+//                        GlobalData.loginUser = response.body()!!.data.user
+//                        setUserInfo()
+//                    }
+//
+//                    override fun onFailure(call: Call<BasicResponse>, t: Throwable) {}
+//                })
+//        })
+//        alert.setNegativeButton("취소", null)
+//        alert.show()
     }
 
     // 프로필사진 변경 (갤러리로 이동)
