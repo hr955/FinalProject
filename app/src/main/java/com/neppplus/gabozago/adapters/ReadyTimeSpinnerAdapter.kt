@@ -8,7 +8,6 @@ import android.widget.ArrayAdapter
 import androidx.databinding.DataBindingUtil
 import com.neppplus.gabozago.R
 import com.neppplus.gabozago.databinding.ItemSpinnerReadyTimeBinding
-import com.neppplus.gabozago.datas.UserData
 
 class ReadyTimeSpinnerAdapter(
     val mContext: Context,
