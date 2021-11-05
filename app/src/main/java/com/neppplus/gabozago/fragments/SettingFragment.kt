@@ -7,10 +7,13 @@ import android.app.Dialog
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
+import android.widget.ArrayAdapter
+import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
@@ -22,6 +25,7 @@ import com.bumptech.glide.Glide
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.normal.TedPermission
 import com.neppplus.gabozago.*
+import com.neppplus.gabozago.adapters.ReadyTimeSpinnerAdapter
 import com.neppplus.gabozago.databinding.FragmentSettingBinding
 import com.neppplus.gabozago.datas.BasicResponse
 import com.neppplus.gabozago.utils.ContextUtil
@@ -67,7 +71,7 @@ class SettingFragment : BaseFragment() {
 
         // 준비 시간 수정
         binding.layoutReadyTime.setOnClickListener {
-            patchUserInfo("준비시간 입력", "ready_minute")
+            patchUserInfo()
         }
 
         // 출발지 목록
@@ -186,43 +190,50 @@ class SettingFragment : BaseFragment() {
         }
 
     // 준비시간 변경
-    private fun patchUserInfo(title: String, field: String) {
-        val customDialog = Dialog(mContext)
-        customDialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-        customDialog.setContentView(R.layout.my_custom_dialog)
+    private fun patchUserInfo() {
+        val hourArray = Array(24) { i -> i }
+        val minuteArray = Array(60) { i -> i }
 
-        val inflater = layoutInflater.inflate(R.layout.my_custom_dialog, null)
-        val btnCancel = inflater.findViewById<TextView>(R.id.btn_cancel)
+        val dialogView = layoutInflater.inflate(R.layout.my_custom_dialog, null)
 
-        btnCancel.setOnClickListener {
-            customDialog.dismiss()
+        val builder = AlertDialog.Builder(mContext)
+        builder.setView(dialogView)
+
+        val alertDialog = builder.create()
+        alertDialog.show()
+
+        val btnCancel = dialogView.findViewById<TextView>(R.id.btn_cancel)
+        val btnSave = dialogView.findViewById<TextView>(R.id.btn_save)
+
+        val spinnerHour = dialogView.findViewById<Spinner>(R.id.spinner_hour)
+        spinnerHour.adapter =
+            ReadyTimeSpinnerAdapter(mContext, R.layout.item_spinner_ready_time, hourArray)
+
+        val spinnerMinute = dialogView.findViewById<Spinner>(R.id.spinner_minute)
+        spinnerMinute.adapter =
+            ReadyTimeSpinnerAdapter(mContext, R.layout.item_spinner_ready_time, minuteArray)
+
+        btnSave.setOnClickListener {
+            val result = (spinnerHour.selectedItem as Int) * 60 + spinnerMinute.selectedItem as Int
+
+            apiService.patchRequestMyInfo("ready_minute", result.toString())
+                .enqueue(object : Callback<BasicResponse> {
+                    override fun onResponse(
+                        call: Call<BasicResponse>,
+                        response: Response<BasicResponse>
+                    ) {
+                        GlobalData.loginUser = response.body()!!.data.user
+                        alertDialog.dismiss()
+                        setUserInfo()
+                    }
+
+                    override fun onFailure(call: Call<BasicResponse>, t: Throwable) {}
+                })
         }
 
-        customDialog.show()
-
-
-//        val et = EditText(mContext)
-//        et.setPadding(50, 0, 50, 0)
-//
-//        val alert = AlertDialog.Builder(mContext)
-//        alert.setTitle(title)
-//        alert.setView(et)
-//        alert.setPositiveButton("확인", DialogInterface.OnClickListener { dialogInterface, i ->
-//            apiService.patchRequestMyInfo(field, et.text.toString())
-//                .enqueue(object : Callback<BasicResponse> {
-//                    override fun onResponse(
-//                        call: Call<BasicResponse>,
-//                        response: Response<BasicResponse>
-//                    ) {
-//                        GlobalData.loginUser = response.body()!!.data.user
-//                        setUserInfo()
-//                    }
-//
-//                    override fun onFailure(call: Call<BasicResponse>, t: Throwable) {}
-//                })
-//        })
-//        alert.setNegativeButton("취소", null)
-//        alert.show()
+        btnCancel.setOnClickListener {
+            alertDialog.dismiss()
+        }
     }
 
     // 프로필사진 변경 (갤러리로 이동)
