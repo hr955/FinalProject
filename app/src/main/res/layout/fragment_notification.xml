@@ -22,6 +22,14 @@
 
         </androidx.appcompat.widget.Toolbar>
 
+        <View
+            android:id="@+id/view"
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="@color/grey"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tb_notification_list" />
+
         <TextView
             android:id="@+id/txt_empty_noti"
             android:layout_width="wrap_content"
@@ -31,7 +39,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             android:textSize="18sp"
-            app:layout_constraintTop_toBottomOf="@id/tb_notification_list" />
+            app:layout_constraintTop_toBottomOf="@id/view" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_notification_list"

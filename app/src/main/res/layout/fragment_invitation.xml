@@ -22,12 +22,20 @@
 
         </androidx.appcompat.widget.Toolbar>
 
+        <View
+            android:id="@+id/view"
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="@color/grey"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tb_invitation_list" />
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_invited_appointment_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tb_invitation_list" />
+            app:layout_constraintTop_toBottomOf="@id/view" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
