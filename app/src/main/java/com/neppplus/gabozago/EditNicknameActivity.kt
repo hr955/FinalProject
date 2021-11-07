@@ -34,6 +34,8 @@ class EditNicknameActivity : BaseActivity() {
             }
             saveNickname()
         }
+
+        binding.btnClose.setOnClickListener { finish() }
     }
 
     override fun setValues() {
