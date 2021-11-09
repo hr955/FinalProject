@@ -187,6 +187,7 @@ class EditAppointmentActivity : BaseActivity() {
     // 초대할 친구 추가 및 삭제
     private fun addFriendButtonClickEvent() {
         binding.btnAddFriend.setOnClickListener {
+            if(mFriendList.isEmpty()) return@setOnClickListener
 
             val selectedFriend = mFriendList[binding.spinnerFriendList.selectedItemPosition]
 

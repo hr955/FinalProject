@@ -51,6 +51,8 @@ class SetDepartureActivity : BaseActivity() {
         binding.ivSearchDeparture.setOnClickListener {
             setSearchListAdapter()
         }
+
+        binding.btnClose.setOnClickListener { finish() }
     }
 
     override fun setValues() {
