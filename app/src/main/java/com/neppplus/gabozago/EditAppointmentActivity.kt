@@ -32,6 +32,7 @@ import com.neppplus.gabozago.adapters.AddFriendSpinnerAdapter
 import com.neppplus.gabozago.databinding.ActivityEditAppointmentBinding
 import com.neppplus.gabozago.datas.*
 import com.neppplus.gabozago.services.MyJobService
+import com.neppplus.gabozago.utils.ContextUtil
 import com.neppplus.gabozago.utils.GlobalData
 import com.neppplus.gabozago.utils.SizeUtil
 import com.neppplus.gabozago.web.KakaoAPIService
@@ -72,6 +73,8 @@ class EditAppointmentActivity : BaseActivity() {
     private val mDestinationInfoWindow = InfoWindow()
     val mPath = PathOverlay()
 
+    private var totalTime = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_edit_appointment)
@@ -105,8 +108,12 @@ class EditAppointmentActivity : BaseActivity() {
             var handled = false
 
             if (actionId == EditorInfo.IME_ACTION_DONE) {
-                val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                inputMethodManager.hideSoftInputFromWindow(binding.edtAppointmentTitle.windowToken, 0)
+                val inputMethodManager =
+                    getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                inputMethodManager.hideSoftInputFromWindow(
+                    binding.edtAppointmentTitle.windowToken,
+                    0
+                )
                 handled = true
             }
 
@@ -187,7 +194,7 @@ class EditAppointmentActivity : BaseActivity() {
     // 초대할 친구 추가 및 삭제
     private fun addFriendButtonClickEvent() {
         binding.btnAddFriend.setOnClickListener {
-            if(mFriendList.isEmpty()) return@setOnClickListener
+            if (mFriendList.isEmpty()) return@setOnClickListener
 
             val selectedFriend = mFriendList[binding.spinnerFriendList.selectedItemPosition]
 
@@ -201,7 +208,7 @@ class EditAppointmentActivity : BaseActivity() {
     }
 
     // 초대할 친구 목록 레이아웃 설정
-    private fun inflateFlowLayoutItem(selectedFriend: UserData){
+    private fun inflateFlowLayoutItem(selectedFriend: UserData) {
         val inflater =
             LayoutInflater.from(mContext).inflate(R.layout.item_add_friend_list, null)
         val layout = inflater.findViewById<LinearLayout>(R.id.linear_layout)
@@ -392,7 +399,7 @@ class EditAppointmentActivity : BaseActivity() {
                             val firstPathObj = pathArr.getJSONObject(0)
 
                             val infoObj = firstPathObj.getJSONObject("info")
-                            val totalTime = infoObj.getInt("totalTime")
+                            totalTime = infoObj.getInt("totalTime")
 
                             setDestinationInfoWindow("$totalTime 분 소요")
 
@@ -415,7 +422,12 @@ class EditAppointmentActivity : BaseActivity() {
                                     }
                                 }
                             }
-                            points.add(LatLng(mDestinationData.latitude, mDestinationData.longitude))
+                            points.add(
+                                LatLng(
+                                    mDestinationData.latitude,
+                                    mDestinationData.longitude
+                                )
+                            )
 
                             mPath.coords = points
                             mPath.map = naverMap
@@ -446,7 +458,8 @@ class EditAppointmentActivity : BaseActivity() {
         mDestinationInfoWindow.adapter =
             object : InfoWindow.DefaultViewAdapter(mContext) {
                 override fun getContentView(p0: InfoWindow): View {
-                    val view = LayoutInflater.from(mContext).inflate(R.layout.my_custom_info_window, null)
+                    val view =
+                        LayoutInflater.from(mContext).inflate(R.layout.my_custom_info_window, null)
                     val txtPlace = view.findViewById<TextView>(R.id.txt_place)
                     val txtArrivalTime =
                         view.findViewById<TextView>(R.id.txt_arrival_time)
@@ -545,7 +558,7 @@ class EditAppointmentActivity : BaseActivity() {
     }
 
     // 약속 데이터 저장 API 호출
-    private fun callSaveAPI(apiService: Call<BasicResponse>){
+    private fun callSaveAPI(apiService: Call<BasicResponse>) {
         apiService.enqueue(object : Callback<BasicResponse> {
             override fun onResponse(
                 call: Call<BasicResponse>,
@@ -554,25 +567,28 @@ class EditAppointmentActivity : BaseActivity() {
                 val js = getSystemService(JOB_SCHEDULER_SERVICE) as JobScheduler
                 val serviceComponent = ComponentName(mContext, MyJobService::class.java)
 
-                mSelectedDateTime.add(Calendar.HOUR_OF_DAY, -2)
+                Log.d("EditAppointmentTest1", mSelectedDateTime.time.toString())
 
                 val now = Calendar.getInstance()
-                val timeOffset = now.timeZone.rawOffset / 1000 / 60 / 60
-                now.add(Calendar.HOUR_OF_DAY, -timeOffset)
 
-                val jobTime = mSelectedDateTime.timeInMillis - now.timeInMillis
+                // (약속시간 - 이동시간 - 준비시간 - 현재날짜) 후에 JobScheduler 실행
+                val jobTime = mSelectedDateTime.timeInMillis - (ContextUtil.getMyReadyMinute(
+                    applicationContext
+                ) * 60 * 1000) - (totalTime * 60 * 1000) - now.timeInMillis
 
                 val basicResponse = response.body()!!
 
+                // setMinimumLatency - 최소 얼마 후 작업이 실행되어야 하는지
+                // setOverrideDeadline - 최대 넘기지 말아야하는 시간
                 val jobInfo =
                     JobInfo.Builder(basicResponse.data.appointment.id, serviceComponent)
                         .setMinimumLatency(jobTime)
-                        .setOverrideDeadline(TimeUnit.MINUTES.toMillis(3))
+                        .setOverrideDeadline(TimeUnit.MINUTES.toMillis(5))
                         .build()
 
                 js.schedule(jobInfo)
 
-                if(mEditMode){
+                if (mEditMode) {
                     setResult(RESULT_OK, intent)
                 }
                 finish()
@@ -586,11 +602,12 @@ class EditAppointmentActivity : BaseActivity() {
     // 약속 수정모드일 경우 데이터 설정
     private fun setDataFromViewAppointmentActivity() {
         mEditMode = intent.getBooleanExtra("EditMode", false)
-        if(mEditMode){
+        if (mEditMode) {
             binding.txtToolbarTitle.text = "약속 수정"
 
             val appointmentData = intent.getSerializableExtra("AppointmentData") as AppointmentData
-            mSelectedDateTime.time = Date(appointmentData.datetime.time - Calendar.getInstance().timeZone.rawOffset)
+            mSelectedDateTime.time =
+                Date(appointmentData.datetime.time - Calendar.getInstance().timeZone.rawOffset)
 
             mAppointmentId = appointmentData.id
 
@@ -614,7 +631,7 @@ class EditAppointmentActivity : BaseActivity() {
 
             mSelectedFriendList.add(GlobalData.loginUser!!)
 
-            for(i in 1 until appointmentData.invitedFriendList.size){
+            for (i in 1 until appointmentData.invitedFriendList.size) {
                 inflateFlowLayoutItem(appointmentData.invitedFriendList[i])
             }
 

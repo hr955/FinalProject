@@ -36,16 +36,10 @@
             android:name=".FindFriendActivity"
             android:exported="true" />
         <activity
-            android:name=".ViewMyFriendsListActivity"
-            android:exported="true" />
-        <activity
             android:name=".EditMyPlaceActivity"
             android:exported="true" />
         <activity
             android:name=".ViewMyPlaceListActivity"
-            android:exported="true" />
-        <activity
-            android:name=".MySettingActivity"
             android:exported="true" />
         <activity
             android:name=".ViewMapActivity"

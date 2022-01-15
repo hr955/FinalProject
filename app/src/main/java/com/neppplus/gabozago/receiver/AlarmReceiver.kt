@@ -30,7 +30,7 @@ class AlarmReceiver : BroadcastReceiver() {
         deliverNotification(p0)
     }
 
-    fun deliverNotification(context: Context) {
+    private fun deliverNotification(context: Context) {
         val contentIntent = Intent(context, MainActivity::class.java)
 
         val pendingIntent = PendingIntent.getActivity(
@@ -52,7 +52,7 @@ class AlarmReceiver : BroadcastReceiver() {
         mNotificationManager.notify(ALARM_ID, notiBuilder.build())
     }
 
-    fun createNotificationChannel() {
+    private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val notiChannel = NotificationChannel(
                 PRIMARY_CHANNEL_ID,

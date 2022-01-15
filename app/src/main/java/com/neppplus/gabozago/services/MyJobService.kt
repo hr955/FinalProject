@@ -5,6 +5,7 @@ import android.app.PendingIntent
 import android.app.job.JobParameters
 import android.app.job.JobService
 import android.content.Intent
+import android.util.Log
 import com.neppplus.gabozago.R
 import com.neppplus.gabozago.datas.BasicResponse
 import com.neppplus.gabozago.receiver.AlarmReceiver
@@ -28,6 +29,7 @@ class MyJobService : JobService() {
 
     override fun onStartJob(p0: JobParameters?): Boolean {
 
+        Log.d("MyJobServiceTest", "MyJobServiceStart")
         val retrofit = ServerAPI.getRetrofit(applicationContext)
         val apiService = retrofit.create(ServerAPIService::class.java)
 
@@ -64,13 +66,19 @@ class MyJobService : JobService() {
                                     val hour = totalTime / 60
                                     val minute = totalTime % 60
 
+                                    //GMT시간으로 내려주기 때문에 시간을 보정해줌
+                                    val appointmentTime = appointmentData.datetime.time - Calendar.getInstance().timeZone.rawOffset
+
                                     val alarmTime =
-                                        appointmentData.datetime.time - totalTime * 60 * 1000 - ContextUtil.getMyReadyMinute(applicationContext) * 60 * 1000
+                                        appointmentTime - (totalTime * 60 * 1000) - (ContextUtil.getMyReadyMinute(applicationContext) * 60 * 1000)
+//                                    Log.d("MyJobServiceTest", "appointmentTime: ${appointmentData.datetime.time}")
+//                                    Log.d("MyJobServiceTest", "appointmentTime-timeoffset: $appointmentTime")
+//                                    Log.d("MyJobServiceTest", "alarmTime: $alarmTime")
 
                                     setAlarmByMillisecond(alarmTime)
                                 }
 
-                                override fun onError(p0: Int, p1: String?, p2: API?) {}
+                                override fun onError(p0: Int, p1: String?, p2: API?) { Log.d("예상시간실패", p1!!) }
                             }
                         )
                     }
@@ -87,6 +95,8 @@ class MyJobService : JobService() {
     }
 
     fun setAlarmByMillisecond(timeInMillis: Long) {
+        Log.d("MyJobServiceTest", "AlarmStart")
+
         val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
         val myIntent = Intent(this, AlarmReceiver::class.java)
         val pendingIntent = PendingIntent.getBroadcast(
@@ -96,8 +106,10 @@ class MyJobService : JobService() {
             PendingIntent.FLAG_UPDATE_CURRENT
         )
 
-        val triggerTime = timeInMillis
-
-        alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, triggerTime, pendingIntent)
+        alarmManager.set(
+            AlarmManager.RTC_WAKEUP,
+            timeInMillis,
+            pendingIntent
+        )
     }
 }
