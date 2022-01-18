@@ -576,6 +576,8 @@ class EditAppointmentActivity : BaseActivity() {
                     applicationContext
                 ) * 60 * 1000) - (totalTime * 60 * 1000) - now.timeInMillis
 
+                Log.d("JobTimeTest", jobTime.toString())
+
                 val basicResponse = response.body()!!
 
                 // setMinimumLatency - 최소 얼마 후 작업이 실행되어야 하는지

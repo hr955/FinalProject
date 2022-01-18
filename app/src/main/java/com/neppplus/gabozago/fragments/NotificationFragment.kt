@@ -49,8 +49,6 @@ class NotificationFragment : BaseFragment() {
             binding.rvNotificationList.apply {
                 mNotificationList.addAll(response.data.notifications)
 
-                binding.txtEmptyNoti.visibility = View.GONE
-
                 setNotiIsRead(mNotificationList[0].id)
 
                 adapter = NotificationAdapter(mContext, mNotificationList)
@@ -67,6 +65,8 @@ class NotificationFragment : BaseFragment() {
             override fun onResponse(call: Call<BasicResponse>, response: Response<BasicResponse>) {
                 if (response.body()!!.data.notifications.isNotEmpty()) {
                     success(response.body()!!)
+                }else{
+                    binding.txtEmptyNoti.visibility = View.VISIBLE
                 }
             }
 
