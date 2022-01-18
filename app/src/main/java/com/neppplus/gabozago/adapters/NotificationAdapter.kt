@@ -41,9 +41,21 @@ class NotificationAdapter(val mContext: Context, val mList: List<NotificationDat
             binding.txtNotificationUserDate.text = "${item.actUser.nickname} · ${item.getFormattedDateTime()}"
 
             when (item.type) {
-                "약속초대" -> binding.icInviteAppointment.visibility = View.VISIBLE
-                "친구추가요청" -> binding.icRequestFriend.visibility = View.VISIBLE
-                "약속변경" -> binding.icEditAppointment.visibility = View.VISIBLE
+                "약속초대" -> {
+                    binding.icInviteAppointment.visibility = View.VISIBLE
+                    binding.icRequestFriend.visibility = View.INVISIBLE
+                    binding.icEditAppointment.visibility = View.INVISIBLE
+                }
+                "친구추가요청" -> {
+                    binding.icRequestFriend.visibility = View.VISIBLE
+                    binding.icInviteAppointment.visibility = View.INVISIBLE
+                    binding.icEditAppointment.visibility = View.INVISIBLE
+                }
+                "약속변경" -> {
+                    binding.icEditAppointment.visibility = View.VISIBLE
+                    binding.icInviteAppointment.visibility = View.INVISIBLE
+                    binding.icRequestFriend.visibility = View.INVISIBLE
+                }
             }
 
             if(!item.isRead){
