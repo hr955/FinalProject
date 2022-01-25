@@ -51,9 +51,8 @@ class MainFragment : BaseFragment() {
     }
 
     override fun setupEvents() {
-        binding.btnAddAppointment.setOnClickListener {
+        binding.fbAddAppointment.setOnClickListener {
             startActivity(Intent(mContext, EditAppointmentActivity::class.java))
-
         }
     }
 
