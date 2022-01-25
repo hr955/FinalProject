@@ -43,6 +43,19 @@
             app:rippleColor="@color/purple_200"
             app:tint="@color/white" />
 
+        <TextView
+            android:id="@+id/tv_appointment_empty_notify"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/view"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:gravity="center"
+            android:textSize="20sp"
+            android:visibility="gone"
+            android:text="아직 등록된 약속이 없어요 \n+ 버튼을 눌러 약속을 추가해보세요!"/>
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_appointment_list"
             android:layout_width="match_parent"

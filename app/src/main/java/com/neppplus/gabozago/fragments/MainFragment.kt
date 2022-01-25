@@ -78,7 +78,12 @@ class MainFragment : BaseFragment() {
         apiService.getRequestAppointmentList().enqueue(object : Callback<BasicResponse> {
             override fun onResponse(call: Call<BasicResponse>, response: Response<BasicResponse>) {
                 mAppointmentList.clear()
-                mAppointmentList.addAll(response.body()!!.data.appointments)
+                if(response.body()!!.data.appointments.isEmpty()){
+                    binding.tvAppointmentEmptyNotify.visibility = View.VISIBLE
+                }else{
+                    mAppointmentList.addAll(response.body()!!.data.appointments)
+                    binding.tvAppointmentEmptyNotify.visibility = View.GONE
+                }
                 mAdapter.notifyDataSetChanged()
             }
 
