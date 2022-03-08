@@ -35,8 +35,6 @@ class SetPlaceSearchListAdapter(val mContext: Context, val mList: SearchPlaceDat
             activity.setResult(Activity.RESULT_OK, activity.intent)
             activity.finish()
         }
-
-        if (position == mList.documents.size - 1) holder.viewDivisionLine.visibility = View.GONE
     }
 
     override fun getItemCount(): Int = mList.documents.size

@@ -26,7 +26,6 @@ class NotificationAdapter(val mContext: Context, val mList: List<NotificationDat
 
     override fun onBindViewHolder(holder: NotificationAdapterViewHolder, position: Int) {
         holder.onBind(mList[position])
-        if (position == mList.size - 1) holder.viewDivisionLine.visibility = View.INVISIBLE
     }
 
     override fun getItemCount(): Int = mList.size
